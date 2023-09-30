@@ -1,0 +1,113 @@
+﻿using System.Net;
+using System.Security.Authentication;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Yearly.Application.Services;
+using Yearly.Application.Services.Authentication;
+using Yearly.Infrastructure.Http;
+
+namespace Yearly.Infrastructure.Services.Authentication;
+
+public class PrimirestAuthService : IPrimirestAuthService
+{
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    public PrimirestAuthService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider)
+    {
+        _httpClientFactory = httpClientFactory;
+        _dateTimeProvider = dateTimeProvider;
+    }
+
+    public async Task<AuthenticationResult> LoginAsync(string username, string password)
+    {
+        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+        var sessionCookie = CreateValidCookie();
+
+        var requestContent = new StringContent(
+            JsonConvert.SerializeObject(new PrimirestLoginRequest(username, password)),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, "ajax/CS/auth/login")
+        {
+            Content = requestContent,
+        };
+        requestMessage.Headers.Add("cookie", sessionCookie);
+
+        //Todo: maybe there is a way to check it
+        //Response is always OK, se we can't check it...
+        await client.SendAsync(requestMessage);  
+        return new AuthenticationResult(sessionCookie);
+    }
+
+    public Task LogoutAsync(string sessionCookie)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<PrimirestUser> GetPrimirestUserInfoAsync(string sessionCookie)
+    {
+        var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
+
+        var path = $"cs/context/available?q=&_={timeStamp}";
+        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, path);
+        requestMessage.Headers.Add("cookie", sessionCookie);
+
+        var response = await client.SendAsync(requestMessage);
+
+        var resultJson = await response.Content.ReadAsStringAsync();
+
+        if (resultJson.StartsWith("<!doctype html>"))
+            //Redirected back to login page
+            throw new AuthenticationException("Cookie not marked as login");
+
+        dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
+        dynamic userDetailsObj = userObj.Items[0];
+        
+        return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString(), sessionCookie);
+    }
+
+    /// <summary>
+    /// Creates a cookie with exactly 24 bytes of value
+    /// that can be used as a session token for Primirest.
+    /// </summary>
+    private string CreateValidCookie()
+    {
+        ReadOnlySpan<byte> cookieBytes = RandomNumberGenerator.GetBytes(16);
+        ReadOnlySpan<char> cookieValue = Convert.ToBase64String(cookieBytes).ToLower();
+        Span<char> urlFriendlyCookieValue = stackalloc char[24];
+        for (int i = 0; i < 22; i++)
+        {
+            urlFriendlyCookieValue[i] = cookieValue[i] switch
+            {
+                '+' => 'x',
+                '/' => 'x',
+                '=' => 'x',
+                '1' => 'a',
+                '2' => 'b',
+                '3' => 'c',
+                '4' => 'd',
+                '5' => 'e',
+                '6' => 'f',
+                '7' => 'g',
+                '8' => 'h',
+                '9' => 'i',
+                '0' => 'j',
+                _ => cookieValue[i]
+            };
+        }
+
+        urlFriendlyCookieValue[22] = 'x';
+        urlFriendlyCookieValue[23] = 'x';
+
+        //var cookie = new Cookie("ASP.NET_SessionId", new string(urlFriendlyCookieValue));
+        return $"ASP.NET_SessionId={new string(urlFriendlyCookieValue)}";
+    }
+}

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yearly.Application\Yearly.Application.csproj" />
+    <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
+    <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
+    <ProjectReference Include="..\Yearly.Infrastructure\Yearly.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
