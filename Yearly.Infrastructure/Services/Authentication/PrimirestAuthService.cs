@@ -4,7 +4,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ErrorOr;
 using Newtonsoft.Json;
+using Yearly.Application.Errors;
 using Yearly.Application.Services;
 using Yearly.Application.Services.Authentication;
 using Yearly.Infrastructure.Http;
@@ -22,6 +24,14 @@ public class PrimirestAuthService : IPrimirestAuthService
         _dateTimeProvider = dateTimeProvider;
     }
 
+    /// <summary>
+    /// Creates a session cookie and attempts to mark it as logged in by sending a login request to Primirest.
+    /// There response from Primirest is always OK, so we can't check if the login was successful.
+    /// <b>You have to check that the cookie was marked yourself.</b>
+    /// </summary>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
     public async Task<AuthenticationResult> LoginAsync(string username, string password)
     {
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
@@ -50,7 +60,7 @@ public class PrimirestAuthService : IPrimirestAuthService
         throw new NotImplementedException();
     }
 
-    public async Task<PrimirestUser> GetPrimirestUserInfoAsync(string sessionCookie)
+    public async Task<ErrorOr<PrimirestUser>> GetPrimirestUserInfoAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 
@@ -65,8 +75,10 @@ public class PrimirestAuthService : IPrimirestAuthService
         var resultJson = await response.Content.ReadAsStringAsync();
 
         if (resultJson.StartsWith("<!doctype html>"))
-            //Redirected back to login page
-            throw new AuthenticationException("Cookie not marked as login");
+        {
+            //We have been redirected to the login page, so the cookie is not valid
+            return Errors.Authentication.CookieNotSigned;
+        }
 
         dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
         dynamic userDetailsObj = userObj.Items[0];

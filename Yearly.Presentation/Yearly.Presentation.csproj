@@ -13,4 +13,8 @@
     <ProjectReference Include="..\Yearly.Infrastructure\Yearly.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Http\" />
+  </ItemGroup>
+
 </Project>
