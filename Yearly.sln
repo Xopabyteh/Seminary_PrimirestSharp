@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{C1ACA48C-556C-4B19-88B1-29F528B3D201}"
 	ProjectSection(SolutionItems) = preProject
 		Authentication.md = Authentication.md
+		flow.md = flow.md
 	EndProjectSection
 EndProject
 Global

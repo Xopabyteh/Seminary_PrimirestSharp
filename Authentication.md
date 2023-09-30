@@ -2,7 +2,7 @@
 
 ## Login with username and password
 ```json
-POST {{host}}/login
+POST {{host}}/auth/login
 Content-Type: application/json
 
 {
