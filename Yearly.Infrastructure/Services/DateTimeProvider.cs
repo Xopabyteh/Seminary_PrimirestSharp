@@ -1,6 +1,4 @@
-﻿using Yearly.Application.Services;
-
-namespace Yearly.Infrastructure.Services;
+﻿namespace Yearly.Infrastructure.Services;
 
 public class DateTimeProvider : IDateTimeProvider
 {

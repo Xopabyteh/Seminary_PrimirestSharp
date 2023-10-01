@@ -1,14 +1,11 @@
-﻿using System.Net;
-using System.Security.Authentication;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using ErrorOr;
 using Newtonsoft.Json;
+using Yearly.Application.Authentication.Queries.Login;
+using Yearly.Application.Authentication.Queries.PrimirestUser;
+using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Errors;
-using Yearly.Application.Services;
-using Yearly.Application.Services.Authentication;
 using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Authentication;
@@ -32,7 +29,7 @@ public class PrimirestAuthService : IPrimirestAuthService
     /// <param name="username"></param>
     /// <param name="password"></param>
     /// <returns></returns>
-    public async Task<AuthenticationResult> LoginAsync(string username, string password)
+    public async Task<ErrorOr<LoginResult>> LoginAsync(string username, string password)
     {
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
         var sessionCookie = CreateValidCookie();
@@ -52,7 +49,7 @@ public class PrimirestAuthService : IPrimirestAuthService
         //Todo: maybe there is a way to check it
         //Response is always OK, se we can't check it...
         await client.SendAsync(requestMessage);  
-        return new AuthenticationResult(sessionCookie);
+        return new LoginResult(sessionCookie);
     }
 
     public Task LogoutAsync(string sessionCookie)
@@ -83,7 +80,7 @@ public class PrimirestAuthService : IPrimirestAuthService
         dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
         dynamic userDetailsObj = userObj.Items[0];
         
-        return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString(), sessionCookie);
+        return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
     }
 
     /// <summary>
@@ -122,4 +119,9 @@ public class PrimirestAuthService : IPrimirestAuthService
         //var cookie = new Cookie("ASP.NET_SessionId", new string(urlFriendlyCookieValue));
         return $"ASP.NET_SessionId={new string(urlFriendlyCookieValue)}";
     }
+
+    // Used for easier json serialization
+    private record PrimirestLoginRequest(
+        string Username,
+        string Password);
 }

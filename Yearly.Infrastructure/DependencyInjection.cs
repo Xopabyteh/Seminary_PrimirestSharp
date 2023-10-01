@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Yearly.Application.Services;
-using Yearly.Application.Services.Authentication;
+using Yearly.Application.Common.Interfaces;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;

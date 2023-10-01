@@ -1,4 +1,4 @@
-﻿namespace Yearly.Application.Services;
+﻿namespace Yearly.Infrastructure.Services;
 
 public interface IDateTimeProvider
 {
