@@ -10,7 +10,7 @@ using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Authentication;
 
-public class PrimirestAuthService : IPrimirestAuthService
+public class PrimirestAuthService : IAuthService
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -57,7 +57,7 @@ public class PrimirestAuthService : IPrimirestAuthService
         throw new NotImplementedException();
     }
 
-    public async Task<ErrorOr<PrimirestUser>> GetPrimirestUserInfoAsync(string sessionCookie)
+    public async Task<ErrorOr<PrimirestUser>> GetUserInfoAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 

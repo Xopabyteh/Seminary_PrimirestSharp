@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Presentation", "Yearly.Presentation\Yearly.Presentation.csproj", "{DC3BC138-056B-4035-A350-4E9B1CD1EDAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Presentation", "Yearly.Presentation\Yearly.Presentation.csproj", "{DC3BC138-056B-4035-A350-4E9B1CD1EDAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Application", "Yearly.Application\Yearly.Application.csproj", "{7DA77683-2A8A-49AB-BA3A-1F96BA395125}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Application", "Yearly.Application\Yearly.Application.csproj", "{7DA77683-2A8A-49AB-BA3A-1F96BA395125}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Domain", "Yearly.Domain\Yearly.Domain.csproj", "{B306697B-A791-4481-A0A9-BEE2FAC3EC48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Domain", "Yearly.Domain\Yearly.Domain.csproj", "{B306697B-A791-4481-A0A9-BEE2FAC3EC48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Infrastructure", "Yearly.Infrastructure\Yearly.Infrastructure.csproj", "{69A48454-4027-4DCB-B59F-04DF0DFAC4E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Infrastructure", "Yearly.Infrastructure\Yearly.Infrastructure.csproj", "{69A48454-4027-4DCB-B59F-04DF0DFAC4E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Contracts", "Yearly.Contracts\Yearly.Contracts.csproj", "{02EB685A-D795-49EF-965F-0B698645B6E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Contracts", "Yearly.Contracts\Yearly.Contracts.csproj", "{02EB685A-D795-49EF-965F-0B698645B6E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Requests", "Requests", "{62F4CC77-0872-4C91-93FB-01DFBD7A292F}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,6 +22,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{C1ACA48C-5
 	ProjectSection(SolutionItems) = preProject
 		Authentication.md = Authentication.md
 		flow.md = flow.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain Models", "Domain Models", "{B63312A3-727F-442F-B5B6-74A399A4140D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Http", "Http", "{A944CA7C-C1C6-4867-9A27-FC45983DACEC}"
+	ProjectSection(SolutionItems) = preProject
+		Authentication.md = Authentication.md
+		Menu.md = Menu.md
+		Photo.md = Photo.md
 	EndProjectSection
 EndProject
 Global
@@ -53,6 +62,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B63312A3-727F-442F-B5B6-74A399A4140D} = {C1ACA48C-556C-4B19-88B1-29F528B3D201}
+		{A944CA7C-C1C6-4867-9A27-FC45983DACEC} = {C1ACA48C-556C-4B19-88B1-29F528B3D201}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A0E2C9E-83F1-400E-B50F-2F5906590494}

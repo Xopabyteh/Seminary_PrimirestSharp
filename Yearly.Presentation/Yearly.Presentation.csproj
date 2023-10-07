@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Http\" />
+    <Folder Include="Validation\" />
   </ItemGroup>
 
 </Project>

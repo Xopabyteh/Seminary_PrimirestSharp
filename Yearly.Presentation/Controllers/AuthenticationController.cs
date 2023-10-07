@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Yearly.Application.Authentication.Queries;
 using Yearly.Application.Authentication.Queries.Login;
 using Yearly.Application.Authentication.Queries.PrimirestUser;
-using Yearly.Application.Common.Interfaces;
 using Yearly.Contracts;
 
 namespace Yearly.Presentation.Controllers;

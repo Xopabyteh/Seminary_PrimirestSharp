@@ -6,15 +6,15 @@ namespace Yearly.Application.Authentication.Queries.PrimirestUser;
 
 public class PrimirestUserQueryHandler : IRequestHandler<PrimirestUserQuery, ErrorOr<PrimirestUser>>
 {
-    private readonly IPrimirestAuthService _primirestAuthService;
+    private readonly IAuthService _authService;
 
-    public PrimirestUserQueryHandler(IPrimirestAuthService primirestAuthService)
+    public PrimirestUserQueryHandler(IAuthService authService)
     {
-        _primirestAuthService = primirestAuthService;
+        _authService = authService;
     }
 
     public Task<ErrorOr<PrimirestUser>> Handle(PrimirestUserQuery request, CancellationToken cancellationToken)
     {
-        return _primirestAuthService.GetPrimirestUserInfoAsync(request.SessionCookie);
+        return _authService.GetUserInfoAsync(request.SessionCookie);
     }
 }

@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Yearly.Application.Common.Behaviours;
 
 namespace Yearly.Application;
 
@@ -9,7 +13,10 @@ public static class DependencyInjection
         services.AddMediatR(c =>
         {
             c.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+            c.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         });
+
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         return services;
     }
