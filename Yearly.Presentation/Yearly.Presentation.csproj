@@ -24,4 +24,6 @@
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties requests_4httpenv_1json__JsonSchema="https://json.schemastore.org/jsconfig.json" /></VisualStudio></ProjectExtensions>
+
 </Project>

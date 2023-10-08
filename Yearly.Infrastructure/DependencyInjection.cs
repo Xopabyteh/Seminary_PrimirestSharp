@@ -3,6 +3,7 @@ using Yearly.Application.Common.Interfaces;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
+using Yearly.Infrastructure.Services.Menus;
 
 namespace Yearly.Infrastructure;
 
@@ -15,8 +16,10 @@ public static class DependencyInjection
             client.BaseAddress = new Uri("https://www.mujprimirest.cz");
         });
 
-        services.AddScoped<IAuthService, PrimirestAuthService>();
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+
+        services.AddScoped<IAuthService, PrimirestAuthService>();
+        services.AddScoped<IMenuProvider, PrimirestMenuProviderService>();
 
         return services;
     }

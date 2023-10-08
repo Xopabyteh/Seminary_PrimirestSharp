@@ -5,11 +5,14 @@ namespace Yearly.Domain.Models.MenuAgg;
 
 public class Menu : AggregateRoot<MenuId>
 {
-    private readonly List<FoodId> foodIds;
-    public IReadOnlyList<FoodId> FoodIds => foodIds.AsReadOnly();
+    private readonly List<FoodId> _foodIds;
+    public IReadOnlyList<FoodId> FoodIds => _foodIds.AsReadOnly();
+    
+    public DateTime Date { get; private set; }
 
-    protected Menu(MenuId id, List<FoodId> foodIds) : base(id)
+    protected Menu(MenuId id, List<FoodId> foodIds, DateTime date) : base(id)
     {
-        this.foodIds = foodIds;
+        this._foodIds = foodIds;
+        this.Date = date;
     }
 }

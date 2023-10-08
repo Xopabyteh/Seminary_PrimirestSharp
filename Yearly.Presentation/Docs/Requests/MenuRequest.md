@@ -1,13 +1,9 @@
 ## Get Menu
 
 ```json
-GET {{host}}/menu
-Content-Type: application/json
-
-{
-    "sessionCookie": "ASP.NET_SessionId=x..x"
-}
+GET {{host}}/menu?sessionCookie={{sessionCookie}}
 ```
+
 
 ### Response
 ```json

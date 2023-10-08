@@ -54,9 +54,14 @@ public class PrimirestAuthService : IAuthService
         return new LoginResult(sessionCookie);
     }
 
-    public Task LogoutAsync(string sessionCookie)
+    public async Task LogoutAsync(string sessionCookie)
     {
-        throw new NotImplementedException();
+        const string logoutPath = "ajax/CS/auth/logout";
+        
+        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, logoutPath);
+        requestMessage.Headers.Add("cookie", sessionCookie);
+        await client.SendAsync(requestMessage);
     }
 
     public async Task<ErrorOr<User>> GetUserInfoAsync(string sessionCookie)
@@ -76,7 +81,7 @@ public class PrimirestAuthService : IAuthService
         if (resultJson.StartsWith("<!doctype html>"))
         {
             //We have been redirected to the login page, so the cookie is not valid
-            return Errors.Authentication.CookieNotSigned;
+            return Application.Errors.Errors.Authentication.CookieNotSigned;
         }
 
         dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();

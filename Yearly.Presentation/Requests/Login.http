@@ -1,9 +1,11 @@
 @host=https://localhost:7217
+@username=username
+@password=password
 
 POST {{host}}/auth/login
 Content-Type: application/json
 
 {
-    "username": "ICOM7620.00071326564871",
-    "password": "Martin.321"
+    "username": "{{username}}",
+    "password": "{{password}}"
 }

@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Yearly.Application.Authentication.Queries.Login;
-using Yearly.Application.Authentication.Queries.PrimirestUser;
-using Yearly.Contracts;
-using Yearly.Contracts.Authentication;
+using Yearly.Application.Menus.Queries;
 using Yearly.Contracts.Menu;
 
 namespace Yearly.Presentation.Controllers;
@@ -11,15 +9,22 @@ namespace Yearly.Presentation.Controllers;
 public class MenuController : ApiController
 {
     private readonly ISender _mediator;
+    private readonly IMapper _mapper;
 
-    public MenuController(ISender mediator)
+    public MenuController(ISender mediator, IMapper mapper)
     {
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     [HttpGet("menu")]
-    public async Task<IActionResult> GetMenus(MenuRequest request)
+    public async Task<IActionResult> GetMenusThisWeek([FromQuery] MenusThisWeekRequest request)
     {
-        return Ok();
+        //var menuQuery = _mapper.Map<MenusThisWeekQuery>(request);
+        var result = await _mediator.Send(new MenusThisWeekQuery());
+
+        return result.Match(
+            menus => Ok(_mapper.Map<MenusThisWeekResponse>(menus)),
+            Problem);
     }
 }

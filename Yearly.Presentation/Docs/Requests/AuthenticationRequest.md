@@ -14,7 +14,7 @@ Content-Type: application/json
 ### Response
 ```json
 {
-  "id": "0",
+  "id": 0,
   "username": "Martin Fiala",
   "sessionCookie": "ASP.NET_SessionId=x..x"
 }
