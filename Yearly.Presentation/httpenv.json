@@ -1,5 +1,7 @@
 {
   "dev": {
-    "host": "https://localhost:7217"
+    "host": "https://localhost:7217",
+    "username": "",
+    "password":  "" 
   }
 }
