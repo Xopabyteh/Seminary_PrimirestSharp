@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\FoodAgg\ValueObjects\" />
+    <Folder Include="Models\MenuAgg\ValueObjects\" />
+  </ItemGroup>
+
 </Project>

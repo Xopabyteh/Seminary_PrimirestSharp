@@ -13,24 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Infrastructure", "Ye
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Contracts", "Yearly.Contracts\Yearly.Contracts.csproj", "{02EB685A-D795-49EF-965F-0B698645B6E8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Requests", "Requests", "{62F4CC77-0872-4C91-93FB-01DFBD7A292F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6122281A-9CD4-4B7D-82E4-DC82B94567C4}"
 	ProjectSection(SolutionItems) = preProject
-		Login.http = Login.http
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{C1ACA48C-556C-4B19-88B1-29F528B3D201}"
-	ProjectSection(SolutionItems) = preProject
-		Authentication.md = Authentication.md
-		flow.md = flow.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain Models", "Domain Models", "{B63312A3-727F-442F-B5B6-74A399A4140D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Http", "Http", "{A944CA7C-C1C6-4867-9A27-FC45983DACEC}"
-	ProjectSection(SolutionItems) = preProject
-		Authentication.md = Authentication.md
-		Menu.md = Menu.md
-		Photo.md = Photo.md
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Global
@@ -62,10 +47,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{B63312A3-727F-442F-B5B6-74A399A4140D} = {C1ACA48C-556C-4B19-88B1-29F528B3D201}
-		{A944CA7C-C1C6-4867-9A27-FC45983DACEC} = {C1ACA48C-556C-4B19-88B1-29F528B3D201}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A0E2C9E-83F1-400E-B50F-2F5906590494}
