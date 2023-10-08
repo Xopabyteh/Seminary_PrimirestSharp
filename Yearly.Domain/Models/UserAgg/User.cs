@@ -13,12 +13,10 @@ public class User : AggregateRoot<UserId>
     private readonly List<PhotoId> _photoIds;
     public IReadOnlyList<PhotoId> PhotoIds => _photoIds.AsReadOnly();
 
-    protected User(UserId id, string username) : base(id)
+    public User(UserId id, string username) : base(id)
     {
         Username = username;
         _roles = new List<UserRole>();
         _photoIds = new List<PhotoId>();
     }
-
-
 }

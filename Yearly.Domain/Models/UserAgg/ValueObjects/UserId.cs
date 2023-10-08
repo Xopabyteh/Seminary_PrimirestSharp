@@ -2,10 +2,15 @@
 
 public class UserId : ValueObject
 {
-    public Guid Value { get; private set; }
+    public int Value { get; private set; }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
+    }
+
+    public UserId(int value)
+    {
+        Value = value;
     }
 }

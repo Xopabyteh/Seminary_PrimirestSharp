@@ -6,6 +6,8 @@ using Yearly.Application.Authentication.Queries.Login;
 using Yearly.Application.Authentication.Queries.PrimirestUser;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Errors;
+using Yearly.Domain.Models.UserAgg;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Authentication;
@@ -57,7 +59,7 @@ public class PrimirestAuthService : IAuthService
         throw new NotImplementedException();
     }
 
-    public async Task<ErrorOr<PrimirestUser>> GetUserInfoAsync(string sessionCookie)
+    public async Task<ErrorOr<User>> GetUserInfoAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 
@@ -80,7 +82,10 @@ public class PrimirestAuthService : IAuthService
         dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
         dynamic userDetailsObj = userObj.Items[0];
         
-        return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
+        //return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
+        var userId = new UserId(int.Parse(userDetailsObj.ID.ToString()));
+        var userName = (string)userDetailsObj.Name.ToString();
+        return new User(userId, userName);
     }
 
     /// <summary>
