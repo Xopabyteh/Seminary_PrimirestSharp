@@ -1,11 +1,11 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using ErrorOr;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Yearly.Application.Authentication.Queries.Login;
-using Yearly.Application.Authentication.Queries.PrimirestUser;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Application.Errors;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure.Http;
@@ -16,17 +16,16 @@ public class PrimirestAuthService : IAuthService
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IDateTimeProvider _dateTimeProvider;
-
-    public PrimirestAuthService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider)
+    private readonly PrimirestAdminCredentialsOptions _adminCredentials;
+    public PrimirestAuthService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider, IOptions<PrimirestAdminCredentialsOptions> adminCredentials)
     {
         _httpClientFactory = httpClientFactory;
         _dateTimeProvider = dateTimeProvider;
+        _adminCredentials = adminCredentials.Value;
     }
 
     /// <summary>
     /// Creates a session cookie and attempts to mark it as logged in by sending a login request to Primirest.
-    /// There response from Primirest is always OK, so we can't check if the login was successful.
-    /// <b>You have to check that the cookie was marked yourself.</b>
     /// </summary>
     /// <param name="username"></param>
     /// <param name="password"></param>
@@ -48,9 +47,13 @@ public class PrimirestAuthService : IAuthService
         };
         requestMessage.Headers.Add("cookie", sessionCookie);
 
-        //Todo: maybe there is a way to check it
-        //Response is always OK, se we can't check it...
-        await client.SendAsync(requestMessage);  
+        var loginResponse = await client.SendAsync(requestMessage);
+
+        //If the loginResponse request uri absolute path is "/CS", then the login was successful
+        //If it is "/CS/auth/login", then the login was unsuccessful
+        if(loginResponse.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+            return Application.Errors.Errors.Authentication.InvalidCredentials;
+
         return new LoginResult(sessionCookie);
     }
 
@@ -104,6 +107,7 @@ public class PrimirestAuthService : IAuthService
         Span<char> urlFriendlyCookieValue = stackalloc char[24];
         for (int i = 0; i < 22; i++)
         {
+            //Todo: change this weird thing to something more reliable
             urlFriendlyCookieValue[i] = cookieValue[i] switch
             {
                 '+' => 'x',
@@ -130,8 +134,45 @@ public class PrimirestAuthService : IAuthService
         return $"ASP.NET_SessionId={new string(urlFriendlyCookieValue)}";
     }
 
+
     // Used for easier json serialization
     private record PrimirestLoginRequest(
         string Username,
         string Password);
+
+    /// <summary>
+    /// Login to primirest with the infrastructue admin credentials (Martin's credentials)
+    /// Performs the given action
+    /// Logs out the admin credentials
+    /// </summary>
+    /// <typeparam name="TResult">The type to be returned from the function</typeparam>
+    /// <param name="action">The function to be called. It should be async. You receive a <see cref="HttpClient"/>
+    /// created by the factory with the name <see cref="HttpClientNames.Primirest"/> and with the session cookie set.
+    /// </param>
+    /// <returns>Error or TResult</returns>
+    internal async Task<ErrorOr<TResult>> PerformAdminLoggedSessionAsync<TResult>(Func<HttpClient, Task<TResult>> action)
+    {
+        //Login as admin
+        var username = _adminCredentials.AdminUsername;
+        var password  = _adminCredentials.AdminPassword;
+
+        var loginResult = await LoginAsync(username, password);
+        if (loginResult.IsError)
+            return Infrastructure.Errors.Errors.System.InvalidAdminCredentials;
+
+
+        var sessionCookie = loginResult.Value.SessionCookie;
+        
+        var primirestLoggedClient = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+        primirestLoggedClient.DefaultRequestHeaders.Add("Cookie", sessionCookie);
+
+        //Perform the action
+        var result = await action(primirestLoggedClient);
+
+        //Logout
+        await LogoutAsync(sessionCookie);
+        primirestLoggedClient.DefaultRequestHeaders.Remove("Cookie");
+
+        return result;
+    }
 }

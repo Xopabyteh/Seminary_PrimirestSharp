@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services;
@@ -9,7 +10,7 @@ namespace Yearly.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, WebApplicationBuilder builder)
     {
         services.AddHttpClient(HttpClientNames.Primirest, client =>
         {
@@ -19,7 +20,12 @@ public static class DependencyInjection
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
         services.AddScoped<IAuthService, PrimirestAuthService>();
+        services.AddScoped<PrimirestAuthService>();
+
         services.AddScoped<IMenuProvider, PrimirestMenuProviderService>();
+
+        services.Configure<PrimirestAdminCredentialsOptions>(
+            builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); //The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
         return services;
     }

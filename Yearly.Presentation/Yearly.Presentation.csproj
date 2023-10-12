@@ -4,10 +4,14 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>5cbbea73-5a61-41ef-8cd6-e7d85b8a87d0</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="httpenv.json.user" />
+    <Compile Remove="Requests\**" />
+    <Content Remove="Requests\**" />
+    <EmbeddedResource Remove="Requests\**" />
+    <None Remove="Requests\**" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Authentication.Queries.Login;
+using Yearly.Application.Authentication.Queries.Logout;
 using Yearly.Application.Authentication.Queries.PrimirestUser;
 using Yearly.Contracts;
 using Yearly.Contracts.Authentication;
@@ -41,5 +42,14 @@ public class AuthenticationController : ApiController
             user => Ok(_mapper.Map<LoginResponse>((user, loginResult.Value))),
             Problem
             );
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
+    {
+        //Todo: make this not so bad
+        var logoutQuery = _mapper.Map<LogoutQuery>(request);
+        await _mediator.Send(logoutQuery);
+        return Ok();
     }
 }

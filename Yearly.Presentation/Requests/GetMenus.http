@@ -1,4 +1,0 @@
-@host=https://localhost:7217
-@sessionCookie=asdasd
-
-GET {{host}}/menu?sessionCookie={{sessionCookie}}

@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.MenuAgg;
 using Yearly.Infrastructure.Http;
@@ -10,54 +11,68 @@ namespace Yearly.Infrastructure.Services.Menus;
 public class PrimirestMenuProviderService : IMenuProvider
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IAuthService _authService;
+    private readonly PrimirestAuthService _authService;
 
-    public PrimirestMenuProviderService(IHttpClientFactory httpClientFactory, IAuthService authService)
+    public PrimirestMenuProviderService(IHttpClientFactory httpClientFactory, PrimirestAuthService authService)
     {
         _httpClientFactory = httpClientFactory;
         _authService = authService;
     }
 
+    //TODO: Do this.
     public async Task<ErrorOr<List<Menu>>> GetMenusThisWeek()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
         //The ids can only be fetched by scraping their index page
-        var menuIds = await GetMenuIds();
+        return await _authService.PerformAdminLoggedSessionAsync(async loggedClient =>
+        {
+            //Fetch menus from primirest
+            var menuIds = await GetMenuIds(loggedClient);
+            foreach (var menuId in menuIds)
+            {
+                var message = new HttpRequestMessage(HttpMethod.Get,
+                    @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={menuId}&menuViewType=FULL&_=0");
 
+                var response = await loggedClient.SendAsync(message);
+                var responseJson = await response.Content.ReadAsStringAsync();
 
-        return Array.Empty<Menu>().ToList();
+                dynamic responseObject = JsonConvert.DeserializeObject(responseJson) ?? throw new InvalidOperationException();
+
+                dynamic days = responseObject.Menu.Days;
+
+                foreach (dynamic day in days)
+                {
+                    DateTimeOffset date = DateTimeOffset.FromUnixTimeMilliseconds(day.Date);
+                    foreach (dynamic item in day.Items)
+                    {
+                        string foodName = item.Meals[0].Meal.Name;
+
+                        //Check if we have a food with this name
+                        //Todo:
+                    }
+                }
+
+            }
+
+            //Check if we have foods inside of the menu
+            //If not, create them and persist them
+
+            //Create menu objects
+
+            return Array.Empty<Menu>().ToList();
+        });
     }
 
     /// <summary>
     /// Scrape the index page of Primirest to get the menu ids
     /// </summary>
     /// <returns></returns>
-    private async Task<ErrorOr<string[]>> GetMenuIds()
+    private async Task<string[]> GetMenuIds(HttpClient loggedClient)
     {
-        //TODO: Move these hardcoded credentials
-        //Login as admin
-        var username = @"ICOM7620.00071326564871";
-        var password = @"Martin.321";
-
-        var loginResult = await _authService.LoginAsync(username, password);
-        
-        if (loginResult.IsError)
-            return Infrastructure.Errors.Errors.System.InvalidAdminCredentials;
-        
-        var sessionCookie = loginResult.Value.SessionCookie;
-        
         //Get index page
-        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
-
-        client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
-        var indexPageHtml = await client.GetStringAsync(
+        var indexPageHtml = await loggedClient.GetStringAsync(
         "CS/boarding/index?purchasePlaceID=24087276&suppressOptionsDialog=true&menuViewType=SIMPLE");
-
-        //Logout
-        client.DefaultRequestHeaders.Remove("Cookie");
-        //await _authService.LogoutAsync(sessionCookie);
-
 
         //Scrape the menu ids
         var indexPageDoc = new HtmlDocument();
@@ -69,7 +84,18 @@ public class PrimirestMenuProviderService : IMenuProvider
             .Select(e => e.GetAttributeValue("value", string.Empty))
             .ToArray();
 
-        
         return idsResult;
     }
+
+    //private record struct PrimirestMenuResponse(
+    //    List<Day> Days
+    //);
+
+    //private record struct Day(
+    //    DateTime Date,
+    //    List<Item> Items);
+
+    //private record struct Item(
+    //    string Description
+    //);
 }
