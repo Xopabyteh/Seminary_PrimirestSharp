@@ -150,7 +150,7 @@ public class PrimirestAuthService : IAuthService
     /// created by the factory with the name <see cref="HttpClientNames.Primirest"/> and with the session cookie set.
     /// </param>
     /// <returns>Error or TResult</returns>
-    internal async Task<ErrorOr<TResult>> PerformAdminLoggedSessionAsync<TResult>(Func<HttpClient, Task<TResult>> action)
+    internal async Task<ErrorOr<TResult>> PerformAdminLoggedSessionAsync<TResult>(Func<HttpClient, Task<ErrorOr<TResult>>> action)
     {
         //Login as admin
         var username = _adminCredentials.AdminUsername;
@@ -158,7 +158,7 @@ public class PrimirestAuthService : IAuthService
 
         var loginResult = await LoginAsync(username, password);
         if (loginResult.IsError)
-            return Infrastructure.Errors.Errors.System.InvalidAdminCredentials;
+            return Infrastructure.Errors.Errors.PrimirestAdapter.InvalidAdminCredentials;
 
 
         var sessionCookie = loginResult.Value.SessionCookie;

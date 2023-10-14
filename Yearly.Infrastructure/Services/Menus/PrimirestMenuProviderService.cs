@@ -2,6 +2,7 @@
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
+using Yearly.Application.Menus;
 using Yearly.Domain.Models.MenuAgg;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services.Authentication;
@@ -20,15 +21,58 @@ public class PrimirestMenuProviderService : IMenuProvider
     }
 
     //TODO: Do this.
-    public async Task<ErrorOr<List<Menu>>> GetMenusThisWeek()
+    /// <summary>
+    /// Fetch menus from primirest
+    /// Nothing else is done, only fetching
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public async Task<ErrorOr<List<ExternalServiceMenu>>> GetMenusThisWeekAsync()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
         //The ids can only be fetched by scraping their index page
-        return await _authService.PerformAdminLoggedSessionAsync(async loggedClient =>
+
+        //Also, the food names include the soup name in them
+        //It is always the same and is the first part of the food name string
+        //To get the soup, we have to find the common part of the food names
+        //And then remove it from the food names
+
+        string GetSoupFromRawFoodNames(List<string> foodNames)
         {
-            //Fetch menus from primirest
+            string GetCommonSubstring(string str1, string str2)
+            {
+                string commonSubstring = "";
+                int len1 = str1.Length;
+                int len2 = str2.Length;
+                for (int i = 0; i < len1; i++)
+                {
+                    for (int j = i + 1; j <= len1; j++)
+                    {
+                        string subString = str1.Substring(i, j - i);
+                        if (len2 >= subString.Length && str2.Contains(subString))
+                        {
+                            if (subString.Length > commonSubstring.Length)
+                            {
+                                commonSubstring = subString;
+                            }
+                        }
+                    }
+                }
+                return commonSubstring;
+            }
+
+            string commonSubstring = foodNames.Aggregate(GetCommonSubstring);
+            return commonSubstring;
+        }
+
+        return await _authService.PerformAdminLoggedSessionAsync<List<ExternalServiceMenu>>(async loggedClient =>
+        {
+            //Fetch menu ids from primirest
             var menuIds = await GetMenuIds(loggedClient);
+
+            //Return them as ExternalServiceMenu objects
+            var reconstructedMenus = new List<ExternalServiceMenu>(10);
             foreach (var menuId in menuIds)
             {
                 var message = new HttpRequestMessage(HttpMethod.Get,
@@ -37,30 +81,49 @@ public class PrimirestMenuProviderService : IMenuProvider
                 var response = await loggedClient.SendAsync(message);
                 var responseJson = await response.Content.ReadAsStringAsync();
 
-                dynamic responseObject = JsonConvert.DeserializeObject(responseJson) ?? throw new InvalidOperationException();
-
-                dynamic days = responseObject.Menu.Days;
-
-                foreach (dynamic day in days)
-                {
-                    DateTimeOffset date = DateTimeOffset.FromUnixTimeMilliseconds(day.Date);
-                    foreach (dynamic item in day.Items)
+                var responseRoot = JsonConvert.DeserializeObject<PrimirestMenuResponseRoot>(responseJson,
+                    new JsonSerializerSettings()
                     {
-                        string foodName = item.Meals[0].Meal.Name;
+                        DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                    });
 
-                        //Check if we have a food with this name
-                        //Todo:
+                if (responseRoot is null)
+                    return Errors.Errors.PrimirestAdapter.PrimirestResponseIsNull;
+
+                foreach (var day in responseRoot.Menu.Days)
+                {
+                    //Construct menu per day here
+
+                    var foods = new List<ExternalServiceFood>(3);
+                    var menuDate = day.Date.AddDays(1); //Primirest stores in cz, we parse in utc, so we add 1 to go back to cz
+
+                    var foodsRawFormat = new List<ExternalServiceFood>(3); //Foods with soup name in them
+                    foreach (var item in day.Items)
+                    {
+                        var rawFoodName = item.Description;
+                        foodsRawFormat.Add(new(rawFoodName, item.MealAllergensMarkings));
                     }
-                }
 
+                    //Find the common part of the food names
+                    var soupName = GetSoupFromRawFoodNames(foodsRawFormat.Select(x=>x.Name).ToList());
+
+                    //Construct food objects
+                    foreach (var foodRawFormat in foodsRawFormat)
+                    {
+                        var foodName = foodRawFormat.Name.Replace(soupName, "").Trim();
+                        var food = new ExternalServiceFood(foodName, foodRawFormat.Allergens);
+                        foods.Add(food);
+                    }
+
+                    var soup = new ExternalServiceFood(soupName.TrimEnd(',', ' '), string.Empty);
+
+                    //Construct menu for this day
+                    var menu = new ExternalServiceMenu(menuDate, foods, soup);
+                    reconstructedMenus.Add(menu);
+                }
             }
 
-            //Check if we have foods inside of the menu
-            //If not, create them and persist them
-
-            //Create menu objects
-
-            return Array.Empty<Menu>().ToList();
+            return reconstructedMenus;
         });
     }
 

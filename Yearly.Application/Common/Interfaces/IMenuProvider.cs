@@ -1,9 +1,9 @@
 ﻿using ErrorOr;
-using Yearly.Domain.Models.MenuAgg;
+using Yearly.Application.Menus;
 
 namespace Yearly.Application.Common.Interfaces;
 
 public interface IMenuProvider
 {
-    public Task<ErrorOr<List<Menu>>> GetMenusThisWeek();
+    public Task<ErrorOr<List<ExternalServiceMenu>>> GetMenusThisWeekAsync();
 }

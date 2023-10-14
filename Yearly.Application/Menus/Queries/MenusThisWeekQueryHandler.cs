@@ -14,8 +14,10 @@ public class MenusThisWeekQueryHandler : IRequestHandler<MenusThisWeekQuery, Err
         _menuProvider = menuProvider;
     }
 
-    public Task<ErrorOr<List<Menu>>> Handle(MenusThisWeekQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<List<Menu>>> Handle(MenusThisWeekQuery request, CancellationToken cancellationToken)
     {
-        return _menuProvider.GetMenusThisWeek();
+        var externalMenusResult = await _menuProvider.GetMenusThisWeekAsync();
+
+        return new List<Menu>();
     }
 }

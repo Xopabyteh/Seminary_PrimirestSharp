@@ -25,8 +25,6 @@ public class AuthenticationController : ApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        //TODO: Mapping & Menu controller
-
         //var loginQuery = new LoginQuery(request.Username, request.Password);
         var loginQuery = _mapper.Map<LoginQuery>(request);
         var loginResult = await _mediator.Send(loginQuery);
@@ -47,7 +45,6 @@ public class AuthenticationController : ApiController
     [HttpPost("logout")]
     public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
     {
-        //Todo: make this not so bad
         var logoutQuery = _mapper.Map<LogoutQuery>(request);
         await _mediator.Send(logoutQuery);
         return Ok();
