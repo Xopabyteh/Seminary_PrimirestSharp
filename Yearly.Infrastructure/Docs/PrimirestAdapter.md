@@ -20,3 +20,14 @@ when it starts up.
 ```
 
 The actions that require a login should be ran with the `PerformAdminLoggedSession` method inside of `PrimirestAuthService`
+
+## Menu
+### Get menus
+Primirest has a different idea about the `menu` than P# does.
+
+For **Primirest** a `menu` is a list of `days` each containting a list of `foods`. 
+>They have 1 menu per week
+
+For **P#** a `menu` is a list of `foods` and a soup.
+>We have 1 menu per day
+

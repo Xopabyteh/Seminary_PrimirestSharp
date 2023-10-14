@@ -1,7 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using ErrorOr;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Yearly.Application.Authentication.Queries.Login;
@@ -51,7 +50,7 @@ public class PrimirestAuthService : IAuthService
 
         //If the loginResponse request uri absolute path is "/CS", then the login was successful
         //If it is "/CS/auth/login", then the login was unsuccessful
-        if(loginResponse.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+        if (loginResponse.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
             return Application.Errors.Errors.Authentication.InvalidCredentials;
 
         return new LoginResult(sessionCookie);

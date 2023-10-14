@@ -33,7 +33,6 @@ public abstract class ValueObject : IEquatable<ValueObject>
         return !Equals(left, right);
     }
 
-
     public bool Equals(ValueObject? other)
     {
         if (other is null)
@@ -42,6 +41,7 @@ public abstract class ValueObject : IEquatable<ValueObject>
         return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
     }
 
-
-    protected ValueObject() {}
+    protected ValueObject()
+    {
+    }
 }

@@ -3,24 +3,19 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Menus;
-using Yearly.Domain.Models.MenuAgg;
-using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services.Authentication;
 
 namespace Yearly.Infrastructure.Services.Menus;
 
 public class PrimirestMenuProviderService : IMenuProvider
 {
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly PrimirestAuthService _authService;
 
-    public PrimirestMenuProviderService(IHttpClientFactory httpClientFactory, PrimirestAuthService authService)
+    public PrimirestMenuProviderService(PrimirestAuthService authService)
     {
-        _httpClientFactory = httpClientFactory;
         _authService = authService;
     }
 
-    //TODO: Do this.
     /// <summary>
     /// Fetch menus from primirest
     /// Nothing else is done, only fetching
@@ -38,18 +33,18 @@ public class PrimirestMenuProviderService : IMenuProvider
         //To get the soup, we have to find the common part of the food names
         //And then remove it from the food names
 
-        string GetSoupFromRawFoodNames(List<string> foodNames)
+        static string GetSoupFromRawFoodNames(List<string> foodNames)
         {
-            string GetCommonSubstring(string str1, string str2)
+            static string GetCommonSubstring(string str1, string str2)
             {
-                string commonSubstring = "";
+                string commonSubstring = string.Empty;
                 int len1 = str1.Length;
                 int len2 = str2.Length;
                 for (int i = 0; i < len1; i++)
                 {
                     for (int j = i + 1; j <= len1; j++)
                     {
-                        string subString = str1.Substring(i, j - i);
+                        string subString = str1[i..j];
                         if (len2 >= subString.Length && str2.Contains(subString))
                         {
                             if (subString.Length > commonSubstring.Length)
@@ -75,13 +70,15 @@ public class PrimirestMenuProviderService : IMenuProvider
             var reconstructedMenus = new List<ExternalServiceMenu>(10);
             foreach (var menuId in menuIds)
             {
-                var message = new HttpRequestMessage(HttpMethod.Get,
+                var message = new HttpRequestMessage(
+                    HttpMethod.Get,
                     @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={menuId}&menuViewType=FULL&_=0");
 
                 var response = await loggedClient.SendAsync(message);
                 var responseJson = await response.Content.ReadAsStringAsync();
 
-                var responseRoot = JsonConvert.DeserializeObject<PrimirestMenuResponseRoot>(responseJson,
+                var responseRoot = JsonConvert.DeserializeObject<PrimirestMenuResponseRoot>(
+                    responseJson,
                     new JsonSerializerSettings()
                     {
                         DateTimeZoneHandling = DateTimeZoneHandling.Utc
@@ -110,7 +107,7 @@ public class PrimirestMenuProviderService : IMenuProvider
                     //Construct food objects
                     foreach (var foodRawFormat in foodsRawFormat)
                     {
-                        var foodName = foodRawFormat.Name.Replace(soupName, "").Trim();
+                        var foodName = foodRawFormat.Name.Replace(soupName, string.Empty).Trim();
                         var food = new ExternalServiceFood(foodName, foodRawFormat.Allergens);
                         foods.Add(food);
                     }
@@ -131,7 +128,7 @@ public class PrimirestMenuProviderService : IMenuProvider
     /// Scrape the index page of Primirest to get the menu ids
     /// </summary>
     /// <returns></returns>
-    private async Task<string[]> GetMenuIds(HttpClient loggedClient)
+    private static async Task<string[]> GetMenuIds(HttpClient loggedClient)
     {
         //Get index page
         var indexPageHtml = await loggedClient.GetStringAsync(
@@ -149,16 +146,4 @@ public class PrimirestMenuProviderService : IMenuProvider
 
         return idsResult;
     }
-
-    //private record struct PrimirestMenuResponse(
-    //    List<Day> Days
-    //);
-
-    //private record struct Day(
-    //    DateTime Date,
-    //    List<Item> Items);
-
-    //private record struct Item(
-    //    string Description
-    //);
 }

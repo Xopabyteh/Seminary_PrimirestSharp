@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Authentication.Queries.Login;
 using Yearly.Application.Authentication.Queries.Logout;
 using Yearly.Application.Authentication.Queries.PrimirestUser;
-using Yearly.Contracts;
 using Yearly.Contracts.Authentication;
 
 namespace Yearly.Presentation.Controllers;
@@ -36,10 +35,8 @@ public class AuthenticationController : ApiController
         var userResult = await _mediator.Send(userQuery);
 
         return userResult.Match(
-            //user => Ok(new LoginResponse(user.Id.Value.ToString(), user.Username, loginResult.Value.SessionCookie)),
             user => Ok(_mapper.Map<LoginResponse>((user, loginResult.Value))),
-            Problem
-            );
+            Problem);
     }
 
     [HttpPost("logout")]

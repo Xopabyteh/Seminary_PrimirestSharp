@@ -1,10 +1,8 @@
 ﻿using System.Reflection;
 using Mapster;
 using MapsterMapper;
-using MediatR;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Yearly.Presentation.Errors;
-using Yearly.Presentation.Validation;
 
 namespace Yearly.Presentation;
 

@@ -25,7 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IMenuProvider, PrimirestMenuProviderService>();
 
         services.Configure<PrimirestAdminCredentialsOptions>(
-            builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); //The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
         return services;
     }

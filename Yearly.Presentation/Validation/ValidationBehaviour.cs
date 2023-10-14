@@ -4,12 +4,11 @@ using MediatR;
 
 namespace Yearly.Presentation.Validation;
 
-public class ValidationBehaviour<TRequest,TResponse>
+public class ValidationBehaviour<TRequest, TResponse>
     : IPipelineBehavior<TRequest, ErrorOr<TResponse>>
     where TRequest : IRequest<TResponse>
     where TResponse : notnull
 {
-
     private readonly IValidator<TRequest>? _validator;
 
     public ValidationBehaviour(IValidator<TRequest>? validator = null)

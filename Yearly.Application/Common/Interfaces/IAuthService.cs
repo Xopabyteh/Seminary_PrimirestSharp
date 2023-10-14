@@ -1,6 +1,5 @@
 ﻿using ErrorOr;
 using Yearly.Application.Authentication.Queries.Login;
-using Yearly.Application.Authentication.Queries.PrimirestUser;
 using Yearly.Domain.Models.UserAgg;
 
 namespace Yearly.Application.Common.Interfaces;

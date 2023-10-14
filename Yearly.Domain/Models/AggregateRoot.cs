@@ -1,11 +1,14 @@
 ﻿namespace Yearly.Domain.Models;
 
-public class AggregateRoot<TId> : Entity<TId> 
+public class AggregateRoot<TId> : Entity<TId>
     where TId : ValueObject
 {
-    protected AggregateRoot(TId id) : base(id)
+    protected AggregateRoot(TId id) 
+        : base(id)
     {
     }
 
-    private AggregateRoot() { }
+    private AggregateRoot()
+    {
+    }
 }

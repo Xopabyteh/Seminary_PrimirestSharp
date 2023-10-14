@@ -20,7 +20,6 @@ public class MenuController : ApiController
     [HttpGet("menu")]
     public async Task<IActionResult> GetMenusThisWeek([FromQuery] MenusThisWeekRequest request)
     {
-        //var menuQuery = _mapper.Map<MenusThisWeekQuery>(request);
         var result = await _mediator.Send(new MenusThisWeekQuery());
 
         return result.Match(

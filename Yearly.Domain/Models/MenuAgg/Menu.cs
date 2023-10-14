@@ -10,7 +10,8 @@ public class Menu : AggregateRoot<MenuId>
     
     public DateTime Date { get; private set; }
 
-    protected Menu(MenuId id, List<FoodId> foodIds, DateTime date) : base(id)
+    protected Menu(MenuId id, List<FoodId> foodIds, DateTime date)
+        : base(id)
     {
         this._foodIds = foodIds;
         this.Date = date;

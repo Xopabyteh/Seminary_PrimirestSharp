@@ -10,12 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
         .AddInfrastructure(builder);
 }
 
-
 var app = builder.Build();
 {
-
     app.MapControllers();
     app.Run();
 }
-
-

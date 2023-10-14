@@ -8,26 +8,25 @@ public record PrimirestMenuResponseDay(
 public record PrimirestMenuResponseItem(
     bool CanOrder,
     string Description,
-    //DateTime MenuDayDate,
-    //IReadOnlyList<MealAllergensList> MealAllergensList,
+    // DateTime MenuDayDate,
+    // IReadOnlyList<MealAllergensList> MealAllergensList,
     string MealAllergensMarkings
 );
 
-
-//public record MealAllergensList(
-//int Item1,
-//string Item2,
-//string Item3,
-//int Item4,
-//int Item5
-//);
+// public record MealAllergensList(
+// int Item1,
+// string Item2,
+// string Item3,
+// int Item4,
+// int Item5
+// );
 
 public record PrimirestMenuResponseMenu(
     IReadOnlyList<object> Orders,
     IReadOnlyList<PrimirestMenuResponseDay> Days
 
-    //DateTime DateFrom,
-    //DateTime DateTo,
+    // DateTime DateFrom,
+    // DateTime DateTo,
 );
 
 public record PrimirestMenuResponseRoot(

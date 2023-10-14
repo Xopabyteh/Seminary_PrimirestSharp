@@ -9,7 +9,6 @@ public class ValidationBehaviour<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : notnull
 {
-
     private readonly IValidator<TRequest>? _validator;
 
     public ValidationBehaviour(IValidator<TRequest>? validator = null)

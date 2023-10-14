@@ -11,7 +11,8 @@ public class Photo : AggregateRoot<PhotoId>
     public FoodId FoodId { get; private set; }
     public string Link { get; private set; }
 
-    public Photo(PhotoId id, UserId publisherId, DateTime publishDate, FoodId foodId, string link) : base(id)
+    public Photo(PhotoId id, UserId publisherId, DateTime publishDate, FoodId foodId, string link) 
+        : base(id)
     {
         PublisherId = publisherId;
         PublishDate = publishDate;
