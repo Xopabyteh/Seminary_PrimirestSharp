@@ -7,11 +7,11 @@ using Yearly.Infrastructure.Services.Authentication;
 
 namespace Yearly.Infrastructure.Services.Menus;
 
-public class PrimirestMenuProviderService : IMenuProvider
+public class PrimirestExternalServiceMenuProviderService : IExternalServiceMenuProvider
 {
     private readonly PrimirestAuthService _authService;
 
-    public PrimirestMenuProviderService(PrimirestAuthService authService)
+    public PrimirestExternalServiceMenuProviderService(PrimirestAuthService authService)
     {
         _authService = authService;
     }
@@ -91,7 +91,7 @@ public class PrimirestMenuProviderService : IMenuProvider
                 {
                     //Construct menu per day here
 
-                    var foods = new List<ExternalServiceFood>(3);
+                    var foods = new List<ExternalServiceFood>(4); //3 + soup
                     var menuDate = day.Date.AddDays(1); //Primirest stores in cz, we parse in utc, so we add 1 to go back to cz
 
                     var foodsRawFormat = new List<ExternalServiceFood>(3); //Foods with soup name in them
@@ -113,9 +113,10 @@ public class PrimirestMenuProviderService : IMenuProvider
                     }
 
                     var soup = new ExternalServiceFood(soupName.TrimEnd(',', ' '), string.Empty);
+                    foods.Add(soup);
 
                     //Construct menu for this day
-                    var menu = new ExternalServiceMenu(menuDate, foods, soup);
+                    var menu = new ExternalServiceMenu(menuDate, foods);
                     reconstructedMenus.Add(menu);
                 }
             }

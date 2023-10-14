@@ -8,4 +8,9 @@ public class FoodId : ValueObject
     {
         yield return Value;
     }
+
+    public FoodId(Guid value)
+    {
+        Value = value;
+    }
 }

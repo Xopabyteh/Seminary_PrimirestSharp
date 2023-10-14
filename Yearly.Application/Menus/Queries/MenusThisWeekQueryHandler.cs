@@ -7,16 +7,17 @@ namespace Yearly.Application.Menus.Queries;
 
 public class MenusThisWeekQueryHandler : IRequestHandler<MenusThisWeekQuery, ErrorOr<List<Menu>>>
 {
-    private readonly IMenuProvider _menuProvider;
+    private readonly IExternalServiceMenuProvider _externalServiceMenuProvider;
 
-    public MenusThisWeekQueryHandler(IMenuProvider menuProvider)
+    public MenusThisWeekQueryHandler(IExternalServiceMenuProvider externalServiceMenuProvider)
     {
-        _menuProvider = menuProvider;
+        _externalServiceMenuProvider = externalServiceMenuProvider;
     }
 
     public async Task<ErrorOr<List<Menu>>> Handle(MenusThisWeekQuery request, CancellationToken cancellationToken)
     {
-        var externalMenusResult = await _menuProvider.GetMenusThisWeekAsync();
+        var externalMenusResult = await _externalServiceMenuProvider.GetMenusThisWeekAsync();
+
 
         return new List<Menu>();
     }

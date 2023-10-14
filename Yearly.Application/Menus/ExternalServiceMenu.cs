@@ -2,6 +2,4 @@
 
 public readonly record struct ExternalServiceMenu(
     DateTime Date,
-    List<ExternalServiceFood> Foods,
-    ExternalServiceFood Soup
-    );
+    List<ExternalServiceFood> Foods);

@@ -3,7 +3,7 @@ using Yearly.Application.Menus;
 
 namespace Yearly.Application.Common.Interfaces;
 
-public interface IMenuProvider
+public interface IExternalServiceMenuProvider
 {
     public Task<ErrorOr<List<ExternalServiceMenu>>> GetMenusThisWeekAsync();
 }

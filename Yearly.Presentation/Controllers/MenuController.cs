@@ -1,6 +1,7 @@
 ﻿using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Yearly.Application.Menus.Commands;
 using Yearly.Application.Menus.Queries;
 using Yearly.Contracts.Menu;
 
@@ -24,6 +25,17 @@ public class MenuController : ApiController
 
         return result.Match(
             menus => Ok(_mapper.Map<MenusThisWeekResponse>(menus)),
+            Problem);
+    }
+
+    [HttpPost("menu/force")]
+    public async Task<IActionResult> ForcePersistMenusFromExternalService(string sessionCookie)
+    {
+        //Todo: authentication
+
+        var result = await _mediator.Send(new PersistMenuForThisWeekCommand());
+        return result.Match(
+            value => Ok(),
             Problem);
     }
 }
