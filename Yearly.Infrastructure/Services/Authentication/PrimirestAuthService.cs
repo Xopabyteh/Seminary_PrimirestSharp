@@ -11,7 +11,7 @@ using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Authentication;
 
-public class PrimirestAuthService : IAuthService
+public class PrimirestAuthService : IExternalAuthService
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -93,6 +93,11 @@ public class PrimirestAuthService : IAuthService
         var userId = new UserId(int.Parse(userDetailsObj.ID.ToString()));
         var userName = (string)userDetailsObj.Name.ToString();
         return new User(userId, userName);
+    }
+
+    public Task<UserRoles> GetUserRoleAsync(UserId userId)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>

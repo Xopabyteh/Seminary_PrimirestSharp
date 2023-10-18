@@ -2,6 +2,7 @@
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.MenuAgg;
 using Yearly.Domain.Models.PhotoAgg;
+using Yearly.Domain.Models.UserAgg;
 
 namespace Yearly.Infrastructure.Persistence;
 public class PrimirestSharpDbContext : DbContext
@@ -23,4 +24,5 @@ public class PrimirestSharpDbContext : DbContext
     public DbSet<Menu> Menus { get; set; }
     public DbSet<Food> Foods { get; set; }
     public DbSet<Photo> Photos { get; set; }
+    public DbSet<User> Users { get; set; }
 }

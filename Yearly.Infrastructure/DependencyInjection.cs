@@ -24,7 +24,7 @@ public static class DependencyInjection
 
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
-        services.AddScoped<IAuthService, PrimirestAuthService>();
+        services.AddScoped<IExternalAuthService, PrimirestAuthService>();
         services.AddScoped<PrimirestAuthService>();
 
         services.AddScoped<IExternalServiceMenuProvider, PrimirestExternalServiceMenuProviderService>();
@@ -46,6 +46,7 @@ public static class DependencyInjection
 
         services.AddScoped<IMenuRepository, MenuRepository>();
         services.AddScoped<IFoodRepository, FoodRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

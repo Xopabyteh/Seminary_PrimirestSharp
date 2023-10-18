@@ -5,7 +5,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Application.Authentication;
 
-public interface IAuthService
+public interface IExternalAuthService
 {
     public Task<ErrorOr<LoginResult>> LoginAsync(string username, string password);
     public Task LogoutAsync(string sessionCookie);
