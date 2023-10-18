@@ -48,7 +48,7 @@ public class Entity<TId> : IEquatable<Entity<TId>>
         return !Equals(left, right);
     }
 
-    protected Entity()
+    protected Entity() //For EF Core
     {
     }
 }

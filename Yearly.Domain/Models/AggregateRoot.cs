@@ -8,7 +8,7 @@ public class AggregateRoot<TId> : Entity<TId>
     {
     }
 
-    private AggregateRoot()
+    private AggregateRoot() //For EF Core
     {
     }
 }

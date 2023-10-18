@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Yearly.Application.Authentication.Queries.Logout;
-using Yearly.Application.Common.Interfaces;
 
 namespace Yearly.Application.Authentication.Queries.Login;
 

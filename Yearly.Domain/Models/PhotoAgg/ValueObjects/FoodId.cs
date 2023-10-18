@@ -8,4 +8,9 @@ public class PhotoId : ValueObject
     {
         yield return Value;
     }
+
+    public PhotoId(Guid value)
+    {
+        Value = value;
+    }
 }

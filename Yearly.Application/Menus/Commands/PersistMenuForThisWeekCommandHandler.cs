@@ -6,7 +6,7 @@ using Yearly.Domain.Models.MenuAgg;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Menus.Commands;
-public class PersistMenuForThisWeekCommandHandler : IRequestHandler<PersistMenuForThisWeekCommand, ErrorOr<Unit>>
+public class PersistMenuForThisWeekCommandHandler : IRequestHandler<PersistMenuForThisWeekCommand, ErrorOr<int>>
 {
     private readonly IExternalServiceMenuProvider _externalServiceMenuProvider;
     private readonly IMenuRepository _menuRepository;
@@ -21,7 +21,7 @@ public class PersistMenuForThisWeekCommandHandler : IRequestHandler<PersistMenuF
         _foodRepository = foodRepository;
     }
 
-    public async Task<ErrorOr<Unit>> Handle(PersistMenuForThisWeekCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<int>> Handle(PersistMenuForThisWeekCommand request, CancellationToken cancellationToken)
     {
         // Load menu from external
         // Persist menu
@@ -33,6 +33,8 @@ public class PersistMenuForThisWeekCommandHandler : IRequestHandler<PersistMenuF
         var externalMenus = externalMenusResult.Value;
         if (externalMenus.Count == 0)
             return Errors.Errors.Menu.NoExternalMenusForThisWeek;
+
+        var addedMenus = 0;
 
         foreach (var externalMenu in externalMenus)
         {
@@ -57,10 +59,11 @@ public class PersistMenuForThisWeekCommandHandler : IRequestHandler<PersistMenuF
 
             //Persist menu
             await _menuRepository.AddMenuAsync(menu);
+            addedMenus++;
         }
 
         await _unitOfWork.SaveChangesAsync();
 
-        return Unit.Value;
+        return addedMenus;
     }
 }

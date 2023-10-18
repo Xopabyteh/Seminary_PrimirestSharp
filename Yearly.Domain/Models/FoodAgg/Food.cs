@@ -33,4 +33,12 @@ public sealed class Food : AggregateRoot<FoodId>
             name,
             allergens);
     }
+
+#pragma warning disable CS8618 //For EF Core
+    private Food()
+        :base(null!)
+#pragma warning restore CS8618
+    {
+
+    }
 }

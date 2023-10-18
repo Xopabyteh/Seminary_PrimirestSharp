@@ -19,4 +19,12 @@ public class Photo : AggregateRoot<PhotoId>
         FoodId = foodId;
         Link = link;
     }
+
+#pragma warning disable CS8618 //For EF Core
+    private Photo()
+        : base(null!)
+#pragma warning restore CS8618
+    {
+
+    }
 }

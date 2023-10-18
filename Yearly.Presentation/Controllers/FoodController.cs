@@ -1,8 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Foods.Commands;
+using Yearly.Contracts.Foods;
 
 namespace Yearly.Presentation.Controllers;
+
+[Route("food")]
 public class FoodController : ApiController
 {
     private readonly ISender _mediator;
@@ -13,14 +16,14 @@ public class FoodController : ApiController
     }
 
 
-    [HttpPost("food/force")]
-    public async Task<IActionResult> ForcePersistFoodsFromExternalService(string sessionCookie)
+    [HttpPost("force")]
+    public async Task<IActionResult> ForcePersistFoodsFromExternalService([FromBody] ForcePersistFoodsFromExternalServiceRequest request)
     {
         //Todo: authentication
 
         var result = await _mediator.Send(new PersistFoodsFromExternalServiceCommand());
         return result.Match(
-            value => Ok(),
+            value => Ok(value),
             Problem);
     }
 }

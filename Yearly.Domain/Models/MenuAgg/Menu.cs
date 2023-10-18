@@ -21,4 +21,12 @@ public sealed class Menu : AggregateRoot<MenuId>
     {
         return new Menu(new MenuId(Guid.NewGuid()), foodIds, date);
     }
+
+#pragma warning disable CS8618 //For EF Core
+    private Menu()
+        : base(null!)
+#pragma warning restore CS8618
+    {
+
+    }
 }

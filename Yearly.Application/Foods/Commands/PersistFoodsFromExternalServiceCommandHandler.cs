@@ -5,7 +5,7 @@ using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Foods.Commands;
-public class PersistFoodsFromExternalServiceCommandHandler : IRequestHandler<PersistFoodsFromExternalServiceCommand, ErrorOr<Unit>>
+public class PersistFoodsFromExternalServiceCommandHandler : IRequestHandler<PersistFoodsFromExternalServiceCommand, ErrorOr<int>>
 {
     private readonly IExternalServiceMenuProvider _externalServiceMenuProvider;
     private readonly IFoodRepository _foodRepository;
@@ -24,7 +24,7 @@ public class PersistFoodsFromExternalServiceCommandHandler : IRequestHandler<Per
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<ErrorOr<Unit>> Handle(PersistFoodsFromExternalServiceCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<int>> Handle(PersistFoodsFromExternalServiceCommand request, CancellationToken cancellationToken)
     {
         var externalMenusResult = await _externalServiceMenuProvider.GetMenusThisWeekAsync();
         if (externalMenusResult.IsError)
@@ -32,6 +32,7 @@ public class PersistFoodsFromExternalServiceCommandHandler : IRequestHandler<Per
 
         var externalMenus = externalMenusResult.Value;
         var externalFoods = externalMenus.SelectMany(m => m.Foods).ToList();
+        var addedFoods = 0;
         foreach (var externalFood in externalFoods)
         {
             var foodExists = await _foodRepository.DoesFoodExistAsync(externalFood.Name);
@@ -41,10 +42,11 @@ public class PersistFoodsFromExternalServiceCommandHandler : IRequestHandler<Per
             //Store food
             var food = Food.Create(externalFood.Name, externalFood.Allergens);
             await _foodRepository.AddFoodAsync(food);
+            addedFoods++;
         }
 
         await _unitOfWork.SaveChangesAsync();
 
-        return Unit.Value;
+        return addedFoods;
     }
 }

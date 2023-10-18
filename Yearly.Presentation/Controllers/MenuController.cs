@@ -3,10 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Menus.Commands;
 using Yearly.Application.Menus.Queries;
+using Yearly.Contracts.Foods;
 using Yearly.Contracts.Menu;
 
 namespace Yearly.Presentation.Controllers;
 
+[Route("menu")]
 public class MenuController : ApiController
 {
     private readonly ISender _mediator;
@@ -18,7 +20,6 @@ public class MenuController : ApiController
         _mapper = mapper;
     }
 
-    [HttpGet("menu")]
     public async Task<IActionResult> GetMenusThisWeek([FromQuery] MenusThisWeekRequest request)
     {
         var result = await _mediator.Send(new MenusThisWeekQuery());
@@ -28,14 +29,14 @@ public class MenuController : ApiController
             Problem);
     }
 
-    [HttpPost("menu/force")]
-    public async Task<IActionResult> ForcePersistMenusFromExternalService(string sessionCookie)
+    [HttpPost("force")]
+    public async Task<IActionResult> ForcePersistMenusFromExternalService([FromBody] ForcePersistMenusFromExternalServiceRequest request)
     {
         //Todo: authentication
 
         var result = await _mediator.Send(new PersistMenuForThisWeekCommand());
         return result.Match(
-            value => Ok(),
+            value => Ok(value),
             Problem);
     }
 }
