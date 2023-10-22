@@ -32,9 +32,8 @@ public class MenuController : ApiController
     [HttpPost("force")]
     public async Task<IActionResult> ForcePersistMenusFromExternalService([FromBody] ForcePersistMenusFromExternalServiceRequest request)
     {
-        //Todo: authentication
-
-        var result = await _mediator.Send(new PersistMenuForThisWeekCommand());
+        var command = _mapper.Map<PersistMenuForThisWeekCommand>(request);
+        var result = await _mediator.Send(command);
         return result.Match(
             value => Ok(value),
             Problem);

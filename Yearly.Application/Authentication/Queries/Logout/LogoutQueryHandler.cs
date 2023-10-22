@@ -5,15 +5,15 @@ namespace Yearly.Application.Authentication.Queries.Login;
 
 public class LogoutQueryHandler : IRequestHandler<LogoutQuery>
 {
-    private readonly IExternalAuthService _externalAuthService;
+    private readonly IAuthService _authService;
 
-    public LogoutQueryHandler(IExternalAuthService externalAuthService)
+    public LogoutQueryHandler(IAuthService authService)
     {
-        this._externalAuthService = externalAuthService;
+        this._authService = authService;
     }
 
     public async Task Handle(LogoutQuery request, CancellationToken cancellationToken)
     {
-        await _externalAuthService.LogoutAsync(request.SessionCookie);
+        await _authService.LogoutAsync(request.SessionCookie);
     }
 }

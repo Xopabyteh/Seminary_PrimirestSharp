@@ -7,6 +7,7 @@ using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Persistence;
 using Yearly.Infrastructure.Persistence.Repositories;
+using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Menus;
@@ -24,13 +25,16 @@ public static class DependencyInjection
 
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
-        services.AddScoped<IExternalAuthService, PrimirestAuthService>();
+        services.AddScoped<IAuthService, PrimirestAuthService>();
         services.AddScoped<PrimirestAuthService>();
 
         services.AddScoped<IExternalServiceMenuProvider, PrimirestExternalServiceMenuProviderService>();
 
         services.Configure<PrimirestAdminCredentialsOptions>(
             builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+
+        services.Configure<SharpAdminUserIdsOptions>(
+            builder.Configuration.GetSection(SharpAdminUserIdsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
         services.AddPersistence(builder);
 
@@ -49,6 +53,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddTransient<DataSeeder>();
 
         return services;
     }

@@ -13,7 +13,7 @@ public interface IUserRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Task<ErrorOr<User>> GetByIdAsync(UserId id);
+    public Task<User?> GetByIdAsync(UserId id);
 
     public Task<bool> DoesUserExistAsync(string username);
 }

@@ -14,6 +14,11 @@ public class PrimirestSharpDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    }
+
 #pragma warning disable CS8618 
     public PrimirestSharpDbContext(DbContextOptions<PrimirestSharpDbContext> options)
 #pragma warning restore CS8618 

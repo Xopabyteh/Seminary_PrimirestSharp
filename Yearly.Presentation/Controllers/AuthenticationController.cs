@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Authentication.Queries.Login;
 using Yearly.Application.Authentication.Queries.Logout;
-using Yearly.Application.Authentication.Queries.PrimirestUser;
 using Yearly.Contracts.Authentication;
 
 namespace Yearly.Presentation.Controllers;
@@ -31,11 +30,8 @@ public class AuthenticationController : ApiController
         if (loginResult.IsError)
             return Problem(loginResult.Errors);
 
-        var userQuery = new UserQuery(loginResult.Value.SessionCookie);
-        var userResult = await _mediator.Send(userQuery);
-
-        return userResult.Match(
-            user => Ok(_mapper.Map<LoginResponse>((user, loginResult.Value))),
+        return loginResult.Match(
+            value => Ok(_mapper.Map<LoginResponse>(value)),
             Problem);
     }
 

@@ -1,8 +1,10 @@
 ﻿using ErrorOr;
 using MediatR;
+using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Menus.Commands;
@@ -12,17 +14,27 @@ public class PersistMenuForThisWeekCommandHandler : IRequestHandler<PersistMenuF
     private readonly IMenuRepository _menuRepository;
     private readonly IFoodRepository _foodRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthService _authService;
 
-    public PersistMenuForThisWeekCommandHandler(IExternalServiceMenuProvider externalServiceMenuProvider, IMenuRepository menuRepository, IUnitOfWork unitOfWork, IFoodRepository foodRepository)
+
+    public PersistMenuForThisWeekCommandHandler(IExternalServiceMenuProvider externalServiceMenuProvider, IMenuRepository menuRepository, IUnitOfWork unitOfWork, IFoodRepository foodRepository, IAuthService authService)
     {
         _externalServiceMenuProvider = externalServiceMenuProvider;
         _menuRepository = menuRepository;
         _unitOfWork = unitOfWork;
         _foodRepository = foodRepository;
+        _authService = authService;
     }
 
     public async Task<ErrorOr<int>> Handle(PersistMenuForThisWeekCommand request, CancellationToken cancellationToken)
     {
+        var userResult = await _authService.GetSharpUser(request.SessionCookie);
+        if(userResult.IsError)
+            return userResult.Errors;
+
+        if(!userResult.Value.Roles.Contains(UserRole.Admin))
+            return Errors.Errors.Authentication.InsufficientPermissions;
+
         // Load menu from external
         // Persist menu
 

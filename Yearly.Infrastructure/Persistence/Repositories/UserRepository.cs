@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+﻿using Microsoft.EntityFrameworkCore;
+using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
@@ -7,18 +8,29 @@ namespace Yearly.Infrastructure.Persistence.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    public Task AddAsync(User user)
+    private readonly PrimirestSharpDbContext _context;
+
+    public UserRepository(PrimirestSharpDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public Task<ErrorOr<User>> GetByIdAsync(UserId id)
+    public async Task AddAsync(User user)
     {
-        throw new NotImplementedException();
+        await _context.Users.AddAsync(user);
+    }
+
+    public async Task<User> GetByIdAsync(UserId id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user is null)
+            throw new IllegalStateException($"User with id {id.Value} not found in repository");
+
+        return user;
     }
 
     public Task<bool> DoesUserExistAsync(string username)
     {
-        throw new NotImplementedException();
+        return _context.Users.AnyAsync(u => u.Username == username);
     }
 }

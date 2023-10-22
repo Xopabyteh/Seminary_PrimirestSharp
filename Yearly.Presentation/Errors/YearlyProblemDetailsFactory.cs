@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using ErrorOr;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using Yearly.Presentation.Http;
 
 namespace Yearly.Presentation.Errors;

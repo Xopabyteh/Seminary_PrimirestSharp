@@ -20,6 +20,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.OwnsMany(u => u.Roles, roleBuilder =>
+            {
+                roleBuilder.ToTable("UserRoles");
+
+                roleBuilder.WithOwner().HasForeignKey(nameof(UserId));
+
+                roleBuilder
+                    .Property(r => r.RoleCode)
+                    .HasMaxLength(3);
+            });
+
+
         builder.OwnsMany(u => u.PhotoIds, photoIdBuilder =>
         {
             photoIdBuilder.ToTable("UserPhotoIds");
