@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Yearly.Application.Authentication.Queries.Login;
+namespace Yearly.Application.Authentication.Commands.Login;
 
-public class LoginQueryValidator : AbstractValidator<LoginQuery>
+public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
-    public LoginQueryValidator()
+    public LoginCommandValidator()
     {
         RuleFor(x => x.Username)
             .NotEmpty()

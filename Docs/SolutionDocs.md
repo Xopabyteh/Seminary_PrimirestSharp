@@ -4,7 +4,7 @@
 > UI and app design
 
 * [Project architecture](https://www.figma.com/file/FuD7lmST0Ar9oFFZS6Jlt3/Unleashed-Diner-Flow?type=whiteboard&node-id=907-53&t=iEvTKeGkVjXp1MAQ-0)
-> Project architecture, domain models, implementation
+> Project architecture, domain models, implementations
 
-* [Project flow](https://www.figma.com/file/iXr6mEJRbgFyzvCq5Mynn4/Primirest-sharp-Flow?type=design&node-id=39-52344&mode=design&t=98IKJbIVTUfWHq9b-0)
-> Process modelling, flow, domain events
+* [Process modeling](https://www.figma.com/file/iXr6mEJRbgFyzvCq5Mynn4/Primirest-sharp-Flow?type=design&node-id=39-52344&mode=design&t=98IKJbIVTUfWHq9b-0)
+> Process modeling, domain events storming

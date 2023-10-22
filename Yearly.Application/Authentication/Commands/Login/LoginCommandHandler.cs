@@ -6,22 +6,22 @@ using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
-namespace Yearly.Application.Authentication.Queries.Login;
+namespace Yearly.Application.Authentication.Commands.Login;
 
-public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<LoginResult>>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginResult>>
 {
     private readonly IAuthService _authService;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public LoginQueryHandler(IAuthService authService, IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public LoginCommandHandler(IAuthService authService, IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
-        this._authService = authService;
+        _authService = authService;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<ErrorOr<LoginResult>> Handle(LoginQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<LoginResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var externalLoginResult = await _authService.LoginAsync(request.Username, request.Password);
 
@@ -42,16 +42,16 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<LoginResult
         var externalUser = externalUserInfoAsync.Value;
 
         //Get user from our system
-        var user = await _userRepository.GetByIdAsync(new UserId(externalUser.Id));
-        if (user is null)
+        var sharpUser = await _userRepository.GetByIdAsync(new UserId(externalUser.Id));
+        if (sharpUser is null)
         {
             //Persist user in our db
-            user = new User(new UserId(externalUser.Id), externalUser.Username);
+            sharpUser = new User(new UserId(externalUser.Id), externalUser.Username);
 
-            await _userRepository.AddAsync(user);
+            await _userRepository.AddAsync(sharpUser);
             await _unitOfWork.SaveChangesAsync();
         }
 
-        return new LoginResult(externalLoginResult.Value, user);
+        return new LoginResult(externalLoginResult.Value, sharpUser);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Yearly.Application.Authentication.Queries.Login;
+using Yearly.Application.Authentication.Commands.Login;
 using Yearly.Application.Authentication.Queries.Logout;
 using Yearly.Contracts.Authentication;
 
@@ -24,7 +24,7 @@ public class AuthenticationController : ApiController
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         //var loginQuery = new LoginQuery(request.Username, request.Password);
-        var loginQuery = _mapper.Map<LoginQuery>(request);
+        var loginQuery = _mapper.Map<LoginCommand>(request);
         var loginResult = await _mediator.Send(loginQuery);
 
         if (loginResult.IsError)
