@@ -25,8 +25,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
     {
         var externalLoginResult = await _authService.LoginAsync(request.Username, request.Password);
 
-        //TODO: Change this to not be in a query
-        //Check if it's first login, if yes, persist user
         if (externalLoginResult.IsError)
             return externalLoginResult.Errors;
 

@@ -19,8 +19,6 @@ public class FoodController : ApiController
     [HttpPost("force")]
     public async Task<IActionResult> ForcePersistFoodsFromExternalService([FromBody] ForcePersistFoodsFromExternalServiceRequest request)
     {
-        //Todo: authentication
-
         var result = await _mediator.Send(new PersistFoodsFromExternalServiceCommand());
         return result.Match(
             value => Ok(value),

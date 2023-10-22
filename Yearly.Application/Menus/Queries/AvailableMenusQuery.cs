@@ -4,4 +4,4 @@ using Yearly.Domain.Models.MenuAgg;
 
 namespace Yearly.Application.Menus.Queries;
 
-public record MenusThisWeekQuery : IRequest<ErrorOr<List<Menu>>>;
+public record AvailableMenusQuery : IRequest<List<Menu>>;

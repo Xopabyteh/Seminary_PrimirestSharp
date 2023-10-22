@@ -22,4 +22,22 @@ public class MenuRepository : IMenuRepository
     {
         return await _context.Menus.AnyAsync(m => m.Date == date);
     }
+
+    public async Task<List<Menu>> GetMenusSinceDayAsync(DateTime inclusiveDate)
+    {
+        var menus = await _context.Menus.Where(m => m.Date >= inclusiveDate).ToListAsync();
+        return menus;
+    }
+
+    /// <summary>
+    /// Deletes the foods immediately without the need to call SaveChanges
+    /// </summary>
+    /// <param name="inclusiveDate"></param>
+    /// <returns></returns>
+    public async Task<int> DeleteMenusBeforeDayAsync(DateTime inclusiveDate)
+    {
+        return await _context.Menus
+            .Where(m => m.Date <= inclusiveDate)
+            .ExecuteDeleteAsync();
+    }
 }

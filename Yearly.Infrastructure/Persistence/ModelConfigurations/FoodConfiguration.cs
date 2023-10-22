@@ -19,7 +19,6 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
                 id => id.Value,
                 idValue => new FoodId(idValue));
 
-        //Todo: this might throw an error
         builder
             .Property(f => f.AliasForFoodId)
             .HasConversion(

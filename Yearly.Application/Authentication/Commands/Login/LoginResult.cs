@@ -2,4 +2,4 @@
 
 namespace Yearly.Application.Authentication.Commands.Login;
 
-public record LoginResult(string SessionCookie, User user);
+public record LoginResult(string SessionCookie, User User);

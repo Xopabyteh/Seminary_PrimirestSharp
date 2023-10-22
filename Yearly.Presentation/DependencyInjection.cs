@@ -3,6 +3,7 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Yearly.Presentation.Errors;
+using Yearly.Presentation.OutputCaching;
 
 namespace Yearly.Presentation;
 
@@ -15,17 +16,30 @@ public static class DependencyInjection
         services.AddControllers();
         services.AddSingleton<ProblemDetailsFactory, YearlyProblemDetailsFactory>();
 
+        services.AddOutputCaching();
+
         return services;
     }
 
-    private static IServiceCollection AddMappings(this IServiceCollection services)
+    private static void AddMappings(this IServiceCollection services)
     {
         var config = TypeAdapterConfig.GlobalSettings;
         config.Scan(Assembly.GetExecutingAssembly());
 
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
+    }
 
-        return services;
+    private static void AddOutputCaching(this IServiceCollection services)
+    {
+        services.AddOutputCache(options =>
+        {
+            options.AddPolicy(OutputCachePolicyName.GetAvailableMenus, policy =>
+            {
+                policy.Tag(OutputCacheTagName.GetAvailableMenusTag); //TODO: Dont forget to evict cache when new menus are received and old ones cleared
+                policy.NoCache();
+            });
+        });
+
     }
 }

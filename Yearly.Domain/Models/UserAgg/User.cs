@@ -1,4 +1,5 @@
-﻿using Yearly.Domain.Models.PhotoAgg.ValueObjects;
+﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.UserAgg;
@@ -25,4 +26,9 @@ public class User : AggregateRoot<UserId>
     {
         _roles.Add(role);
     }
+
+    //public void PublishPhoto( FoodId forFood)
+    //{
+
+    //}
 }

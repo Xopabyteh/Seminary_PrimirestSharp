@@ -16,6 +16,7 @@ builder.Services
 var app = builder.Build();
 
 app.MapControllers();
+app.UseOutputCache();
 
 if (app.Environment.IsDevelopment())
 {
@@ -26,3 +27,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Run();
+
+//TODO: Differentiate between soup and main course

@@ -1,6 +1,6 @@
 ﻿namespace Yearly.Contracts.Menu;
 
-public record MenusThisWeekResponse(
+public record AvailableMenusResponse(
     List<MenuResponse> Menus);
 
 public record MenuResponse(

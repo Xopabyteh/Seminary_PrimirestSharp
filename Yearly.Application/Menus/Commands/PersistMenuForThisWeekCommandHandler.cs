@@ -57,7 +57,7 @@ public class PersistMenuForThisWeekCommandHandler : IRequestHandler<PersistMenuF
             var foodIdsForMenu = new List<FoodId>(4);
 
             //Get foods from our repository
-            foreach (var externalFood in externalMenu.Foods) //Todo: make soup into food
+            foreach (var externalFood in externalMenu.Foods)
             {
                 var food = await _foodRepository.GetFoodByNameAsync(externalFood.Name);
                 if (food is null)

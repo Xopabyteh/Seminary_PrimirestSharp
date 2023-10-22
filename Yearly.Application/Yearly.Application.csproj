@@ -22,4 +22,9 @@
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Foods\Queries\" />
+    <Folder Include="Photos\Queries\" />
+  </ItemGroup>
+
 </Project>

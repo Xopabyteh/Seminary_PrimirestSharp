@@ -51,6 +51,7 @@ public static class DependencyInjection
         services.AddScoped<IMenuRepository, MenuRepository>();
         services.AddScoped<IFoodRepository, FoodRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPhotoRepository, PhotoRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
