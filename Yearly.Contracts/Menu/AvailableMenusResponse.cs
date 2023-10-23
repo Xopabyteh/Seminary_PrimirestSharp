@@ -10,5 +10,12 @@ public record MenuResponse(
 public record FoodResponse(
     string Name,
     string Allergens,
-    List<string> Images);
+    List<string> Images,
+    PrimirestOrderIdentifierResponse PrimirestOrderIdentifier
+    );
+
+public record PrimirestOrderIdentifierResponse(
+    int MenuId,
+    int DayId,
+    int ItemId);
 

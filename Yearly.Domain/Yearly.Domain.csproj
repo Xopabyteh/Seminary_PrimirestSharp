@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Errors\Exceptions\" />
-    <Folder Include="Models\FoodAgg\ValueObjects\" />
     <Folder Include="Models\MenuAgg\ValueObjects\" />
     <Folder Include="Repositories\" />
   </ItemGroup>

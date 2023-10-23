@@ -20,12 +20,9 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
     }
 
-    public async Task<User> GetByIdAsync(UserId id)
+    public async Task<User?> GetByIdAsync(UserId id)
     {
         var user = await _context.Users.FindAsync(id);
-        if (user is null)
-            throw new IllegalStateException($"User with id {id.Value} not found in repository");
-
         return user;
     }
 

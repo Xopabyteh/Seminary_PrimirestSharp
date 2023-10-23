@@ -3,6 +3,7 @@ using System.Text;
 using ErrorOr;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using Yearly.Application.Authentication;
 using Yearly.Application.Authentication.Queries.Login;
 using Yearly.Domain.Models.UserAgg;
@@ -40,8 +41,7 @@ public class PrimirestAuthService : IAuthService
         var requestContent = new StringContent(
             JsonConvert.SerializeObject(new PrimirestLoginRequest(username, password)),
             Encoding.UTF8,
-            "application/json"
-        );
+            "application/json");
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, "ajax/CS/auth/login")
         {
@@ -69,6 +69,13 @@ public class PrimirestAuthService : IAuthService
         await client.SendAsync(requestMessage);
     }
 
+    /// <summary>
+    /// Gets id of the logged in user via Primirest auth and returns the user from our repository.
+    /// The user must already exist in our repository for this to work.
+    /// </summary>
+    /// <param name="sessionCookie"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task<ErrorOr<User>> GetSharpUser(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
@@ -95,12 +102,11 @@ public class PrimirestAuthService : IAuthService
         //return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
         var userId = new UserId(int.Parse(userDetailsObj.ID.ToString()));
         var sharpUser = await _userRepository.GetByIdAsync(userId);
-        return sharpUser;
-        //var userName = (string)userDetailsObj.Name.ToString();
-        //return new User(userId, userName);
+        
+        return sharpUser!; //The user is already in our repository, so no worry about null.
     }
 
-    public async Task<ErrorOr<ExternalUserInfo>> GetExternalUserInfoAsync(string sessionCookie)
+    public async Task<ErrorOr<PrimirestUserInfo>> GetPrimirestUserInfoAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 
@@ -125,7 +131,7 @@ public class PrimirestAuthService : IAuthService
 
         var userId = (int)int.Parse(userDetailsObj.ID.ToString());
         var userName = (string)userDetailsObj.Name.ToString();
-        return new ExternalUserInfo(userId, userName);
+        return new PrimirestUserInfo(userId, userName);
     }
 
     /// <summary>
@@ -146,7 +152,7 @@ public class PrimirestAuthService : IAuthService
 
         var loginResult = await LoginAsync(username, password);
         if (loginResult.IsError)
-            return Infrastructure.Errors.Errors.PrimirestAdapter.InvalidAdminCredentials;
+            return Errors.Errors.PrimirestAdapter.InvalidAdminCredentials;
 
 
         var sessionCookie = loginResult.Value;
@@ -203,6 +209,7 @@ public class PrimirestAuthService : IAuthService
     }
 
     // Used for easier json serialization
+    [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local", Justification = "Used for json serialization")]
     private record PrimirestLoginRequest(
         string Username,
         string Password);

@@ -28,7 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, PrimirestAuthService>();
         services.AddScoped<PrimirestAuthService>();
 
-        services.AddScoped<IExternalServiceMenuProvider, PrimirestExternalServiceMenuProviderService>();
+        services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
 
         services.Configure<PrimirestAdminCredentialsOptions>(
             builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...

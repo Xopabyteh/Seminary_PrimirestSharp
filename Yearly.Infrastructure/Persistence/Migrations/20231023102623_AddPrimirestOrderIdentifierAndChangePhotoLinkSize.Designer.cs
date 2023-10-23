@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yearly.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Yearly.Infrastructure.Persistence;
 namespace Yearly.Infrastructure.Migrations
 {
     [DbContext(typeof(PrimirestSharpDbContext))]
-    partial class PrimirestSharpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231023102623_AddPrimirestOrderIdentifierAndChangePhotoLinkSize")]
+    partial class AddPrimirestOrderIdentifierAndChangePhotoLinkSize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

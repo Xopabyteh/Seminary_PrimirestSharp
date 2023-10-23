@@ -8,9 +8,12 @@ public record PrimirestMenuResponseDay(
 public record PrimirestMenuResponseItem(
     bool CanOrder,
     string Description,
-    // DateTime MenuDayDate,
-    // IReadOnlyList<MealAllergensList> MealAllergensList,
-    string MealAllergensMarkings
+    string MealAllergensMarkings,
+
+    //For order identifier      (their naming is confusing)
+    int IDMenuDay, //dayID
+    int IDMenu, //menuID
+    int ID //itemID
 );
 
 // public record MealAllergensList(

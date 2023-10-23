@@ -38,15 +38,15 @@ public class MenuController : ApiController
         //This might be slow, but because this will be cached and invoked once per week, it should be fine
         var menuResponses = menus.Select(m =>
         {
-            return new MenuResponse(m.Date, m.FoodIds.Select(mFI =>
+            return new MenuResponse(m.Date, m.FoodIds.Select(mFId =>
                 {
-                    var foodForMenu = foodsForMenus.Single(f => f.Id == mFI);
+                    var foodForMenu = foodsForMenus.Single(f => f.Id == mFId);
                     return new FoodResponse(
                         foodForMenu.Name,
                         foodForMenu.Allergens,
-                        photosForFood.Where(p => p.FoodId == mFI).Select(p => p.Link).ToList());
-                }).ToList()
-            );
+                        photosForFood.Where(p => p.FoodId == mFId).Select(p => p.Link).ToList(),
+                        _mapper.Map<PrimirestOrderIdentifierResponse>(foodForMenu.PrimirestOrderIdentifier));
+                }).ToList());
         }).ToList();
 
         var availableMenusResponse = new AvailableMenusResponse(menuResponses);
@@ -54,12 +54,12 @@ public class MenuController : ApiController
     }
 
     [HttpPost("force")]
-    public async Task<IActionResult> ForcePersistMenusFromExternalService([FromBody] ForcePersistMenusFromExternalServiceRequest request)
+    public async Task<IActionResult> ForceAvailablePersistMenusFromPrimirest([FromBody] ForcePersistAvailableMenusFromPrimirestRequest request)
     {
-        var command = _mapper.Map<PersistMenuForThisWeekCommand>(request);
+        var command = _mapper.Map<PersistAvailableMenusCommand>(request);
         var result = await _mediator.Send(command);
         return result.Match(
-            value => Ok(value),
+            _ => Ok(),
             Problem);
     }
 }

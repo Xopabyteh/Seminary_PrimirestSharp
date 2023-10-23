@@ -18,6 +18,11 @@ public static class DependencyInjection
 
         services.AddOutputCaching();
 
+        services.AddLogging(b =>
+        {
+            b.AddSimpleConsole();
+        });
+        
         return services;
     }
 

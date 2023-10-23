@@ -3,15 +3,16 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Menus;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Infrastructure.Services.Authentication;
 
 namespace Yearly.Infrastructure.Services.Menus;
 
-public class PrimirestExternalServiceMenuProviderService : IExternalServiceMenuProvider
+public class PrimirestMenuProvider : IPrimirestMenuProvider
 {
     private readonly PrimirestAuthService _authService;
 
-    public PrimirestExternalServiceMenuProviderService(PrimirestAuthService authService)
+    public PrimirestMenuProvider(PrimirestAuthService authService)
     {
         _authService = authService;
     }
@@ -22,7 +23,7 @@ public class PrimirestExternalServiceMenuProviderService : IExternalServiceMenuP
     /// </summary>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<ErrorOr<List<ExternalServiceMenu>>> GetMenusThisWeekAsync()
+    public async Task<ErrorOr<List<PrimirestMenuForDay>>> GetMenusThisWeekAsync()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
@@ -61,13 +62,13 @@ public class PrimirestExternalServiceMenuProviderService : IExternalServiceMenuP
             return commonSubstring;
         }
 
-        return await _authService.PerformAdminLoggedSessionAsync<List<ExternalServiceMenu>>(async loggedClient =>
+        return await _authService.PerformAdminLoggedSessionAsync<List<PrimirestMenuForDay>>(async loggedClient =>
         {
             //Fetch menu ids from primirest
             var menuIds = await GetMenuIds(loggedClient);
 
             //Return them as ExternalServiceMenu objects
-            var reconstructedMenus = new List<ExternalServiceMenu>(10);
+            var reconstructedMenus = new List<PrimirestMenuForDay>(10);
             foreach (var menuId in menuIds)
             {
                 var message = new HttpRequestMessage(
@@ -91,32 +92,39 @@ public class PrimirestExternalServiceMenuProviderService : IExternalServiceMenuP
                 {
                     //Construct menu per day here
 
-                    var foods = new List<ExternalServiceFood>(4); //3 + soup
+                    var foods = new List<PrimirestFood>(3); 
                     var menuDate = day.Date.AddDays(1); //Primirest stores in cz, we parse in utc, so we add 1 to go back to cz
 
-                    var foodsRawFormat = new List<ExternalServiceFood>(3); //Foods with soup name in them
+                    var rawFoodNames = new List<string>(3); //Foods with soup name in them
                     foreach (var item in day.Items)
                     {
                         var rawFoodName = item.Description;
-                        foodsRawFormat.Add(new(rawFoodName, item.MealAllergensMarkings));
+                        rawFoodNames.Add(rawFoodName);
                     }
 
                     //Find the common part of the food names
-                    var soupName = GetSoupFromRawFoodNames(foodsRawFormat.Select(x=>x.Name).ToList());
+                    var soupName = GetSoupFromRawFoodNames(rawFoodNames);
 
                     //Construct food objects
-                    foreach (var foodRawFormat in foodsRawFormat)
+                    foreach (var item in day.Items)
                     {
-                        var foodName = foodRawFormat.Name.Replace(soupName, string.Empty).Trim();
-                        var food = new ExternalServiceFood(foodName, foodRawFormat.Allergens);
+                        var foodName = item.Description.Replace(soupName, string.Empty).Trim();
+
+                        var primirestIdentifier = new PrimirestOrderIdentifier(
+                            item.IDMenu,
+                            item.IDMenuDay,
+                            item.ID);
+
+                        var food = new PrimirestFood(foodName, item.MealAllergensMarkings, primirestIdentifier);
                         foods.Add(food);
                     }
 
-                    var soup = new ExternalServiceFood(soupName.TrimEnd(',', ' '), string.Empty);
-                    foods.Add(soup);
+                    //Todo: soup
+                    //var soup = new PrimirestFood(soupName.TrimEnd(',', ' '), string.Empty);
+                    //foods.Add(soup);
 
                     //Construct menu for this day
-                    var menu = new ExternalServiceMenu(menuDate, foods);
+                    var menu = new PrimirestMenuForDay(menuDate, foods);
                     reconstructedMenus.Add(menu);
                 }
             }

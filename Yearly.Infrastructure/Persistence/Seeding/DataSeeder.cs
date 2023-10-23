@@ -1,4 +1,5 @@
-﻿using Yearly.Domain.Models.UserAgg;
+﻿using Microsoft.EntityFrameworkCore;
+using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Persistence.Seeding;
@@ -14,6 +15,9 @@ public class DataSeeder
 
     public void Seed()
     {
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+
         SeedUsers();
 
         _context.SaveChanges();
@@ -21,11 +25,9 @@ public class DataSeeder
 
     private void SeedUsers()
     {
-        _context.Users.RemoveRange(_context.Users); // Clear the table
-
         var adminUser = new User(new UserId(26564871), @"Martin Fiala");
         adminUser.AddRole(UserRole.Admin);
-     
+        
         _context.Users.Add(adminUser);
     }
 }

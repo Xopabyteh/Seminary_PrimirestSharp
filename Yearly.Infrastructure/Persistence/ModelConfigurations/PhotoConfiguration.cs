@@ -48,7 +48,7 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
 
         builder
             .Property(p => p.Link)
-            .HasMaxLength(100)
+            .HasMaxLength(300)
             .IsRequired();
     }
 }

@@ -12,26 +12,37 @@ public sealed class Food : AggregateRoot<FoodId>
     
     public string Name { get; private set; } 
     public string Allergens { get; private set; } // Todo: primitive obsession
+    
+    public PrimirestOrderIdentifier PrimirestOrderIdentifier { get; private set; }
 
-    private Food(FoodId id, List<PhotoId> photoIds, FoodId? aliasForFoodId, string name, string allergens) 
+    private Food(
+        FoodId id,
+        List<PhotoId> photoIds,
+        FoodId? aliasForFoodId,
+        string name,
+        string allergens,
+        PrimirestOrderIdentifier primirestOrderIdentifier) 
         : base(id)
     {
         _photoIds = photoIds;
         AliasForFoodId = aliasForFoodId;
         Name = name;
         Allergens = allergens;
+        PrimirestOrderIdentifier = primirestOrderIdentifier;
     }
 
     public static Food Create(
         string name,
-        string allergens)
+        string allergens,
+        PrimirestOrderIdentifier primirestOrderIdentifier)
     { 
         return new Food(
             new FoodId(Guid.NewGuid()),
             new List<PhotoId>(),
             null,
             name,
-            allergens);
+            allergens,
+            primirestOrderIdentifier);
     }
 
 #pragma warning disable CS8618 //For EF Core

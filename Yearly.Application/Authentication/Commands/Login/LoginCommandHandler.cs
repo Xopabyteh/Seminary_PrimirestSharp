@@ -28,7 +28,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         if (externalLoginResult.IsError)
             return externalLoginResult.Errors;
 
-        var externalUserInfoAsync = await _authService.GetExternalUserInfoAsync(externalLoginResult.Value);
+        var externalUserInfoAsync = await _authService.GetPrimirestUserInfoAsync(externalLoginResult.Value);
         if (externalUserInfoAsync.IsError)
         {
             throw new IllegalStateException("Cannot retrieve external info of a user that just logged in");

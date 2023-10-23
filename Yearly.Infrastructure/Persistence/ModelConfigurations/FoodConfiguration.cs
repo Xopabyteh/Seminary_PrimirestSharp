@@ -26,7 +26,7 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
                 idValue => new FoodId(idValue))
             .IsRequired(false);
 
-        builder.OwnsMany(m => m.PhotoIds, photoIdBuilder =>
+        builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
         {
             photoIdBuilder.ToTable("FoodPhotoIds");
 
@@ -40,13 +40,28 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
         });
 
         builder
-            .Property(m => m.Name)
+            .Property(f => f.Name)
             .HasMaxLength(256)
             .IsRequired();
 
         builder
-            .Property(m => m.Allergens)
+            .Property(f => f.Allergens)
             .HasMaxLength(64)
             .IsRequired();
+
+        builder.OwnsOne(f => f.PrimirestOrderIdentifier, pIdBuilder =>
+        {
+            pIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
+
+            pIdBuilder
+                .Property(i => i.DayId)
+                .HasColumnName("PrimirestDayId");
+            pIdBuilder
+                .Property(i => i.ItemId)
+                .HasColumnName("PrimirestItemId");
+            pIdBuilder
+                .Property(i => i.MenuId)
+                .HasColumnName("PrimirestMenuId");
+        });
     }
 }

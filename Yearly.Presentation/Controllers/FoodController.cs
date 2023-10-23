@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Yearly.Application.Foods.Commands;
 using Yearly.Contracts.Foods;
 
 namespace Yearly.Presentation.Controllers;
@@ -15,13 +14,4 @@ public class FoodController : ApiController
         _mediator = mediator;
     }
 
-
-    [HttpPost("force")]
-    public async Task<IActionResult> ForcePersistFoodsFromExternalService([FromBody] ForcePersistFoodsFromExternalServiceRequest request)
-    {
-        var result = await _mediator.Send(new PersistFoodsFromExternalServiceCommand());
-        return result.Match(
-            value => Ok(value),
-            Problem);
-    }
 }

@@ -1,8 +1,8 @@
 ﻿namespace Yearly.Application.Authentication;
 
 /// <summary>
-/// Raw user info from external auth provider
+/// Raw user info from primirest auth provider
 /// </summary>
 /// <param name="Id"></param>
 /// <param name="Username"></param>
-public readonly record struct ExternalUserInfo(int Id, string Username);
+public readonly record struct PrimirestUserInfo(int Id, string Username);
