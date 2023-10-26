@@ -8,8 +8,9 @@
 
   <ItemGroup>
     <Folder Include="Errors\Exceptions\" />
+    <Folder Include="Models\Common\ValueObjects\" />
     <Folder Include="Models\MenuAgg\ValueObjects\" />
-    <Folder Include="Repositories\" />
+    <Folder Include="Models\SoupAgg\ValueObjects\" />
   </ItemGroup>
 
   <ItemGroup>

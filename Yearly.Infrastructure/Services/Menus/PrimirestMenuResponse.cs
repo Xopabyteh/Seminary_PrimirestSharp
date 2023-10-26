@@ -1,11 +1,11 @@
 ﻿// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
 
-public record PrimirestMenuResponseDay(
+internal record PrimirestMenuResponseDay(
     IReadOnlyList<PrimirestMenuResponseItem> Items,
     DateTime Date
 );
 
-public record PrimirestMenuResponseItem(
+internal record PrimirestMenuResponseItem(
     bool CanOrder,
     string Description,
     string MealAllergensMarkings,
@@ -24,7 +24,7 @@ public record PrimirestMenuResponseItem(
 // int Item5
 // );
 
-public record PrimirestMenuResponseMenu(
+internal record PrimirestMenuResponseMenu(
     IReadOnlyList<object> Orders,
     IReadOnlyList<PrimirestMenuResponseDay> Days
 
@@ -32,6 +32,6 @@ public record PrimirestMenuResponseMenu(
     // DateTime DateTo,
 );
 
-public record PrimirestMenuResponseRoot(
+internal record PrimirestMenuResponseRoot(
     PrimirestMenuResponseMenu Menu
 );

@@ -82,6 +82,24 @@ namespace Yearly.Infrastructure.Migrations
                     b.ToTable("Photos");
                 });
 
+            modelBuilder.Entity("Yearly.Domain.Models.SoupAgg.Soup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AliasForSoupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Soups");
+                });
+
             modelBuilder.Entity("Yearly.Domain.Models.UserAgg.User", b =>
                 {
                     b.Property<int>("Id")
@@ -171,6 +189,30 @@ namespace Yearly.Infrastructure.Migrations
                         });
 
                     b.Navigation("FoodIds");
+                });
+
+            modelBuilder.Entity("Yearly.Domain.Models.SoupAgg.Soup", b =>
+                {
+                    b.OwnsMany("Yearly.Domain.Models.PhotoAgg.ValueObjects.PhotoId", "PhotoIds", b1 =>
+                        {
+                            b1.Property<Guid>("Value")
+                                .HasColumnType("uniqueidentifier")
+                                .HasColumnName("PhotoId");
+
+                            b1.Property<Guid>("SoupId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.HasKey("Value");
+
+                            b1.HasIndex("SoupId");
+
+                            b1.ToTable("SoupPhotoIds", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("SoupId");
+                        });
+
+                    b.Navigation("PhotoIds");
                 });
 
             modelBuilder.Entity("Yearly.Domain.Models.UserAgg.User", b =>

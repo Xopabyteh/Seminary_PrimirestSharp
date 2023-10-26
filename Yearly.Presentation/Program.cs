@@ -1,6 +1,5 @@
 using Yearly.Application;
 using Yearly.Infrastructure;
-using Yearly.Infrastructure.Persistence;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
 
@@ -27,4 +26,3 @@ if (app.Environment.IsDevelopment())
 
 app.Run();
 
-//TODO: Differentiate between soup and main course

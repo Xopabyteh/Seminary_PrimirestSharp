@@ -16,6 +16,6 @@ public class PhotosForFoodsQueryHandler : IRequestHandler<PhotosForFoodsQuery, L
     public Task<List<Photo>> Handle(PhotosForFoodsQuery request, CancellationToken cancellationToken)
     {
         var foodIds = request.Foods.Select(f => f.Id).ToList();
-        return _photoRepository.GetPhotosForFoodsAsync(foodIds);
+        return _photoRepository.GetPhotosByFoodIdsAsync(foodIds);
     }
 }

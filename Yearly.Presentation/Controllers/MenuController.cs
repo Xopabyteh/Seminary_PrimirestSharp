@@ -28,7 +28,7 @@ public class MenuController : ApiController
     [OutputCache(PolicyName = OutputCachePolicyName.GetAvailableMenus)]
     public async Task<IActionResult> GetAvailableMenus()
     {
-        //Todo: maybe not load all foods at once? or maybe yes, whats more optimal?
+        ////Todo: maybe not load all foods at once? or maybe yes, whats more optimal?
         var menus = await _mediator.Send(new AvailableMenusQuery());
 
         var foodsForMenus = await _mediator.Send(new FoodsForMenusQuery(menus));
@@ -38,7 +38,7 @@ public class MenuController : ApiController
         //This might be slow, but because this will be cached and invoked once per week, it should be fine
         var menuResponses = menus.Select(m =>
         {
-            return new MenuResponse(m.Date, m.FoodIds.Select(mFId =>
+            return new MenuForDayResponse(m.Date, m.FoodIds.Select(mFId =>
                 {
                     var foodForMenu = foodsForMenus.Single(f => f.Id == mFId);
                     return new FoodResponse(
@@ -58,6 +58,10 @@ public class MenuController : ApiController
     {
         var command = _mapper.Map<PersistAvailableMenusCommand>(request);
         var result = await _mediator.Send(command);
+
+        //Revoke old cache
+        //Todo: 
+
         return result.Match(
             _ => Ok(),
             Problem);

@@ -2,5 +2,6 @@
 
 public readonly record struct PrimirestMenuForDay(
     DateTime Date,
-    List<PrimirestFood> Foods
+    List<PrimirestFood> Foods,
+    PrimirestSoup Soup
     );

@@ -119,12 +119,10 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                         foods.Add(food);
                     }
 
-                    //Todo: soup
-                    //var soup = new PrimirestFood(soupName.TrimEnd(',', ' '), string.Empty);
-                    //foods.Add(soup);
-
+                    var soup = new PrimirestSoup(soupName.Trim(',', ' '));
+                    
                     //Construct menu for this day
-                    var menu = new PrimirestMenuForDay(menuDate, foods);
+                    var menu = new PrimirestMenuForDay(menuDate, foods, soup);
                     reconstructedMenus.Add(menu);
                 }
             }

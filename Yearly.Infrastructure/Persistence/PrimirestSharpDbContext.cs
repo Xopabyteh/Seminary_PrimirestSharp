@@ -28,6 +28,7 @@ public class PrimirestSharpDbContext : DbContext
 
     public DbSet<Menu> Menus { get; set; }
     public DbSet<Food> Foods { get; set; }
+    //public DbSet<Soup> Soups { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<User> Users { get; set; }
 }

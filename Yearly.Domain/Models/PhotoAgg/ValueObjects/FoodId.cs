@@ -13,4 +13,9 @@ public class PhotoId : ValueObject
     {
         Value = value;
     }
+
+    private PhotoId() // For EF Core
+    {
+        
+    }
 }

@@ -1,6 +1,4 @@
-﻿using Yearly.Presentation.Controllers;
-
-namespace Yearly.Presentation.OutputCaching;
+﻿namespace Yearly.Presentation.OutputCaching;
 
 internal static class OutputCachePolicyName
 {

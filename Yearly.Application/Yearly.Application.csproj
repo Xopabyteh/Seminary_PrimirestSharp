@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Foods\Queries\" />
-    <Folder Include="Photos\Queries\" />
+    <Folder Include="Foods\" />
+    <Folder Include="Photos\" />
   </ItemGroup>
 
 </Project>

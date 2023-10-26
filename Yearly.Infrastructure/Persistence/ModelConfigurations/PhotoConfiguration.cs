@@ -24,12 +24,6 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
                 id => id.Value,
                 idValue => new UserId(idValue))
             .ValueGeneratedNever();
-        //builder.OwnsOne(p => p.PublisherId, publisherIdBuilder =>
-        //{
-        //    publisherIdBuilder.ToTable("PhotoPublisherIds");
-
-        //    publisherIdBuilder.WithOwner().HasForeignKey(nameof(PhotoId));
-        //});
 
         builder.Property(p => p.PublishDate);
 
@@ -39,12 +33,6 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
                 id => id.Value,
                 idValue => new FoodId(idValue))
             .ValueGeneratedNever();
-        //builder.OwnsOne(p => p.FoodId, foodIdBuilder =>
-        //{
-        //    foodIdBuilder.ToTable("PhotoFoodIds");
-
-        //    foodIdBuilder.WithOwner().HasForeignKey(nameof(PhotoId));
-        //});
 
         builder
             .Property(p => p.Link)

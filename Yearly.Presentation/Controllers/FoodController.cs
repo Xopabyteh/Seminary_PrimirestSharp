@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Yearly.Contracts.Foods;
 
 namespace Yearly.Presentation.Controllers;
 

@@ -1,16 +1,18 @@
 ﻿namespace Yearly.Contracts.Menu;
 
 public record AvailableMenusResponse(
-    List<MenuResponse> Menus);
+    List<MenuForDayResponse> Menus);
 
-public record MenuResponse(
+public record MenuForDayResponse(
     DateTime Date, 
-    List<FoodResponse> Foods);
+    List<FoodResponse> Foods
+    //SoupResponse Soup
+    );
 
 public record FoodResponse(
     string Name,
     string Allergens,
-    List<string> Images,
+    List<string> ImageLinks,
     PrimirestOrderIdentifierResponse PrimirestOrderIdentifier
     );
 
@@ -19,3 +21,6 @@ public record PrimirestOrderIdentifierResponse(
     int DayId,
     int ItemId);
 
+//public record SoupResponse(
+//    string Name,
+//    List<string> ImageLinks);

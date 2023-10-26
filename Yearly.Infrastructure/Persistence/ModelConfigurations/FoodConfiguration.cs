@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
 
@@ -26,18 +24,19 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
                 idValue => new FoodId(idValue))
             .IsRequired(false);
 
-        builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
-        {
-            photoIdBuilder.ToTable("FoodPhotoIds");
+        //builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
+        //{
+        //    photoIdBuilder.ToTable("FoodPhotoIds");
 
-            photoIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
+        //    photoIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
 
-            photoIdBuilder.HasKey(p => p.Value);
-            photoIdBuilder
-                .Property(p => p.Value)
-                .HasColumnName("PhotoId")
-                .ValueGeneratedNever();
-        });
+        //    photoIdBuilder.HasKey(p => p.Value);
+        //    photoIdBuilder
+        //        .Property(p => p.Value)
+        //        .HasColumnName("PhotoId")
+        //        .ValueGeneratedNever();
+        //});
+        builder.Ignore(f => f.PhotoIds);
 
         builder
             .Property(f => f.Name)

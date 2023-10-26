@@ -1,7 +1,4 @@
 ﻿using Mapster;
-using Yearly.Contracts.Menu;
-using Yearly.Domain.Models.FoodAgg;
-using Yearly.Domain.Models.MenuAgg;
 
 namespace Yearly.Presentation.Mappings;
 

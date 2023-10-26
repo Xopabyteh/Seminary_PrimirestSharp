@@ -14,9 +14,15 @@ public class PhotoRepository : IPhotoRepository
         _context = context;
     }
 
-    public async Task<List<Photo>> GetPhotosForFoodsAsync(List<FoodId> foodIds)
+    public async Task<List<Photo>> GetPhotosByFoodIdsAsync(List<FoodId> foodIds)
     {
         var photos = await _context.Photos.Where(p => foodIds.Contains(p.FoodId)).ToListAsync();
         return photos;
     }
+
+    //public async Task<List<Photo>> GetPhotosForSoupsAsync(List<FoodId> FoodIds)
+    //{
+    //    var photos = await _context.Photos.Where(p => FoodIds.Contains(p.FoodId)).ToListAsync();
+    //    return photos
+    //}
 }

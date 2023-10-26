@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Yearly.Domain.Models.UserAgg;
+﻿using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Persistence.Seeding;

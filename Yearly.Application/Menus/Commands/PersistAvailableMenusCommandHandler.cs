@@ -43,6 +43,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
     public async Task<ErrorOr<Unit>> Handle(PersistAvailableMenusCommand request, CancellationToken cancellationToken)
     {
         //Auth: Only admins can do this
+
         var userResult = await _authService.GetSharpUser(request.SessionCookie);
         if (userResult.IsError)
             return userResult.Errors;
@@ -69,7 +70,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
             var foodIdsForMenu = new List<FoodId>(4);
 
-            //Get foods from our repository
+            //Handle foods
             foreach (var primirestFood in primirestMenuForDay.Foods)
             {
                 var food = await _foodRepository.GetFoodByNameAsync(primirestFood.Name);
@@ -87,6 +88,14 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
                 foodIdsForMenu.Add(food.Id);
             }
+            ////Handle soup
+            //var soup = await _soupRepository.GetSoupByNameAsync(primirestMenuForDay.Soup.Name);
+            //if (soup is null) //If we don't have the soup yet, create it
+            //{
+            //    soup = Soup.Create(primirestMenuForDay.Soup.Name);
+            //    _logger.Log(LogLevel.Information, "New soup created - {soupName}", soup.Name);
+            //    await _soupRepository.AddSoupAsync(soup);
+            //}
 
             //Create menu
             var menu = Menu.Create(foodIdsForMenu, primirestMenuForDay.Date);

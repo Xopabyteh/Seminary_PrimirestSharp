@@ -1,5 +1,4 @@
-﻿using ErrorOr;
-using MediatR;
+﻿using MediatR;
 using Yearly.Domain.Models.MenuAgg;
 
 namespace Yearly.Application.Menus.Queries;

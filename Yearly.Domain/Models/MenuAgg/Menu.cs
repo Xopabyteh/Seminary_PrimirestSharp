@@ -7,10 +7,13 @@ public sealed class Menu : AggregateRoot<MenuId>
 {
     private readonly List<FoodId> _foodIds;
     public IReadOnlyList<FoodId> FoodIds => _foodIds.AsReadOnly();
-    
+
     public DateTime Date { get; private set; }
 
-    private Menu(MenuId id, List<FoodId> foodIds, DateTime date)
+    private Menu(
+        MenuId id,
+        List<FoodId> foodIds,
+        DateTime date)
         : base(id)
     {
         this._foodIds = foodIds;

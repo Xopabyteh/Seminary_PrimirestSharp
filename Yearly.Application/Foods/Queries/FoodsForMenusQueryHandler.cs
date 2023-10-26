@@ -15,7 +15,7 @@ public class FoodsForMenusQueryHandler : IRequestHandler<FoodsForMenusQuery, Lis
 
     public async Task<List<Food>> Handle(FoodsForMenusQuery request, CancellationToken cancellationToken)
     {
-        var foods = await _foodRepository.GetFoodsForMenusAsync(request.Menus);
+        var foods = await _foodRepository.GetFoodsByIdsAsync(request.Menus.SelectMany(m => m.FoodIds).ToList());
         return foods;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.MenuAgg;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Infrastructure.Persistence.Repositories;
@@ -36,10 +35,9 @@ public class FoodRepository : IFoodRepository
         return exists;
     }
 
-    public async Task<List<Food>> GetFoodsForMenusAsync(List<Menu> menus)
+    public async Task<List<Food>> GetFoodsByIdsAsync(List<FoodId> ids)
     {
-        var foodIds = menus.SelectMany(m => m.FoodIds);
-        var foods = await _context.Foods.Where(f => foodIds.Contains(f.Id)).ToListAsync();
+        var foods = await _context.Foods.Where(f => ids.Contains(f.Id)).ToListAsync();
         return foods;
     }
 }
