@@ -11,6 +11,7 @@ using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Menus;
+using Yearly.Infrastructure.Services.Orders;
 
 namespace Yearly.Infrastructure;
 
@@ -29,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<PrimirestAuthService>();
 
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
+        services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();
 
         services.Configure<PrimirestAdminCredentialsOptions>(
             builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...

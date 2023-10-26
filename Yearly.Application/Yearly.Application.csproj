@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Foods\" />
+    <Folder Include="Orders\Commands\" />
     <Folder Include="Photos\" />
   </ItemGroup>
 

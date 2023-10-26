@@ -15,7 +15,7 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
                 {
                     "name": "Krupoto s peèenou èervenou øepou a sýrem typu Feta",
                     "allergens": "1c,7",
-                    "images": [],
+                    "imageLinks": [],
                     "primirestOrderIdentifier": {
                         "menuId": 119137656,
                         "dayId": 119137727,
@@ -25,7 +25,7 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
                 {
                     "name": "Zapeèené tìstoviny s mletým masem a pórkem",
                     "allergens": "1a,7",
-                    "images": [],
+                    "imageLinks": [],
                     "primirestOrderIdentifier": {
                         "menuId": 119137656,
                         "dayId": 119137727,
@@ -35,7 +35,7 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
                 {
                     "name": "Filet Mahi Mahi s bylinkovým máslem, vaøené brambory s petrželkou",
                     "allergens": "4,7",
-                    "images": [],
+                    "imageLinks": [],
                     "primirestOrderIdentifier": {
                         "menuId": 119137656,
                         "dayId": 119137727,
@@ -50,7 +50,7 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
                 {
                     "name": "Restovaná zelenina s èervenou fazolí a jogurtovým dipem, vaøené brambory",
                     "allergens": "1a,7",
-                    "images": [],
+                    "imageLinks": [],
                     "primirestOrderIdentifier": {
                         "menuId": 119104167,
                         "dayId": 119104168,
@@ -60,7 +60,7 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
                 {
                     "name": "Vepøová kýta dušená s krémovou omáèkou se zeleninou (Bratislavská), dušená rýže",
                     "allergens": "1a,7,9,10",
-                    "images": [],
+                    "imageLinks": [],
                     "primirestOrderIdentifier": {
                         "menuId": 119104167,
                         "dayId": 119104168,
@@ -70,7 +70,7 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
                 {
                     "name": "Tagliatelle s kuøecím masem a rajèaty",
                     "allergens": "1a,3,7",
-                    "images": [],
+                    "imageLinks": [],
                     "primirestOrderIdentifier": {
                         "menuId": 119104167,
                         "dayId": 119104168,

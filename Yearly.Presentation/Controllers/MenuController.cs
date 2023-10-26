@@ -6,6 +6,7 @@ using Yearly.Application.Foods.Queries;
 using Yearly.Application.Menus.Commands;
 using Yearly.Application.Menus.Queries;
 using Yearly.Application.Photos.Queries;
+using Yearly.Contracts.Common;
 using Yearly.Contracts.Foods;
 using Yearly.Contracts.Menu;
 using Yearly.Presentation.OutputCaching;

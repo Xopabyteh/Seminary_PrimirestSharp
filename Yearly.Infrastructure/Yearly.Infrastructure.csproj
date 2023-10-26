@@ -16,6 +16,7 @@
     <Folder Include="Http\" />
     <Folder Include="Persistence\Seeding\" />
     <Folder Include="Persistence\Repositories\" />
+    <Folder Include="Services\Orders\" />
   </ItemGroup>
 
   <ItemGroup>
