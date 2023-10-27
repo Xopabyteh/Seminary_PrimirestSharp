@@ -5,7 +5,8 @@ namespace Yearly.Domain.Repositories;
 
 public interface IPhotoRepository
 {
-    public Task<List<Photo>> GetPhotosByFoodIdsAsync(List<FoodId> foodIds);
+    
+    public Task<List<Photo>> GetPhotosForFoodAsync(FoodId foodId);
 
     //public Task<List<Photo>> GetPhotosForSoupsAsync(List<FoodId> FoodIds);
 }

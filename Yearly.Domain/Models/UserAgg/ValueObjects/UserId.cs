@@ -1,6 +1,9 @@
 ﻿namespace Yearly.Domain.Models.UserAgg.ValueObjects;
 
-public class PrimirestUserId : ValueObject
+/// <summary>
+/// This Id is from Primirest (UserID) and is used to identify the user in their auth system.
+/// </summary>
+public class UserId : ValueObject
 {
     public int Value { get; private set; }
 
@@ -9,7 +12,7 @@ public class PrimirestUserId : ValueObject
         yield return Value;
     }
 
-    public PrimirestUserId(int value)
+    public UserId(int value)
     {
         Value = value;
     }

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Menus;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services.Authentication;
 
@@ -83,10 +84,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                     new JsonSerializerSettings()
                     {
                         DateTimeZoneHandling = DateTimeZoneHandling.Utc
-                    });
-
-                if (responseRoot is null)
-                    return Errors.Errors.PrimirestAdapter.PrimirestResponseIsNull;
+                    }) ?? throw new InvalidPrimirestContractException("Primirest changed their Menu retrieval contract");
 
                 var menuForWeek = new PrimirestMenuForWeek(new(5), int.Parse(menuId));
 

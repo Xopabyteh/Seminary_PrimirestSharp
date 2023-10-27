@@ -65,7 +65,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
         foreach (var primirestMenuForWeek in primirestMenusForWeek)
         {
-            var menuForWeekId = new PrimirestMenuForWeekId(primirestMenuForWeek.PrimirestMenuId);
+            var menuForWeekId = new MenuForWeekId(primirestMenuForWeek.PrimirestMenuId);
 
             //If we already have this menu, skip it
             if (await _menuRepository.DoesMenuForWeekExistAsync(menuForWeekId))
@@ -90,7 +90,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                     }
                     else
                     {
-                        //TODO: Update primirest order identifier if we already have the food
+                        //TODO: Update primirest food identifier if we already have the food
                     }
 
 

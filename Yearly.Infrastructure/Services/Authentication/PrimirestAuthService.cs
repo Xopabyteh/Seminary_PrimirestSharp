@@ -99,7 +99,7 @@ public class PrimirestAuthService : IAuthService
         dynamic userDetailsObj = userObj.Items[0];
 
         //return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
-        var userId = new PrimirestUserId(int.Parse(userDetailsObj.ID.ToString()));
+        var userId = new UserId(int.Parse(userDetailsObj.ID.ToString()));
         var sharpUser = await _userRepository.GetByIdAsync(userId);
         
         return sharpUser!; //The user is already in our repository, so no worry about null.

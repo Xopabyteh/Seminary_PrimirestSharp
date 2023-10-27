@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Menus;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Domain.Models.MenuAgg.ValueObjects;
+using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Orders;
@@ -50,31 +52,47 @@ public class PrimirestOrderService : IPrimirestOrderService
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<List<PrimirestFoodOrder>>> GetOrdersForPersonAsync(string sessionCookie)
+    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>> GetOrdersForPersonForWeekAsync(string sessionCookie, MenuForWeekId forWeekId)
     {
+        // Call the same API as when getting menus
+        // This time grab the orders
 
-        throw new NotImplementedException();
-        //// Call the same API as when getting menus
-        //// This time grab the orders
+        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+        client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
 
-        //var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
-        //client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
+        var message = new HttpRequestMessage(
+            HttpMethod.Get,
+            @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={forWeekId.Value}&menuViewType=FULL&_=0");
 
-        //var message = new HttpRequestMessage(
-        //    HttpMethod.Get,
-        //    @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={menuId}&menuViewType=FULL&_=0");
+        //Todo: handle session cookie not signed error here
 
-        //var response = await loggedClient.SendAsync(message);
-        //var responseJson = await response.Content.ReadAsStringAsync();
+        var response = await client.SendAsync(message);
+        var responseJson = await response.Content.ReadAsStringAsync();
 
-        //var responseRoot = JsonConvert.DeserializeObject<PrimirestMenuResponseRoot>(
-        //    responseJson,
-        //    new JsonSerializerSettings()
-        //    {
-        //        DateTimeZoneHandling = DateTimeZoneHandling.Utc
-        //    });
+        var responseRoot = JsonConvert.DeserializeObject<PrimirestMenuResponseRoot>(
+            responseJson,
+            new JsonSerializerSettings()
+            {
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            }) ?? throw new InvalidPrimirestContractException("Primirest changed their Menu retrieval contract");
 
+        var ordersResponse = responseRoot.Menu.Orders;
+        var foodOrders = new List<PrimirestFoodOrder>(ordersResponse.Count);
 
+        // Reconstruct the orders from the response
+        foreach (var orderResponse in ordersResponse)
+        {
+            var item = orderResponse.Items[0]; //Always only 1 item.
+            var reconstructedOrder = new PrimirestFoodOrder(
+                OrderItemId: item.ID,
+                OrderId: item.IDOrder,
+                FoodItemId: item.IDItem);
+
+            foodOrders.Add(reconstructedOrder);
+        }
+
+        return foodOrders;
     }
+
     private readonly record struct PrimirestOrderResponse(bool Success, string? Message);
 }

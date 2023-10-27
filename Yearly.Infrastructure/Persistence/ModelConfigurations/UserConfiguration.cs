@@ -14,7 +14,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .Property(u => u.Id)
             .HasConversion(
                 id => id.Value,
-                idValue => new PrimirestUserId(idValue));
+                idValue => new UserId(idValue));
 
         builder.Property(u => u.Username)
             .HasMaxLength(100)
@@ -24,7 +24,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             {
                 roleBuilder.ToTable("UserRoles");
 
-                roleBuilder.WithOwner().HasForeignKey(nameof(PrimirestUserId));
+                roleBuilder.WithOwner().HasForeignKey(nameof(UserId));
 
                 roleBuilder
                     .Property(r => r.RoleCode)
@@ -36,7 +36,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         {
             photoIdBuilder.ToTable("UserPhotoIds");
 
-            photoIdBuilder.WithOwner().HasForeignKey(nameof(PrimirestUserId));
+            photoIdBuilder.WithOwner().HasForeignKey(nameof(UserId));
         });
     }
 }

@@ -21,10 +21,12 @@ if (app.Environment.IsDevelopment())
     //Seed data
     using var scope = app.Services.CreateScope();
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    dataSeeder.Seed();
+    //dataSeeder.Seed();
 }
 
 app.Run();
 
 //TODO: Change order identifier in API request docs
 //TODO: Change order place ids to some constant
+//Todo: Menus for weeks should hold some date info
+//Todo: Fix docs!

@@ -1,6 +1,9 @@
 ﻿namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
 
-public sealed class PrimirestMenuForWeekId : ValueObject
+/// <summary>
+/// This Id is from Primirest (MenuID) and is used to identify the menu for a week.
+/// </summary>
+public sealed class MenuForWeekId : ValueObject
 {
     public int Value { get; private set; }
 
@@ -9,7 +12,7 @@ public sealed class PrimirestMenuForWeekId : ValueObject
         yield return Value;
     }
 
-    public PrimirestMenuForWeekId(int value)
+    public MenuForWeekId(int value)
     {
         Value = value;
     }

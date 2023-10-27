@@ -19,8 +19,13 @@ public class MenuForWeekRepository : IMenuForWeekRepository
         await _context.MenusForWeeks.AddAsync(menu);
     }
 
-    public async Task<bool> DoesMenuForWeekExistAsync(PrimirestMenuForWeekId id)
+    public async Task<bool> DoesMenuForWeekExistAsync(MenuForWeekId id)
     {
         return await _context.MenusForWeeks.AnyAsync(m => m.Id == id);
+    }
+
+    public Task<List<MenuForWeek>> GetAvailableMenusAsync()
+    {
+        return _context.MenusForWeeks.ToListAsync();
     }
 }

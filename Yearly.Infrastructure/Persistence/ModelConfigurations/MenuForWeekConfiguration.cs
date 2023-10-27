@@ -17,14 +17,14 @@ public class MenuForWeekConfiguration : IEntityTypeConfiguration<MenuForWeek>
             .Property(m => m.Id)
             .HasConversion(
                 id => id.Value,
-                idValue => new PrimirestMenuForWeekId(idValue))
+                idValue => new MenuForWeekId(idValue))
             .ValueGeneratedNever();
 
         builder.OwnsMany(m => m.MenusForDays, menuForDayBuilder =>
         {
             menuForDayBuilder.ToTable("MenusForDays");
 
-            menuForDayBuilder.WithOwner().HasForeignKey(nameof(PrimirestMenuForWeekId));
+            menuForDayBuilder.WithOwner().HasForeignKey(nameof(MenuForWeekId));
 
             menuForDayBuilder.OwnsMany(d => d.FoodIds, foodIdBuilder =>
             {

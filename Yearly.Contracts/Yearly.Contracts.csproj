@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Foods\" />
-    <Folder Include="Order\" />
   </ItemGroup>
 
 </Project>

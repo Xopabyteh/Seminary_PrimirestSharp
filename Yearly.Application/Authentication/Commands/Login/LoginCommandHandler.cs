@@ -40,11 +40,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         var externalUser = externalUserInfoAsync.Value;
 
         //Get user from our system
-        var sharpUser = await _userRepository.GetByIdAsync(new PrimirestUserId(externalUser.Id));
+        var sharpUser = await _userRepository.GetByIdAsync(new UserId(externalUser.Id));
         if (sharpUser is null)
         {
             //Persist user in our db
-            sharpUser = new User(new PrimirestUserId(externalUser.Id), externalUser.Username);
+            sharpUser = new User(new UserId(externalUser.Id), externalUser.Username);
 
             await _userRepository.AddAsync(sharpUser);
             await _unitOfWork.SaveChangesAsync();
