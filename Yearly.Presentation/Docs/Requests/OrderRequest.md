@@ -1,3 +1,27 @@
+## Get ordered foods (my orders)
+```json
+GET {{host}}/order/my-orders?sessionCookie={{sessionCookie}}&menuForWeekId=1234
+```
+### Response
+```json
+{
+    "orders": [
+        {
+            "orderItemId": 121445269,
+            "orderId": 121445268,
+            "foodItemId": 119104181
+        },
+        {
+            "orderItemId": 121445271,
+            "orderId": 121445270,
+            "foodItemId": 119104189
+        }
+    ]
+}
+```
+> `orderItemId` and `orderId` are used when cancelling an order
+`foodItemId` is the food, that is actually ordered.
+
 ## Order food
 ```json
 POST {{host}}/order/new-order
@@ -10,7 +34,6 @@ POST {{host}}/order/new-order
 	}
 }
 ```
-### Response
-Ok or errors
+> Returns Ok or errors
 
 ## Cancel order

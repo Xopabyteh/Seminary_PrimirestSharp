@@ -5,7 +5,7 @@ namespace Yearly.Contracts.Menu;
 public record AvailableMenusResponse(List<MenuForWeekResponse> MenusForWeeks);
 
 public record MenuForWeekResponse(
-    List<MenuForDayResponse> MenusForDay,
+    List<MenuForDayResponse> MenusForDays,
     int PrimirestMenuId);
 public record MenuForDayResponse(
     DateTime Date, 
