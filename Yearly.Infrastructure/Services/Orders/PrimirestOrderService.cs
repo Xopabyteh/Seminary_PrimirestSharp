@@ -52,7 +52,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         throw new NotImplementedException();
     }
 
-    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>> GetOrdersForPersonForWeekAsync(string sessionCookie, MenuForWeekId forWeekId)
+    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id)
     {
         // Call the same API as when getting menus
         // This time grab the orders
@@ -62,7 +62,7 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var message = new HttpRequestMessage(
             HttpMethod.Get,
-            @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={forWeekId.Value}&menuViewType=FULL&_=0");
+            @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={id.Value}&menuViewType=FULL&_=0");
 
         //Todo: handle session cookie not signed error here
 

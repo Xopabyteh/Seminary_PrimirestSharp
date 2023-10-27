@@ -25,7 +25,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     /// </summary>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<ErrorOr<List<PrimirestMenuForWeek>>> GetMenusThisWeekAsync()
+    public async Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
@@ -64,12 +64,12 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
             return commonSubstring;
         }
 
-        return await _authService.PerformAdminLoggedSessionAsync<List<PrimirestMenuForWeek>>(async loggedClient =>
+        return await _authService.PerformAdminLoggedSessionAsync<List<PrimirestWeeklyMenu>>(async loggedClient =>
         {
             //Fetch menu ids from primirest
             var menuIds = await GetMenuIds(loggedClient);
 
-            var menusForWeeks = new List<PrimirestMenuForWeek>(menuIds.Length);
+            var weeklyMenus = new List<PrimirestWeeklyMenu>(menuIds.Length);
             foreach (var menuId in menuIds)
             {
                 var message = new HttpRequestMessage(
@@ -86,7 +86,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                         DateTimeZoneHandling = DateTimeZoneHandling.Utc
                     }) ?? throw new InvalidPrimirestContractException("Primirest changed their Menu retrieval contract");
 
-                var menuForWeek = new PrimirestMenuForWeek(new(5), int.Parse(menuId));
+                var weeklyMenu = new PrimirestWeeklyMenu(new(5), int.Parse(menuId));
 
                 foreach (var day in responseRoot.Menu.Days)
                 {
@@ -122,16 +122,16 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                     var soup = new PrimirestSoup(soupName.Trim(',', ' '));
                     
                     //Construct menu for this day
-                    var menu = new PrimirestMenuForDay(menuDate, foods, soup);
+                    var dailyMenu = new PrimirestDailyMenu(menuDate, foods, soup);
                     //reconstructedMenus.Add(menu);
 
-                    menuForWeek.MenusForDay.Add(menu);
+                    weeklyMenu.DailyMenus.Add(dailyMenu);
                 }
 
-                menusForWeeks.Add(menuForWeek);
+                weeklyMenus.Add(weeklyMenu);
             }
 
-            return menusForWeeks;
+            return weeklyMenus;
         });
     }
 

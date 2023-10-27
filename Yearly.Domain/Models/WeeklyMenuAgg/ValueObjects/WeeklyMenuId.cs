@@ -3,7 +3,7 @@
 /// <summary>
 /// This Id is from Primirest (MenuID) and is used to identify the menu for a week.
 /// </summary>
-public sealed class MenuForWeekId : ValueObject
+public sealed class WeeklyMenuId : ValueObject
 {
     public int Value { get; private set; }
 
@@ -12,7 +12,7 @@ public sealed class MenuForWeekId : ValueObject
         yield return Value;
     }
 
-    public MenuForWeekId(int value)
+    public WeeklyMenuId(int value)
     {
         Value = value;
     }

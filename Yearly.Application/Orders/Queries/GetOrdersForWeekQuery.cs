@@ -5,5 +5,5 @@ using Yearly.Domain.Models.MenuAgg.ValueObjects;
 
 namespace Yearly.Application.Orders.Queries;
 
-public record GetOrdersForWeekQuery(string SessionCookie, MenuForWeekId WeekId)
+public record GetOrdersForWeekQuery(string SessionCookie, WeeklyMenuId WeekId)
     : IRequest<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>>;

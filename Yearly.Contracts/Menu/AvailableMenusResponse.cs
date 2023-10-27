@@ -2,12 +2,12 @@
 
 namespace Yearly.Contracts.Menu;
 
-public record AvailableMenusResponse(List<MenuForWeekResponse> MenusForWeeks);
+public record AvailableMenusResponse(List<WeeklyMenuResponse> WeeklyMenus);
 
-public record MenuForWeekResponse(
-    List<MenuForDayResponse> MenusForDays,
+public record WeeklyMenuResponse(
+    List<DailyMenuResponse> DailyMenus,
     int PrimirestMenuId);
-public record MenuForDayResponse(
+public record DailyMenuResponse(
     DateTime Date, 
     List<FoodResponse> Foods
     //SoupResponse Soup

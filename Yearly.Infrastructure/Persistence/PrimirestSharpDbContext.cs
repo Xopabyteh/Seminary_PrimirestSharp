@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.MenuForWeekAgg;
+using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.UserAgg;
 
@@ -27,7 +27,7 @@ public class PrimirestSharpDbContext : DbContext
     {
     }
 
-    public DbSet<MenuForWeek> MenusForWeeks { get; set; }
+    public DbSet<WeeklyMenu> WeeklyMenus { get; set; }
     public DbSet<Food> Foods { get; set; }
     //public DbSet<Soup> Soups { get; set; }
     public DbSet<Photo> Photos { get; set; }

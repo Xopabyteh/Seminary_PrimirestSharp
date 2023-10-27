@@ -6,7 +6,7 @@ using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.MenuForWeekAgg;
+using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
@@ -19,7 +19,7 @@ namespace Yearly.Application.Menus.Commands;
 public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvailableMenusCommand, ErrorOr<Unit>>
 {
     private readonly IPrimirestMenuProvider _primirestMenuProvider;
-    private readonly IMenuForWeekRepository _menuRepository;
+    private readonly IWeeklyMenuRepository _weeklyMenuRepository;
     private readonly IFoodRepository _foodRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
@@ -27,14 +27,14 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
     public PersistAvailableMenusCommandHandler(
         IPrimirestMenuProvider primirestMenuProvider,
-        IMenuForWeekRepository menuRepository,
+        IWeeklyMenuRepository weeklyMenuRepository,
         IUnitOfWork unitOfWork,
         IFoodRepository foodRepository,
         IAuthService authService,
         ILogger<PersistAvailableMenusCommandHandler> logger)
     {
         _primirestMenuProvider = primirestMenuProvider;
-        _menuRepository = menuRepository;
+        _weeklyMenuRepository = weeklyMenuRepository;
         _unitOfWork = unitOfWork;
         _foodRepository = foodRepository;
         _authService = authService;
@@ -59,27 +59,27 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
         if (primirestMenusResult.IsError)
             return primirestMenusResult.Errors;
 
-        var primirestMenusForWeek = primirestMenusResult.Value;
-        if (primirestMenusForWeek.Count == 0)
+        var primirestWeeklyMenus = primirestMenusResult.Value;
+        if (primirestWeeklyMenus.Count == 0)
             return Unit.Value; //No menus available -> nothing to persist
 
-        foreach (var primirestMenuForWeek in primirestMenusForWeek)
+        foreach (var primirestWeeklyMenu in primirestWeeklyMenus)
         {
-            var menuForWeekId = new MenuForWeekId(primirestMenuForWeek.PrimirestMenuId);
+            var weeklyMenuId = new WeeklyMenuId(primirestWeeklyMenu.PrimirestMenuId);
 
             //If we already have this menu, skip it
-            if (await _menuRepository.DoesMenuForWeekExistAsync(menuForWeekId))
+            if (await _weeklyMenuRepository.DoesMenuForWeekExistAsync(weeklyMenuId))
                 continue;
 
-            var menusForDays = new List<MenuForDay>(5);
+            var dailyMenus = new List<DailyMenu>(5);
 
             //Handle foods from this week menu
-            foreach (var primirestMenuForDay in primirestMenuForWeek.MenusForDay)
+            foreach (var primirestDailyMenu in primirestWeeklyMenu.DailyMenus)
             {
                 var foodIdsForDay = new List<FoodId>(3);
 
                 //Handle foods
-                foreach (var primirestFood in primirestMenuForDay.Foods)
+                foreach (var primirestFood in primirestDailyMenu.Foods)
                 {
                     var food = await _foodRepository.GetFoodByNameAsync(primirestFood.Name);
                     if (food is null) //If we don't have food yet, create it
@@ -97,13 +97,13 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                     foodIdsForDay.Add(food.Id);
                 }
 
-                var menuForDay = new MenuForDay(foodIdsForDay, primirestMenuForDay.Date);
-                menusForDays.Add(menuForDay);
+                var menuForDay = new DailyMenu(foodIdsForDay, primirestDailyMenu.Date);
+                dailyMenus.Add(menuForDay);
             }
 
             //Construct menu for week and store it
-            var menuForWeek = MenuForWeek.Create(menuForWeekId, menusForDays);
-            await _menuRepository.AddMenuAsync(menuForWeek);
+            var menuForWeek = WeeklyMenu.Create(weeklyMenuId, dailyMenus);
+            await _weeklyMenuRepository.AddMenuAsync(menuForWeek);
         }
 
         await _unitOfWork.SaveChangesAsync();

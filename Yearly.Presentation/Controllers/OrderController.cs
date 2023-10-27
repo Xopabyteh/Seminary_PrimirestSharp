@@ -5,7 +5,7 @@ using Yearly.Application.Orders.Commands;
 using Yearly.Application.Orders.Queries;
 using Yearly.Contracts.Order;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.MenuForWeekAgg;
+using Yearly.Domain.Models.WeeklyMenuAgg;
 
 namespace Yearly.Presentation.Controllers;
 
@@ -37,7 +37,7 @@ public class OrderController : ApiController
         [FromQuery] string sessionCookie,
         [FromQuery] int menuForWeekId)
     {
-        var orders = await _mediator.Send(new GetOrdersForWeekQuery(sessionCookie, new MenuForWeekId(menuForWeekId)));
+        var orders = await _mediator.Send(new GetOrdersForWeekQuery(sessionCookie, new WeeklyMenuId(menuForWeekId)));
         if (orders.IsError)
             return Problem(orders.Errors);
 

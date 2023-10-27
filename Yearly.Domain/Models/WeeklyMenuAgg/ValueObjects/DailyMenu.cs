@@ -2,14 +2,14 @@
 
 namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
 
-public sealed class MenuForDay : ValueObject
+public sealed class DailyMenu : ValueObject
 {
     private readonly List<FoodId> _foodIds;
     public IReadOnlyList<FoodId> FoodIds => _foodIds.AsReadOnly();
 
     public DateTime Date { get; private set; }
 
-    public MenuForDay(
+    public DailyMenu(
         List<FoodId> foodIds,
         DateTime date)
     {
@@ -18,7 +18,7 @@ public sealed class MenuForDay : ValueObject
     }
 
 #pragma warning disable CS8618 //For EF Core
-    private MenuForDay()
+    private DailyMenu()
 #pragma warning restore CS8618
     {
 

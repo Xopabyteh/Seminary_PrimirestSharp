@@ -1,20 +1,20 @@
 ﻿using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.MenuForWeekAgg;
+using Yearly.Domain.Models.WeeklyMenuAgg;
 
 namespace Yearly.Domain.Repositories;
-public interface IMenuForWeekRepository
+public interface IWeeklyMenuRepository
 {
-    public Task AddMenuAsync(MenuForWeek menu);
+    public Task AddMenuAsync(WeeklyMenu weeklyMenu);
     //public Task<bool> DoesMenuExistForDateAsync(DateTime date);
 
-    public Task<bool> DoesMenuForWeekExistAsync(MenuForWeekId id);
+    public Task<bool> DoesMenuForWeekExistAsync(WeeklyMenuId id);
 
     /// <summary>
     /// Get's all the menus that are available since the given date.
     /// </summary>
     /// <param name="inclusiveDate"></param>
     /// <returns></returns>
-    public Task<List<MenuForWeek>> GetAvailableMenusAsync();
+    public Task<List<WeeklyMenu>> GetAvailableMenusAsync();
 
     ///// <summary>
     ///// Deletes all menus before the given date.

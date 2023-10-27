@@ -1,6 +1,6 @@
 ﻿namespace Yearly.Application.Menus;
 
-public readonly record struct PrimirestMenuForWeek(
-    List<PrimirestMenuForDay> MenusForDay,
+public readonly record struct PrimirestWeeklyMenu(
+    List<PrimirestDailyMenu> DailyMenus,
     int PrimirestMenuId // The id of the menu in Primirest, used for ordering. The one stored in the horrible selection field that has to be scraped
 );

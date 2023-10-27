@@ -8,9 +8,9 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
 ### Response
 ```json
 {
-    "menusForWeeks": [
+    "weeklyMenus": [
     {
-        "menusForDays": [
+        "dailyMenus": [
             {
                 "date": "2023-10-30T23:00:00",
                 "foods": [
@@ -195,7 +195,7 @@ GET {{host}}/menu?sessionCookie={{sessionCookie}}
 So the menus for this week and possibly for another. 
 If there is no menu, an empty array.
 
-> Returns `menus for weeks`, each `menu for week` contains a list of `menus for day`
-Each `menu for day` contains a list of `foods` and `date` of the day.
+> Returns `weekly menus`, each `weekly menu` contains a list of `daily menus`
+Each `daily menu` contains a list of `foods` and `date` of the day.
 
 > The `primirestFoodIdentifier` contains all necessary data to order the food.

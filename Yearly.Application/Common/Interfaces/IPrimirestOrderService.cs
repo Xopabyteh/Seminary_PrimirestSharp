@@ -15,7 +15,7 @@ public interface IPrimirestOrderService
     /// Get the foods that a person has ordered for the given week
     /// </summary>
     /// <param name="sessionCookie"></param>
-    /// <param name="forWeekId"></param>
+    /// <param name="id"></param>
     /// <returns></returns>
-    public Task<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>> GetOrdersForPersonForWeekAsync(string sessionCookie, MenuForWeekId forWeekId);
+    public Task<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id);
 }

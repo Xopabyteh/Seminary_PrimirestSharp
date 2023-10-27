@@ -14,7 +14,7 @@ using Yearly.Contracts.Order;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.MenuForWeekAgg;
+using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Presentation.OutputCaching;
 using static Yearly.Application.Errors.Errors;
 
@@ -36,7 +36,7 @@ public class MenuController : ApiController
     [OutputCache(PolicyName = OutputCachePolicyName.GetAvailableMenus)]
     public async Task<IActionResult> GetAvailableMenus()
     {
-        var menusForWeeks = await _mediator.Send(new GetAvailableMenusForWeeksQuery());
+        var weeklyMenus = await _mediator.Send(new GetAvailableWeeklyMenusQuery());
         //foreach (var menu in menus)
         //{
         //    var orders = await _mediator.Send(new GetOrdersForWeekQuery(request.SessionCookie, menu.Id));
@@ -46,14 +46,14 @@ public class MenuController : ApiController
         //    orders.Value[0].
         //}
 
-        var menusForWeeksResponse = new List<MenuForWeekResponse>();
-        foreach (var menuForWeek in menusForWeeks)
+        var weeklyMenusResponse = new List<WeeklyMenuResponse>();
+        foreach (var weeklyMenu in weeklyMenus)
         {
-            var menusForDaysResponse = new List<MenuForDayResponse>();
-            foreach (var menuForDay in menuForWeek.MenusForDays)
+            var dailyMenusResponse = new List<DailyMenuResponse>();
+            foreach (var dailyMenu in weeklyMenu.DailyMenus)
             {
                 var foodsResponse = new List<FoodResponse>();
-                foreach (var foodForDayId in menuForDay.FoodIds)
+                foreach (var foodForDayId in dailyMenu.FoodIds)
                 {
                     var foodForDay = await _mediator.Send(new GetFoodQuery(foodForDayId));
 
@@ -66,13 +66,13 @@ public class MenuController : ApiController
                         _mapper.Map<PrimirestFoodIdentifierResponse>(foodForDay.PrimirestFoodIdentifier)));
                 }
 
-                menusForDaysResponse.Add(new MenuForDayResponse(menuForDay.Date, foodsResponse));
+                dailyMenusResponse.Add(new DailyMenuResponse(dailyMenu.Date, foodsResponse));
             }
 
-            menusForWeeksResponse.Add(new MenuForWeekResponse(menusForDaysResponse, menuForWeek.Id.Value));
+            weeklyMenusResponse.Add(new WeeklyMenuResponse(dailyMenusResponse, weeklyMenu.Id.Value));
         }
 
-        var response = new AvailableMenusResponse(menusForWeeksResponse);
+        var response = new AvailableMenusResponse(weeklyMenusResponse);
 
         return Ok(response);
     }
