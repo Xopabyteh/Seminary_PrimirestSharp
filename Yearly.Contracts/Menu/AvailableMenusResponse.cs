@@ -15,7 +15,7 @@ public record FoodResponse(
     string Name,
     string Allergens,
     List<string> ImageLinks,
-    PrimirestOrderIdentifierResponse PrimirestOrderIdentifier
+    PrimirestFoodIdentifierResponse PrimirestFoodIdentifier
     );
 
 //public record SoupResponse(

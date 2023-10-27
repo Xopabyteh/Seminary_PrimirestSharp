@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Menus;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services.Authentication;
 
 namespace Yearly.Infrastructure.Services.Menus;
@@ -23,7 +24,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     /// </summary>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<ErrorOr<List<PrimirestMenuForDay>>> GetMenusThisWeekAsync()
+    public async Task<ErrorOr<List<PrimirestMenuForWeek>>> GetMenusThisWeekAsync()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
@@ -62,13 +63,12 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
             return commonSubstring;
         }
 
-        return await _authService.PerformAdminLoggedSessionAsync<List<PrimirestMenuForDay>>(async loggedClient =>
+        return await _authService.PerformAdminLoggedSessionAsync<List<PrimirestMenuForWeek>>(async loggedClient =>
         {
             //Fetch menu ids from primirest
             var menuIds = await GetMenuIds(loggedClient);
 
-            //Return them as ExternalServiceMenu objects
-            var reconstructedMenus = new List<PrimirestMenuForDay>(10);
+            var menusForWeeks = new List<PrimirestMenuForWeek>(menuIds.Length);
             foreach (var menuId in menuIds)
             {
                 var message = new HttpRequestMessage(
@@ -87,6 +87,8 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
 
                 if (responseRoot is null)
                     return Errors.Errors.PrimirestAdapter.PrimirestResponseIsNull;
+
+                var menuForWeek = new PrimirestMenuForWeek(new(5), int.Parse(menuId));
 
                 foreach (var day in responseRoot.Menu.Days)
                 {
@@ -110,7 +112,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                     {
                         var foodName = item.Description.Replace(soupName, string.Empty).Trim();
 
-                        var primirestIdentifier = new PrimirestOrderIdentifier(
+                        var primirestIdentifier = new PrimirestFoodIdentifier(
                             item.IDMenu,
                             item.IDMenuDay,
                             item.ID);
@@ -123,11 +125,15 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                     
                     //Construct menu for this day
                     var menu = new PrimirestMenuForDay(menuDate, foods, soup);
-                    reconstructedMenus.Add(menu);
+                    //reconstructedMenus.Add(menu);
+
+                    menuForWeek.MenusForDay.Add(menu);
                 }
+
+                menusForWeeks.Add(menuForWeek);
             }
 
-            return reconstructedMenus;
+            return menusForWeeks;
         });
     }
 

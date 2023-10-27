@@ -3,7 +3,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.UserAgg;
 
-public class User : AggregateRoot<UserId>
+public class User : AggregateRoot<PrimirestUserId>
 {
     public string Username { get; private set; }
 
@@ -13,7 +13,7 @@ public class User : AggregateRoot<UserId>
     private readonly List<PhotoId> _photoIds;
     public IReadOnlyList<PhotoId> PhotoIds => _photoIds.AsReadOnly();
 
-    public User(UserId id, string username)
+    public User(PrimirestUserId id, string username)
         : base(id)
     {
         Username = username;

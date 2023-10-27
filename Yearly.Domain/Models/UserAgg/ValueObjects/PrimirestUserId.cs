@@ -1,6 +1,6 @@
 ﻿namespace Yearly.Domain.Models.UserAgg.ValueObjects;
 
-public class UserId : ValueObject
+public class PrimirestUserId : ValueObject
 {
     public int Value { get; private set; }
 
@@ -9,7 +9,7 @@ public class UserId : ValueObject
         yield return Value;
     }
 
-    public UserId(int value)
+    public PrimirestUserId(int value)
     {
         Value = value;
     }

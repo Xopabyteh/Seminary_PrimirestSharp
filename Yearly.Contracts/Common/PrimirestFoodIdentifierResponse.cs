@@ -1,6 +1,6 @@
 ﻿namespace Yearly.Contracts.Common;
 
-public record PrimirestOrderIdentifierResponse(
+public record PrimirestFoodIdentifierResponse(
     int MenuId,
     int DayId,
     int ItemId);

@@ -13,7 +13,7 @@ public sealed class Food : AggregateRoot<FoodId>
     public string Name { get; private set; } 
     public string Allergens { get; private set; } // Todo: primitive obsession
     
-    public PrimirestOrderIdentifier PrimirestOrderIdentifier { get; private set; }
+    public PrimirestFoodIdentifier PrimirestFoodIdentifier { get; private set; }
 
     private Food(
         FoodId id,
@@ -21,20 +21,20 @@ public sealed class Food : AggregateRoot<FoodId>
         FoodId? aliasForFoodId,
         string name,
         string allergens,
-        PrimirestOrderIdentifier primirestOrderIdentifier) 
+        PrimirestFoodIdentifier primirestFoodIdentifier) 
         : base(id)
     {
         _photoIds = photoIds;
         AliasForFoodId = aliasForFoodId;
         Name = name;
         Allergens = allergens;
-        PrimirestOrderIdentifier = primirestOrderIdentifier;
+        PrimirestFoodIdentifier = primirestFoodIdentifier;
     }
 
     public static Food Create(
         string name,
         string allergens,
-        PrimirestOrderIdentifier primirestOrderIdentifier)
+        PrimirestFoodIdentifier primirestFoodIdentifier)
     { 
         return new Food(
             new FoodId(Guid.NewGuid()),
@@ -42,7 +42,7 @@ public sealed class Food : AggregateRoot<FoodId>
             null,
             name,
             allergens,
-            primirestOrderIdentifier);
+            primirestFoodIdentifier);
     }
 
 #pragma warning disable CS8618 //For EF Core

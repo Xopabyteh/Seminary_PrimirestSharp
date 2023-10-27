@@ -10,6 +10,6 @@ public class OrderMappings : IRegister
     {
         config.NewConfig<OrderFoodRequest, OrderFoodCommand>()
             .Map(dst => dst.SessionCookie, src => src.SessionCookie)
-            .Map(dst => dst.PrimirestOrderIdentifier, src => src.PrimirestOrderIdentifier);
+            .Map(dst => dst.PrimirestFoodIdentifier, src => src.PrimirestFoodIdentifier);
     }
 }

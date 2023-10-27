@@ -25,11 +25,21 @@ internal record PrimirestMenuResponseItem(
 // );
 
 internal record PrimirestMenuResponseMenu(
-    IReadOnlyList<object> Orders,
+    IReadOnlyList<PrimirestMenuResponseOrder> Orders,
     IReadOnlyList<PrimirestMenuResponseDay> Days
 
     // DateTime DateFrom,
     // DateTime DateTo,
+);
+
+internal record PrimirestMenuResponseOrder(
+    IReadOnlyList<PrimirestMenuResponseOrderItem> Items
+);
+
+internal record PrimirestMenuResponseOrderItem(
+    int ID, //ID of the order item
+    int IDOrder, //ID of the order
+    int IDItem //ID of the food, the naming is horrible
 );
 
 internal record PrimirestMenuResponseRoot(

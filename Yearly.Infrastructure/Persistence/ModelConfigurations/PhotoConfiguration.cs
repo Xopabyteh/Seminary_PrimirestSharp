@@ -22,7 +22,7 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
             .Property(p => p.PublisherId)
             .HasConversion(
                 id => id.Value,
-                idValue => new UserId(idValue))
+                idValue => new PrimirestUserId(idValue))
             .ValueGeneratedNever();
 
         builder.Property(p => p.PublishDate);

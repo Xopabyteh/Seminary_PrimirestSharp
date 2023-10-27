@@ -5,7 +5,8 @@ using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.MenuAgg;
+using Yearly.Domain.Models.MenuAgg.ValueObjects;
+using Yearly.Domain.Models.MenuForWeekAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
@@ -18,7 +19,7 @@ namespace Yearly.Application.Menus.Commands;
 public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvailableMenusCommand, ErrorOr<Unit>>
 {
     private readonly IPrimirestMenuProvider _primirestMenuProvider;
-    private readonly IMenuRepository _menuRepository;
+    private readonly IMenuForWeekRepository _menuRepository;
     private readonly IFoodRepository _foodRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
@@ -26,7 +27,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
     public PersistAvailableMenusCommandHandler(
         IPrimirestMenuProvider primirestMenuProvider,
-        IMenuRepository menuRepository,
+        IMenuForWeekRepository menuRepository,
         IUnitOfWork unitOfWork,
         IFoodRepository foodRepository,
         IAuthService authService,
@@ -58,50 +59,51 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
         if (primirestMenusResult.IsError)
             return primirestMenusResult.Errors;
 
-        var primirestMenusForDay = primirestMenusResult.Value;
-        if (primirestMenusForDay.Count == 0)
+        var primirestMenusForWeek = primirestMenusResult.Value;
+        if (primirestMenusForWeek.Count == 0)
             return Unit.Value; //No menus available -> nothing to persist
 
-        foreach (var primirestMenuForDay in primirestMenusForDay)
+        foreach (var primirestMenuForWeek in primirestMenusForWeek)
         {
+            var menuForWeekId = new PrimirestMenuForWeekId(primirestMenuForWeek.PrimirestMenuId);
+
             //If we already have this menu, skip it
-            if (await _menuRepository.DoesMenuExistForDateAsync(primirestMenuForDay.Date))
+            if (await _menuRepository.DoesMenuForWeekExistAsync(menuForWeekId))
                 continue;
 
-            var foodIdsForMenu = new List<FoodId>(4);
+            var menusForDays = new List<MenuForDay>(5);
 
-            //Handle foods
-            foreach (var primirestFood in primirestMenuForDay.Foods)
+            //Handle foods from this week menu
+            foreach (var primirestMenuForDay in primirestMenuForWeek.MenusForDay)
             {
-                var food = await _foodRepository.GetFoodByNameAsync(primirestFood.Name);
-                if (food is null) //If we don't have food yet, create it
+                var foodIdsForDay = new List<FoodId>(3);
+
+                //Handle foods
+                foreach (var primirestFood in primirestMenuForDay.Foods)
                 {
-                    food = Food.Create(primirestFood.Name, primirestFood.Allergens, primirestFood.PrimirestOrderIdentifier);
-                    _logger.Log(LogLevel.Information, "New food created - {foodName}", food.Name);
-                    await _foodRepository.AddFoodAsync(food);
-                }
-                else
-                {
-                    //TODO: Update primirest order identifier if we already have the food
-                }
+                    var food = await _foodRepository.GetFoodByNameAsync(primirestFood.Name);
+                    if (food is null) //If we don't have food yet, create it
+                    {
+                        food = Food.Create(primirestFood.Name, primirestFood.Allergens, primirestFood.PrimirestFoodIdentifier);
+                        _logger.Log(LogLevel.Information, "New food created - {foodName}", food.Name);
+                        await _foodRepository.AddFoodAsync(food);
+                    }
+                    else
+                    {
+                        //TODO: Update primirest order identifier if we already have the food
+                    }
 
 
-                foodIdsForMenu.Add(food.Id);
+                    foodIdsForDay.Add(food.Id);
+                }
+
+                var menuForDay = new MenuForDay(foodIdsForDay, primirestMenuForDay.Date);
+                menusForDays.Add(menuForDay);
             }
-            ////Handle soup
-            //var soup = await _soupRepository.GetSoupByNameAsync(primirestMenuForDay.Soup.Name);
-            //if (soup is null) //If we don't have the soup yet, create it
-            //{
-            //    soup = Soup.Create(primirestMenuForDay.Soup.Name);
-            //    _logger.Log(LogLevel.Information, "New soup created - {soupName}", soup.Name);
-            //    await _soupRepository.AddSoupAsync(soup);
-            //}
 
-            //Create menu
-            var menu = Menu.Create(foodIdsForMenu, primirestMenuForDay.Date);
-
-            //Persist menu
-            await _menuRepository.AddMenuAsync(menu);
+            //Construct menu for week and store it
+            var menuForWeek = MenuForWeek.Create(menuForWeekId, menusForDays);
+            await _menuRepository.AddMenuAsync(menuForWeek);
         }
 
         await _unitOfWork.SaveChangesAsync();

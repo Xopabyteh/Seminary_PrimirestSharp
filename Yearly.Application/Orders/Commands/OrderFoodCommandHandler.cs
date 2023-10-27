@@ -14,6 +14,6 @@ public class OrderFoodCommandHandler : IRequestHandler<OrderFoodCommand, ErrorOr
 
     public Task<ErrorOr<Unit>> Handle(OrderFoodCommand request, CancellationToken cancellationToken)
     {
-        return _primirestOrderService.OrderFoodAsync(request.SessionCookie, request.PrimirestOrderIdentifier);
+        return _primirestOrderService.OrderFoodAsync(request.SessionCookie, request.PrimirestFoodIdentifier);
     }
 }

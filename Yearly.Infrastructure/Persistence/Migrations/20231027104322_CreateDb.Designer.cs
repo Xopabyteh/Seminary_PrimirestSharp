@@ -12,8 +12,8 @@ using Yearly.Infrastructure.Persistence;
 namespace Yearly.Infrastructure.Migrations
 {
     [DbContext(typeof(PrimirestSharpDbContext))]
-    [Migration("20231018135622_AddUsersTablesAndAlterLengths")]
-    partial class AddUsersTablesAndAlterLengths
+    [Migration("20231027104322_CreateDb")]
+    partial class CreateDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,17 +48,14 @@ namespace Yearly.Infrastructure.Migrations
                     b.ToTable("Foods");
                 });
 
-            modelBuilder.Entity("Yearly.Domain.Models.MenuAgg.Menu", b =>
+            modelBuilder.Entity("Yearly.Domain.Models.MenuForWeekAgg.MenuForWeek", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Menus");
+                    b.ToTable("MenusForWeeks", (string)null);
                 });
 
             modelBuilder.Entity("Yearly.Domain.Models.PhotoAgg.Photo", b =>
@@ -71,8 +68,8 @@ namespace Yearly.Infrastructure.Migrations
 
                     b.Property<string>("Link")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<DateTime>("PublishDate")
                         .HasColumnType("datetime2");
@@ -121,31 +118,86 @@ namespace Yearly.Infrastructure.Migrations
                                 .HasForeignKey("FoodId");
                         });
 
-                    b.Navigation("PhotoIds");
-                });
-
-            modelBuilder.Entity("Yearly.Domain.Models.MenuAgg.Menu", b =>
-                {
-                    b.OwnsMany("Yearly.Domain.Models.FoodAgg.ValueObjects.FoodId", "FoodIds", b1 =>
+                    b.OwnsOne("Yearly.Domain.Models.FoodAgg.ValueObjects.PrimirestFoodIdentifier", "PrimirestFoodIdentifier", b1 =>
                         {
-                            b1.Property<Guid>("Value")
-                                .HasColumnType("uniqueidentifier")
-                                .HasColumnName("FoodId");
-
-                            b1.Property<Guid>("MenuId")
+                            b1.Property<Guid>("FoodId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.HasKey("Value");
+                            b1.Property<int>("DayId")
+                                .HasColumnType("int")
+                                .HasColumnName("PrimirestDayId");
 
-                            b1.HasIndex("MenuId");
+                            b1.Property<int>("ItemId")
+                                .HasColumnType("int")
+                                .HasColumnName("PrimirestItemId");
 
-                            b1.ToTable("MenuFoodIds", (string)null);
+                            b1.Property<int>("MenuId")
+                                .HasColumnType("int")
+                                .HasColumnName("PrimirestMenuId");
+
+                            b1.HasKey("FoodId");
+
+                            b1.ToTable("Foods");
 
                             b1.WithOwner()
-                                .HasForeignKey("MenuId");
+                                .HasForeignKey("FoodId");
                         });
 
-                    b.Navigation("FoodIds");
+                    b.Navigation("PhotoIds");
+
+                    b.Navigation("PrimirestFoodIdentifier")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Yearly.Domain.Models.MenuForWeekAgg.MenuForWeek", b =>
+                {
+                    b.OwnsMany("Yearly.Domain.Models.MenuAgg.ValueObjects.MenuForDay", "MenusForDays", b1 =>
+                        {
+                            b1.Property<int>("PrimirestMenuForWeekId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime>("Date")
+                                .HasColumnType("datetime2");
+
+                            b1.HasKey("PrimirestMenuForWeekId", "Id");
+
+                            b1.ToTable("MenusForDays", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("PrimirestMenuForWeekId");
+
+                            b1.OwnsMany("Yearly.Domain.Models.FoodAgg.ValueObjects.FoodId", "FoodIds", b2 =>
+                                {
+                                    b2.Property<Guid>("Value")
+                                        .HasColumnType("uniqueidentifier")
+                                        .HasColumnName("FoodId");
+
+                                    b2.Property<int>("MenuForDayId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<int>("MenuForDayPrimirestMenuForWeekId")
+                                        .HasColumnType("int");
+
+                                    b2.HasKey("Value");
+
+                                    b2.HasIndex("MenuForDayPrimirestMenuForWeekId", "MenuForDayId");
+
+                                    b2.ToTable("MenuFoodIds", (string)null);
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MenuForDayPrimirestMenuForWeekId", "MenuForDayId");
+                                });
+
+                            b1.Navigation("FoodIds");
+                        });
+
+                    b.Navigation("MenusForDays");
                 });
 
             modelBuilder.Entity("Yearly.Domain.Models.UserAgg.User", b =>
@@ -172,7 +224,33 @@ namespace Yearly.Infrastructure.Migrations
                                 .HasForeignKey("UserId");
                         });
 
+                    b.OwnsMany("Yearly.Domain.Models.UserAgg.ValueObjects.UserRole", "Roles", b1 =>
+                        {
+                            b1.Property<int>("UserId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<string>("RoleCode")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("nvarchar(3)");
+
+                            b1.HasKey("UserId", "Id");
+
+                            b1.ToTable("UserRoles", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
                     b.Navigation("PhotoIds");
+
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

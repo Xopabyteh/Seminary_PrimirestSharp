@@ -3,13 +3,13 @@
 /// <summary>
 /// We use this to identify the foods when ordering them via Primirest
 /// </summary>
-public class PrimirestOrderIdentifier : ValueObject
+public class PrimirestFoodIdentifier : ValueObject
 {
     public int MenuId { get; }
     public int DayId  {get; }
     public int ItemId { get; }
 
-    public PrimirestOrderIdentifier(int menuId, int dayId, int itemId)
+    public PrimirestFoodIdentifier(int menuId, int dayId, int itemId)
     {
         MenuId = menuId;
         DayId = dayId;
@@ -24,7 +24,7 @@ public class PrimirestOrderIdentifier : ValueObject
     }
 
 
-    private PrimirestOrderIdentifier() // For EF Core
+    private PrimirestFoodIdentifier() // For EF Core
     {
     }
 }

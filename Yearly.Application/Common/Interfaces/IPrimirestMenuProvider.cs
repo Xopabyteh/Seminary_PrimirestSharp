@@ -5,5 +5,5 @@ namespace Yearly.Application.Common.Interfaces;
 
 public interface IPrimirestMenuProvider
 {
-    public Task<ErrorOr<List<PrimirestMenuForDay>>> GetMenusThisWeekAsync();
+    public Task<ErrorOr<List<PrimirestMenuForWeek>>> GetMenusThisWeekAsync();
 }

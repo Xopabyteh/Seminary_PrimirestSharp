@@ -1,15 +1,15 @@
 ﻿namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
 
-public sealed class MenuId : ValueObject
+public sealed class PrimirestMenuForWeekId : ValueObject
 {
-    public Guid Value { get; private set; }
+    public int Value { get; private set; }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public MenuId(Guid value)
+    public PrimirestMenuForWeekId(int value)
     {
         Value = value;
     }

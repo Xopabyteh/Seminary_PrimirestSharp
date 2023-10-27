@@ -24,7 +24,7 @@ public class DataSeeder
 
     private void SeedUsers()
     {
-        var adminUser = new User(new UserId(26564871), @"Martin Fiala");
+        var adminUser = new User(new PrimirestUserId(26564871), @"Martin Fiala");
         adminUser.AddRole(UserRole.Admin);
         
         _context.Users.Add(adminUser);

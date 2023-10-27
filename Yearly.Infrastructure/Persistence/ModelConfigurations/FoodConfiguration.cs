@@ -7,7 +7,6 @@ namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
 
 public class FoodConfiguration : IEntityTypeConfiguration<Food>
 {
-
     public void Configure(EntityTypeBuilder<Food> builder)
     {
         builder.HasKey(f => f.Id);
@@ -24,19 +23,18 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
                 idValue => new FoodId(idValue))
             .IsRequired(false);
 
-        //builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
-        //{
-        //    photoIdBuilder.ToTable("FoodPhotoIds");
+        builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
+        {
+            photoIdBuilder.ToTable("FoodPhotoIds");
 
-        //    photoIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
+            photoIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
 
-        //    photoIdBuilder.HasKey(p => p.Value);
-        //    photoIdBuilder
-        //        .Property(p => p.Value)
-        //        .HasColumnName("PhotoId")
-        //        .ValueGeneratedNever();
-        //});
-        builder.Ignore(f => f.PhotoIds);
+            photoIdBuilder.HasKey(p => p.Value);
+            photoIdBuilder
+                .Property(p => p.Value)
+                .HasColumnName("PhotoId")
+                .ValueGeneratedNever();
+        });
 
         builder
             .Property(f => f.Name)
@@ -48,7 +46,7 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
             .HasMaxLength(64)
             .IsRequired();
 
-        builder.OwnsOne(f => f.PrimirestOrderIdentifier, pIdBuilder =>
+        builder.OwnsOne(f => f.PrimirestFoodIdentifier, pIdBuilder =>
         {
             pIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
 

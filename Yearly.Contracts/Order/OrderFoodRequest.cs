@@ -4,4 +4,4 @@ namespace Yearly.Contracts.Order;
 
 public record OrderFoodRequest(
     string SessionCookie,
-    PrimirestOrderIdentifierResponse PrimirestOrderIdentifier);
+    PrimirestFoodIdentifierResponse PrimirestFoodIdentifier);

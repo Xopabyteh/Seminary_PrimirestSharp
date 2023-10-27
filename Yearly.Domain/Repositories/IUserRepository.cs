@@ -7,7 +7,7 @@ public interface IUserRepository
 {
     public Task AddAsync(User user);
 
-    public Task<User?> GetByIdAsync(UserId id);
+    public Task<User?> GetByIdAsync(PrimirestUserId id);
 
     public Task<bool> DoesUserExistAsync(string username);
 }
