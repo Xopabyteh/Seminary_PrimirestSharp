@@ -26,7 +26,4 @@ if (app.Environment.IsDevelopment())
 
 app.Run();
 
-//TODO: Change order identifier in API request docs
 //TODO: Change order place ids to some constant
-//Todo: Menus for weeks should hold some date info
-//Todo: Fix docs!

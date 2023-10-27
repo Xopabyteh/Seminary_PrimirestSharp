@@ -19,6 +19,11 @@ GET {{host}}/order/my-orders?sessionCookie={{sessionCookie}}&menuForWeekId=1234
     ]
 }
 ```
+
+> Returns all necessary data to show ordered foods (`foodItemId`) and 
+to cancel an order (`orderItemId` and `orderId`, 
+[the `menuId` is part of the request, so you already have it])
+
 > `orderItemId` and `orderId` are used when cancelling an order
 `foodItemId` is the food, that is actually ordered.
 
