@@ -12,6 +12,7 @@ using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Menus;
 using Yearly.Infrastructure.Services.Orders;
+using Yearly.Infrastructure.Services.Photos;
 
 namespace Yearly.Infrastructure;
 
@@ -53,8 +54,10 @@ public static class DependencyInjection
         services.AddScoped<IWeeklyMenuRepository, WeeklyWeeklyMenuRepository>();
         services.AddScoped<IFoodRepository, FoodRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IPhotoRepository, PhotoRepository>();
         //services.AddScoped<ISoupRepository, SoupRepository>();
+
+        services.AddScoped<IPhotoRepository, PhotoRepository>();
+        services.AddScoped<IPhotoStorageService, LocalPhotoStorageService>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

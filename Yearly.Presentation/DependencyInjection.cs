@@ -13,7 +13,10 @@ public static class DependencyInjection
     {
         services.AddMappings();
 
-        services.AddControllers();
+        services
+            .AddControllers()
+            .AddNewtonsoftJson();
+
         services.AddSingleton<ProblemDetailsFactory, YearlyProblemDetailsFactory>();
 
         services.AddOutputCaching();

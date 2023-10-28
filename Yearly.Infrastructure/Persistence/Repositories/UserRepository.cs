@@ -19,6 +19,12 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
     }
 
+    public Task UpdateAsync(User user)
+    {
+        _context.Users.Update(user);
+        return Task.CompletedTask;
+    }
+
     public async Task<User?> GetByIdAsync(UserId id)
     {
         var user = await _context.Users.FindAsync(id);

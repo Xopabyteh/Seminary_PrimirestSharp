@@ -2,7 +2,7 @@
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Repositories;
 
-namespace Yearly.Application.Photos.Queries
+namespace Yearly.Application.Photos.Queries.ForFood
 {
     public class PhotosForFoodQueryHandler : IRequestHandler<PhotosForFoodQuery, List<Photo>>
     {
@@ -15,7 +15,7 @@ namespace Yearly.Application.Photos.Queries
 
         public Task<List<Photo>> Handle(PhotosForFoodQuery request, CancellationToken cancellationToken)
         {
-            return _photoRepository.GetPhotosForFoodAsync(request.Id);
+            return _photoRepository.GetApprovedPhotosForFoodAsync(request.Id);
         }
     }
 }

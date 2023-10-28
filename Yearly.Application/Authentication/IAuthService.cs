@@ -26,5 +26,5 @@ public interface IAuthService
     /// </summary>
     /// <param name="sessionCookie"></param>
     /// <returns></returns>
-    public Task<ErrorOr<User>> GetSharpUser(string sessionCookie);
+    public Task<ErrorOr<User>> GetSharpUserAsync(string sessionCookie);
 }

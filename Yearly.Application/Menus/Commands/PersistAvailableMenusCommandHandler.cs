@@ -45,7 +45,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
     {
         //Auth: Only admins can do this
 
-        var userResult = await _authService.GetSharpUser(request.SessionCookie);
+        var userResult = await _authService.GetSharpUserAsync(request.SessionCookie);
         if (userResult.IsError)
             return userResult.Errors;
 

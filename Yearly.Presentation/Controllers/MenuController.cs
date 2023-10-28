@@ -5,18 +5,11 @@ using Microsoft.AspNetCore.OutputCaching;
 using Yearly.Application.Foods.Queries;
 using Yearly.Application.Menus.Commands;
 using Yearly.Application.Menus.Queries;
-using Yearly.Application.Orders.Queries;
-using Yearly.Application.Photos.Queries;
+using Yearly.Application.Photos.Queries.ForFood;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Foods;
 using Yearly.Contracts.Menu;
-using Yearly.Contracts.Order;
-using Yearly.Domain.Models.FoodAgg;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Presentation.OutputCaching;
-using static Yearly.Application.Errors.Errors;
 
 namespace Yearly.Presentation.Controllers;
 
@@ -46,6 +39,7 @@ public class MenuController : ApiController
         //    orders.Value[0].
         //}
 
+        //Todo: update docs new food identifier
         var weeklyMenusResponse = new List<WeeklyMenuResponse>();
         foreach (var weeklyMenu in weeklyMenus)
         {
@@ -63,7 +57,8 @@ public class MenuController : ApiController
                         foodForDay.Name,
                         foodForDay.Allergens,
                         photoLinks.Select(p => p.Link).ToList(),
-                        _mapper.Map<PrimirestFoodIdentifierResponse>(foodForDay.PrimirestFoodIdentifier)));
+                        foodForDay.Id.Value,
+                        _mapper.Map<PrimirestFoodIdentifierContract>(foodForDay.PrimirestFoodIdentifier)));
                 }
 
                 dailyMenusResponse.Add(new DailyMenuResponse(dailyMenu.Date, foodsResponse));

@@ -6,13 +6,13 @@ public static partial class Errors
 {
     public static class Authentication
     {
-        public static Error InvalidCredentials
-            => Error.Validation("Authentication.InvalidCredentials", "Invalid username or password");
+        public static readonly Error InvalidCredentials
+            = Error.Validation("Authentication.InvalidCredentials", "Invalid username or password");
 
-        public static Error CookieNotSigned
-            => Error.Validation("Authentication.CookieNotSigned", "Cookie is not signed");
+        public static readonly Error CookieNotSigned
+            = Error.Validation("Authentication.CookieNotSigned", "Cookie is not signed");
 
-        public static Error InsufficientPermissions
-            => Error.Validation("Authentication.InsufficientPermissions", "Insufficient permissions");
+        public static readonly Error InsufficientPermissions
+            = Error.Validation("Authentication.InsufficientPermissions", "Insufficient permissions");
     }
 }

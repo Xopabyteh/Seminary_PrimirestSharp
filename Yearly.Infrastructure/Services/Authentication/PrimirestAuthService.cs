@@ -75,7 +75,7 @@ public class PrimirestAuthService : IAuthService
     /// <param name="sessionCookie"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<ErrorOr<User>> GetSharpUser(string sessionCookie)
+    public async Task<ErrorOr<User>> GetSharpUserAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 

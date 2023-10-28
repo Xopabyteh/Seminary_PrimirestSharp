@@ -1,14 +1,5 @@
 ﻿namespace Yearly.Domain.Models.UserAgg.ValueObjects;
 
-//[Flags]
-//public enum UserRole
-//{
-//    BlackListedFromTakingPhotos = 0b0,
-//    User = 0b1,
-//    PhotoVerifier = 010,
-//    Admin = 0b100
-//}
-
 public class UserRole : ValueObject
 {
     public string RoleCode { get; }
@@ -22,9 +13,17 @@ public class UserRole : ValueObject
         RoleCode = roleCode;
     }
 
-    public static readonly UserRole PhotoVerifier = new("PhV");
+    public static readonly UserRole PhotoApprover = new("PhA");
     public static readonly UserRole Admin = new("Adm");
     public static readonly UserRole BlackListedFromTakingPhotos = new("BFP");
+    public static bool IsKnown(string code) => ValidRoles.Any(r => r.RoleCode == code);
+
+    private static readonly List<UserRole> ValidRoles = new()
+    {
+        PhotoApprover,
+        Admin,
+        BlackListedFromTakingPhotos
+    };
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private UserRole() //For EF core

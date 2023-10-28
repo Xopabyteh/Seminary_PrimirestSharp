@@ -2,8 +2,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Authentication.Commands.Login;
+using Yearly.Application.Authentication.Commands.Roles;
 using Yearly.Application.Authentication.Queries.Logout;
 using Yearly.Contracts.Authentication;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Presentation.Controllers;
 
@@ -41,5 +43,17 @@ public class AuthenticationController : ApiController
         var logoutQuery = _mapper.Map<LogoutQuery>(request);
         await _mediator.Send(logoutQuery);
         return Ok();
+    }
+
+    [HttpPost("add-role")]
+    public async Task<IActionResult> AddRole(
+        [FromBody] AddRoleRequest request,
+        [FromHeader] string sessionCookie)
+    {
+        var command = new AddRoleToUserCommand(sessionCookie, new UserId(request.UserId), new UserRole(request.RoleCode));
+        var result = await _mediator.Send(command);
+        return result.Match(
+            _ => Ok(),
+            Problem);
     }
 }

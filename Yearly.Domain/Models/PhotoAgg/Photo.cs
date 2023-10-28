@@ -1,4 +1,5 @@
-﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
+﻿using Yearly.Domain.Errors.Exceptions;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
@@ -10,6 +11,7 @@ public class Photo : AggregateRoot<PhotoId>
     public DateTime PublishDate { get; private set; }
     public FoodId FoodId { get; private set; }
     public string Link { get; private set; }
+    public bool IsApproved { get; private set; }
 
     public Photo(PhotoId id, UserId publisherId, DateTime publishDate, FoodId foodId, string link) 
         : base(id)
@@ -18,6 +20,18 @@ public class Photo : AggregateRoot<PhotoId>
         PublishDate = publishDate;
         FoodId = foodId;
         Link = link;
+
+        IsApproved = false;
+    }
+
+    public void Approve()
+    {
+        if (this.IsApproved)
+            throw new IllegalStateException("Photo already approved");
+
+        this.IsApproved = true;
+
+        // Todo: Publish domain event
     }
 
 #pragma warning disable CS8618 //For EF Core

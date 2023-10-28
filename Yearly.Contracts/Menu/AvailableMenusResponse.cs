@@ -17,7 +17,8 @@ public record FoodResponse(
     string Name,
     string Allergens,
     List<string> PhotoLinks,
-    PrimirestFoodIdentifierResponse PrimirestFoodIdentifier
+    Guid FoodId, //The id of the food in our system, not the primirest id
+    PrimirestFoodIdentifierContract PrimirestFoodIdentifier
     );
 
 //public record SoupResponse(

@@ -25,7 +25,9 @@
   <ItemGroup>
     <Folder Include="Orders\Commands\" />
     <Folder Include="Orders\Queries\" />
-    <Folder Include="Photos\" />
+    <Folder Include="Photos\Commands\Approve\" />
+    <Folder Include="Photos\Commands\Reject\" />
+    <Folder Include="Photos\Queries\Waiting\" />
   </ItemGroup>
 
 </Project>
