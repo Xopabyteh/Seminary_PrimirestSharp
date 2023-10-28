@@ -39,7 +39,6 @@ public class MenuController : ApiController
         //    orders.Value[0].
         //}
 
-        //Todo: update docs new food identifier
         var weeklyMenusResponse = new List<WeeklyMenuResponse>();
         foreach (var weeklyMenu in weeklyMenus)
         {
@@ -73,9 +72,9 @@ public class MenuController : ApiController
     }
 
     [HttpPost("force")]
-    public async Task<IActionResult> ForceAvailablePersistMenusFromPrimirest([FromBody] ForcePersistAvailableMenusFromPrimirestRequest request)
+    public async Task<IActionResult> ForceAvailablePersistMenusFromPrimirest([FromHeader] string sessionCookie)
     {
-        var command = _mapper.Map<PersistAvailableMenusCommand>(request);
+        var command = new PersistAvailableMenusCommand(sessionCookie);
         var result = await _mediator.Send(command);
 
         //Revoke old cache

@@ -22,9 +22,9 @@ public class OrderController : ApiController
     }
 
     [HttpPost("new-order")]
-    public async Task<IActionResult> OrderFood([FromBody] OrderFoodRequest request)
+    public async Task<IActionResult> OrderFood([FromBody] OrderFoodRequest request, [FromHeader] string sessionCookie)
     {
-        var command = _mapper.Map<OrderFoodCommand>(request);
+        var command = _mapper.Map<OrderFoodCommand>((request, sessionCookie));
         var result = await _mediator.Send(command);
         
         return result.Match(
@@ -34,7 +34,7 @@ public class OrderController : ApiController
 
     [HttpGet("my-orders")]
     public async Task<IActionResult> GetMyOrdersForWeek(
-        [FromQuery] string sessionCookie,
+        [FromHeader] string sessionCookie,
         [FromQuery] int menuForWeekId)
     {
         var orders = await _mediator.Send(new GetOrdersForWeekQuery(sessionCookie, new WeeklyMenuId(menuForWeekId)));

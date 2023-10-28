@@ -2,6 +2,4 @@
 
 namespace Yearly.Contracts.Order;
 
-public record OrderFoodRequest(
-    string SessionCookie,
-    PrimirestFoodIdentifierContract PrimirestFoodIdentifier);
+public record OrderFoodRequest(PrimirestFoodIdentifierContract PrimirestFoodIdentifier);

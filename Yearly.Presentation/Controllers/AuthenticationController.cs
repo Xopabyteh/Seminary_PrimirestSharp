@@ -38,9 +38,9 @@ public class AuthenticationController : ApiController
     }
 
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
+    public async Task<IActionResult> Logout([FromHeader] string sessionCookie)
     {
-        var logoutQuery = _mapper.Map<LogoutQuery>(request);
+        var logoutQuery = new LogoutQuery(sessionCookie);
         await _mediator.Send(logoutQuery);
         return Ok();
     }
