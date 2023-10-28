@@ -10,8 +10,6 @@ builder.Services
     .AddPresentation()
     .AddInfrastructure(builder);
 
-
-
 var app = builder.Build();
 
 app.MapControllers();
