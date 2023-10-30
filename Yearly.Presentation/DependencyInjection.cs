@@ -45,7 +45,7 @@ public static class DependencyInjection
             options.AddPolicy(OutputCachePolicyName.GetAvailableMenus, policy =>
             {
                 policy.Tag(OutputCacheTagName.GetAvailableMenusTag); //TODO: Dont forget to evict cache when new menus are received and old ones cleared
-                policy.NoCache();
+                //policy.NoCache();
             });
         });
 

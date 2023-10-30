@@ -2,7 +2,7 @@
 using MediatR;
 using Yearly.Application.Common.Interfaces;
 
-namespace Yearly.Application.Orders.Commands;
+namespace Yearly.Application.Orders.Commands.NewOrder;
 
 public class OrderFoodCommandHandler : IRequestHandler<OrderFoodCommand, ErrorOr<Unit>>
 {

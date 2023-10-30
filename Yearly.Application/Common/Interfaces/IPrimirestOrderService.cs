@@ -9,7 +9,7 @@ namespace Yearly.Application.Common.Interfaces;
 public interface IPrimirestOrderService
 {
     public Task<ErrorOr<Unit>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier);
-    public Task<ErrorOr<Unit>> CancelOrderAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier);
+    public Task<ErrorOr<Unit>> CancelOrderAsync(string sessionCookie, PrimirestFoodOrderIdentifier foodIdentifier);
 
     /// <summary>
     /// Get the foods that a person has ordered for the given week
@@ -17,5 +17,5 @@ public interface IPrimirestOrderService
     /// <param name="sessionCookie"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Task<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id);
+    public Task<ErrorOr<IReadOnlyList<PrimirestFoodOrderIdentifier>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id);
 }

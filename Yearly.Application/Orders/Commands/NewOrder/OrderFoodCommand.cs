@@ -2,7 +2,7 @@
 using MediatR;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 
-namespace Yearly.Application.Orders.Commands;
+namespace Yearly.Application.Orders.Commands.NewOrder;
 
 public record OrderFoodCommand(string SessionCookie, PrimirestFoodIdentifier PrimirestFoodIdentifier)
     : IRequest<ErrorOr<Unit>>;

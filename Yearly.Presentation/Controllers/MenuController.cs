@@ -30,14 +30,8 @@ public class MenuController : ApiController
     public async Task<IActionResult> GetAvailableMenus()
     {
         var weeklyMenus = await _mediator.Send(new GetAvailableWeeklyMenusQuery());
-        //foreach (var menu in menus)
-        //{
-        //    var orders = await _mediator.Send(new GetOrdersForWeekQuery(request.SessionCookie, menu.Id));
-        //    if(orders.IsError)
-        //        return Problem(orders.Errors);
 
-        //    orders.Value[0].
-        //}
+        //Todo: optimize this mess
 
         var weeklyMenusResponse = new List<WeeklyMenuResponse>();
         foreach (var weeklyMenu in weeklyMenus)

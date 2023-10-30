@@ -10,4 +10,5 @@ public interface IFoodRepository
     public Task<Food?> GetFoodByNameAsync(string foodName);
     public Task<bool> DoesFoodExistAsync(string foodName);
     public Task<List<Food>> GetFoodsByIdsAsync(List<FoodId> ids);
+    public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdAsync(List<int> itemIds);
 }

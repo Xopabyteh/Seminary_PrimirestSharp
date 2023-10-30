@@ -1,11 +1,11 @@
 ﻿using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Yearly.Application.Orders.Commands;
+using Yearly.Application.Orders.Commands.CancelOrder;
+using Yearly.Application.Orders.Commands.NewOrder;
 using Yearly.Application.Orders.Queries;
 using Yearly.Contracts.Order;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.WeeklyMenuAgg;
 
 namespace Yearly.Presentation.Controllers;
 
@@ -22,11 +22,22 @@ public class OrderController : ApiController
     }
 
     [HttpPost("new-order")]
-    public async Task<IActionResult> OrderFood([FromBody] OrderFoodRequest request, [FromHeader] string sessionCookie)
+    public async Task<IActionResult> OrderFood([FromBody] NewOrderRequest request, [FromHeader] string sessionCookie)
     {
         var command = _mapper.Map<OrderFoodCommand>((request, sessionCookie));
         var result = await _mediator.Send(command);
         
+        return result.Match(
+            _ => Ok(),
+            Problem);
+    }
+
+    [HttpPost("cancel-order")]
+    public async Task<IActionResult> OrderFood([FromBody] CancelOrderRequest request, [FromHeader] string sessionCookie)
+    {
+        var command = _mapper.Map<CancelOrderCommand>((request, sessionCookie));
+        var result = await _mediator.Send(command);
+
         return result.Match(
             _ => Ok(),
             Problem);
@@ -44,10 +55,7 @@ public class OrderController : ApiController
         var ordersResponse = new List<OrderResponse>(orders.Value.Count);
         foreach (var order in orders.Value)
         {
-            ordersResponse.Add(new OrderResponse(
-                order.OrderItemId,
-                order.OrderId,
-                order.FoodItemId));
+            ordersResponse.Add(_mapper.Map<OrderResponse>(order));
         }
 
         var response = new MyOrdersResponse(ordersResponse);

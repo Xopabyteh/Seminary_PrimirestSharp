@@ -47,12 +47,27 @@ public class PrimirestOrderService : IPrimirestOrderService
         return Error.Failure("Unknown");
     }
 
-    public Task<ErrorOr<Unit>> CancelOrderAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier)
+    public async Task<ErrorOr<Unit>> CancelOrderAsync(string sessionCookie, PrimirestFoodOrderIdentifier foodIdentifier)
     {
-        throw new NotImplementedException();
+        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+        client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
+
+        var responseJson = await client.GetStringAsync(
+            $"https://www.mujprimirest.cz/ajax/CS/boarding/0/cancelOrderItem?orderID={foodIdentifier.OrderId}&itemID={foodIdentifier.OrderItemId}&menuID={foodIdentifier.MenuId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
+
+        var response = JsonConvert.DeserializeObject<PrimirestOrderResponse>(responseJson);
+
+        if(response.Success)
+            return Unit.Value;
+
+        if (response.Message! == @"Časový limit pro zrušení objednávky již vypršel")
+            return Application.Errors.Errors.Orders.TooLateToCancelOrder;
+
+        _logger.LogError("Primirest changed error codes");
+        return Error.Failure("Unknown");
     }
 
-    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrder>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id)
+    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrderIdentifier>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id)
     {
         // Call the same API as when getting menus
         // This time grab the orders
@@ -77,16 +92,17 @@ public class PrimirestOrderService : IPrimirestOrderService
             }) ?? throw new InvalidPrimirestContractException("Primirest changed their Menu retrieval contract");
 
         var ordersResponse = responseRoot.Menu.Orders;
-        var foodOrders = new List<PrimirestFoodOrder>(ordersResponse.Count);
+        var foodOrders = new List<PrimirestFoodOrderIdentifier>(ordersResponse.Count);
 
         // Reconstruct the orders from the response
         foreach (var orderResponse in ordersResponse)
         {
             var item = orderResponse.Items[0]; //Always only 1 item.
-            var reconstructedOrder = new PrimirestFoodOrder(
+            var reconstructedOrder = new PrimirestFoodOrderIdentifier(
                 OrderItemId: item.ID,
                 OrderId: item.IDOrder,
-                FoodItemId: item.IDItem);
+                FoodItemId: item.IDItem,
+                MenuId: id.Value);
 
             foodOrders.Add(reconstructedOrder);
         }

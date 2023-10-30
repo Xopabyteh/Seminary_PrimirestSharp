@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Orders\Commands\" />
+    <Folder Include="Orders\Commands\CancelOrder\" />
     <Folder Include="Orders\Queries\" />
     <Folder Include="Photos\Commands\Approve\" />
     <Folder Include="Photos\Commands\Reject\" />

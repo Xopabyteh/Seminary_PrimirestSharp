@@ -40,4 +40,14 @@ public class FoodRepository : IFoodRepository
         var foods = await _context.Foods.Where(f => ids.Contains(f.Id)).ToListAsync();
         return foods;
     }
+
+
+    //Key: PrimirestItemId, Value: Food
+    public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdAsync(List<int> itemIds)
+    {
+        var foods = _context.Foods
+            .Where(f => itemIds.Contains(f.PrimirestFoodIdentifier.ItemId))
+            .ToDictionaryAsync(f => f.PrimirestFoodIdentifier.ItemId);
+        return foods;
+    }
 }
