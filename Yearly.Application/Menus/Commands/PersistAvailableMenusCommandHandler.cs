@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;

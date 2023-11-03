@@ -1,6 +1,5 @@
 ﻿using ErrorOr;
 using MediatR;
-using Yearly.Application.Menus;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 

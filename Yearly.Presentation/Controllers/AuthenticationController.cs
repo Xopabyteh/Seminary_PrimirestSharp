@@ -12,12 +12,11 @@ namespace Yearly.Presentation.Controllers;
 [Route("auth")]
 public class AuthenticationController : ApiController
 {
-    private readonly ISender _mediator;
     private readonly IMapper _mapper;
 
-    public AuthenticationController(ISender mediator, IMapper mapper)
+    public AuthenticationController(ISender mediator, IMapper mapper) 
+        : base(mediator)
     {
-        _mediator = mediator;
         _mapper = mapper;
     }
 
@@ -46,14 +45,20 @@ public class AuthenticationController : ApiController
     }
 
     [HttpPost("add-role")]
-    public async Task<IActionResult> AddRole(
+    public Task<IActionResult> AddRole(
         [FromBody] AddRoleRequest request,
         [FromHeader] string sessionCookie)
     {
-        var command = new AddRoleToUserCommand(sessionCookie, new UserId(request.UserId), new UserRole(request.RoleCode));
-        var result = await _mediator.Send(command);
-        return result.Match(
-            _ => Ok(),
-            Problem);
+        return PerformAuthorizedActionAsync(
+            sessionCookie,
+            async _ =>
+            {
+                var command = new AddRoleToUserCommand(new UserId(request.UserId), new UserRole(request.RoleCode));
+                var result = await _mediator.Send(command);
+                return result.Match(
+                    _ => Ok(),
+                    Problem);
+            },
+            UserRole.Admin);
     }
 }

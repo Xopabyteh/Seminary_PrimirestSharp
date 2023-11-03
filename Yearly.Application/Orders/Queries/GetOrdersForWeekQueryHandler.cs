@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Application.Menus;
 using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Repositories;

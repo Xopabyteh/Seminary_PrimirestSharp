@@ -5,7 +5,6 @@ using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Menus;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Infrastructure.Errors;
-using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services.Authentication;
 
 namespace Yearly.Infrastructure.Services.Menus;

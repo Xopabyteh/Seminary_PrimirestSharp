@@ -7,7 +7,6 @@ public class AddRoleToUserCommandValidator : AbstractValidator<AddRoleToUserComm
 {
     public AddRoleToUserCommandValidator()
     {
-        RuleFor(x => x.SessionCookie).NotEmpty();
         RuleFor(x => x.UserId).NotEmpty();
 
         RuleFor(x => x.Role)

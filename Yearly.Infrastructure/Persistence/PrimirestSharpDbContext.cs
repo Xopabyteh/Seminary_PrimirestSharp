@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Domain.Models.FoodAgg;
-using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.UserAgg;
+using Yearly.Domain.Models.WeeklyMenuAgg;
 
 namespace Yearly.Infrastructure.Persistence;
 public class PrimirestSharpDbContext : DbContext

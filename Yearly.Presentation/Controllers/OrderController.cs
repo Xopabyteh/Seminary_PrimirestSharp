@@ -12,12 +12,11 @@ namespace Yearly.Presentation.Controllers;
 [Route("order")]
 public class OrderController : ApiController
 {
-    private readonly ISender _mediator;
     private readonly IMapper _mapper;
 
     public OrderController(ISender mediator, IMapper mapper)
+        : base(mediator)
     {
-        _mediator = mediator;
         _mapper = mapper;
     }
 
