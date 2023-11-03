@@ -36,9 +36,6 @@ public static class DependencyInjection
         services.Configure<PrimirestAdminCredentialsOptions>(
             builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
-        services.Configure<SharpAdminUserIdsOptions>(
-            builder.Configuration.GetSection(SharpAdminUserIdsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
-
         services.AddPersistence(builder);
 
         return services;

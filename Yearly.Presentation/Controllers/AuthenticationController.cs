@@ -2,8 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Authentication.Commands.Login;
+using Yearly.Application.Authentication.Commands.Logout;
 using Yearly.Application.Authentication.Commands.Roles;
-using Yearly.Application.Authentication.Queries.Logout;
 using Yearly.Contracts.Authentication;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
@@ -40,7 +40,7 @@ public class AuthenticationController : ApiController
     [HttpPost("logout")]
     public async Task<IActionResult> Logout([FromHeader] string sessionCookie)
     {
-        var logoutQuery = new LogoutQuery(sessionCookie);
+        var logoutQuery = new LogoutCommand(sessionCookie);
         await _mediator.Send(logoutQuery);
         return Ok();
     }

@@ -7,7 +7,6 @@ using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Menus.Commands;
@@ -22,7 +21,6 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
     private readonly IWeeklyMenuRepository _weeklyMenuRepository;
     private readonly IFoodRepository _foodRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthService _authService;
     private readonly ILogger<PersistAvailableMenusCommandHandler> _logger;
 
     public PersistAvailableMenusCommandHandler(
@@ -30,28 +28,17 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
         IWeeklyMenuRepository weeklyMenuRepository,
         IUnitOfWork unitOfWork,
         IFoodRepository foodRepository,
-        IAuthService authService,
         ILogger<PersistAvailableMenusCommandHandler> logger)
     {
         _primirestMenuProvider = primirestMenuProvider;
         _weeklyMenuRepository = weeklyMenuRepository;
         _unitOfWork = unitOfWork;
         _foodRepository = foodRepository;
-        _authService = authService;
         _logger = logger;
     }
 
     public async Task<ErrorOr<Unit>> Handle(PersistAvailableMenusCommand request, CancellationToken cancellationToken)
     {
-        //Auth: Only admins can do this
-
-        var userResult = await _authService.GetSharpUserAsync(request.SessionCookie);
-        if (userResult.IsError)
-            return userResult.Errors;
-
-        if (!userResult.Value.Roles.Contains(UserRole.Admin))
-            return Errors.Errors.Authentication.InsufficientPermissions;
-
         // Load menu from primirest
         // Persist menu
 

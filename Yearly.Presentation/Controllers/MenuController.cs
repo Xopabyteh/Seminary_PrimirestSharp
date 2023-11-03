@@ -1,7 +1,10 @@
-﻿using MapsterMapper;
+﻿using Azure.Core;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Yearly.Application.Authentication;
+using Yearly.Application.Authentication.Queries;
 using Yearly.Application.Foods.Queries;
 using Yearly.Application.Menus.Commands;
 using Yearly.Application.Menus.Queries;
@@ -9,6 +12,7 @@ using Yearly.Application.Photos.Queries.ForFood;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Foods;
 using Yearly.Contracts.Menu;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Presentation.OutputCaching;
 
 namespace Yearly.Presentation.Controllers;
@@ -68,7 +72,15 @@ public class MenuController : ApiController
     [HttpPost("force")]
     public async Task<IActionResult> ForceAvailablePersistMenusFromPrimirest([FromHeader] string sessionCookie)
     {
-        var command = new PersistAvailableMenusCommand(sessionCookie);
+        //Auth
+        var userResult = await _mediator.Send(new UserBySessionQuery(sessionCookie));
+        if (userResult.IsError)
+            return Problem(userResult.Errors);
+
+        if (!userResult.Value.Roles.Contains(UserRole.Admin))
+            return Unauthorized();
+
+        var command = new PersistAvailableMenusCommand();
         var result = await _mediator.Send(command);
 
         //Revoke old cache
