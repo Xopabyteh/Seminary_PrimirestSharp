@@ -12,7 +12,7 @@ using Yearly.Infrastructure.Persistence;
 namespace Yearly.Infrastructure.Migrations
 {
     [DbContext(typeof(PrimirestSharpDbContext))]
-    [Migration("20231028093201_CreateDb")]
+    [Migration("20231104103839_CreateDb")]
     partial class CreateDb
     {
         /// <inheritdoc />
@@ -178,21 +178,16 @@ namespace Yearly.Infrastructure.Migrations
 
                     b.OwnsMany("Yearly.Domain.Models.UserAgg.ValueObjects.UserRole", "Roles", b1 =>
                         {
-                            b1.Property<int>("UserId")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
                             b1.Property<string>("RoleCode")
-                                .IsRequired()
                                 .HasMaxLength(3)
                                 .HasColumnType("nvarchar(3)");
 
-                            b1.HasKey("UserId", "Id");
+                            b1.Property<int>("UserId")
+                                .HasColumnType("int");
+
+                            b1.HasKey("RoleCode");
+
+                            b1.HasIndex("UserId");
 
                             b1.ToTable("UserRoles", (string)null);
 

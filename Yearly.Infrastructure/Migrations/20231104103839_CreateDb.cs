@@ -109,14 +109,12 @@ namespace Yearly.Infrastructure.Migrations
                 name: "UserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleCode = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false)
+                    RoleCode = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.Id });
+                    table.PrimaryKey("PK_UserRoles", x => x.RoleCode);
                     table.ForeignKey(
                         name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
@@ -173,6 +171,11 @@ namespace Yearly.Infrastructure.Migrations
                 name: "IX_MenuFoodIds_DailyMenuWeeklyMenuId_DailyMenuId",
                 table: "MenuFoodIds",
                 columns: new[] { "DailyMenuWeeklyMenuId", "DailyMenuId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_UserId",
+                table: "UserRoles",
+                column: "UserId");
         }
 
         /// <inheritdoc />
