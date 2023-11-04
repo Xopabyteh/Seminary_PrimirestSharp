@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Persistence;
+using Yearly.Infrastructure.Persistence.PhotosStorage;
 using Yearly.Infrastructure.Persistence.Repositories;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Menus;
 using Yearly.Infrastructure.Services.Orders;
-using Yearly.Infrastructure.Services.Photos;
 
 namespace Yearly.Infrastructure;
 
@@ -45,7 +46,8 @@ public static class DependencyInjection
     {
         services.AddDbContext<PrimirestSharpDbContext>(options =>
         {
-            options.UseSqlServer(builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            options.UseSqlServer(
+                builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
         });
 
         services.AddScoped<IWeeklyMenuRepository, WeeklyWeeklyMenuRepository>();
@@ -54,7 +56,13 @@ public static class DependencyInjection
         //services.AddScoped<ISoupRepository, SoupRepository>();
 
         services.AddScoped<IPhotoRepository, PhotoRepository>();
-        services.AddScoped<IPhotoStorageService, LocalPhotoStorageService>();
+        //services.AddScoped<IPhotoStorage, LocalPhotoStorage>();
+        services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
+        services.AddAzureClients(c =>
+        {
+            c.AddBlobServiceClient(
+                builder.Configuration.GetSection("Persistence").GetSection("AzureStorageConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+        });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

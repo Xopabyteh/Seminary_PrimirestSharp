@@ -7,6 +7,9 @@ namespace Yearly.Domain.Models.PhotoAgg;
 
 public class Photo : AggregateRoot<PhotoId>
 {
+    public static string NameFrom(PhotoId photoId, FoodId foodId)
+        => $"{foodId.Value}-{photoId.Value}";
+
     public UserId PublisherId { get; private set; }
     public DateTime PublishDate { get; private set; }
     public FoodId FoodId { get; private set; }

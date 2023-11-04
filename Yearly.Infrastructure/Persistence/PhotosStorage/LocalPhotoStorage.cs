@@ -1,20 +1,19 @@
 ﻿using ErrorOr;
 using Microsoft.AspNetCore.Http;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 
-namespace Yearly.Infrastructure.Services.Photos;
+namespace Yearly.Infrastructure.Persistence.PhotosStorage;
 
-public class LocalPhotoStorageService : IPhotoStorageService
+public class LocalPhotoStorage : IPhotoStorage
 {
-    public async Task<ErrorOr<string>> UploadPhotoAsync(IFormFile file, PhotoId id)
+    public async Task<ErrorOr<string>> UploadPhotoAsync(IFormFile file, string name)
     {
         var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos");
 
         //Assure that directory exists
         Directory.CreateDirectory(directoryPath);
 
-        var filePath = Path.Combine(directoryPath, file.FileName);
+        var filePath = Path.Combine(directoryPath, name);
 
         await using var stream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(stream);
@@ -22,9 +21,10 @@ public class LocalPhotoStorageService : IPhotoStorageService
         return filePath;
     }
 
-    public Task DeletePhotoAsync(string path)
+    public Task DeletePhotoAsync(string name)
     {
-        File.Delete(path);
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos", name);
+        File.Delete(filePath);
         return Task.CompletedTask;
     }
 }

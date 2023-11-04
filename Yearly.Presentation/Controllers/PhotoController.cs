@@ -32,7 +32,7 @@ public class PhotoController : ApiController
 
             var result = await _mediator.Send(new PublishPhotoCommand(photo, new FoodId(foodId), user));
             return result.Match(
-                _ => Ok(),
+                createdPhoto => Created(createdPhoto.Link, null),
                 Problem);
         });
     }
