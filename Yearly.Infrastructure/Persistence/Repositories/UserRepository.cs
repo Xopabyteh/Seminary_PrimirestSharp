@@ -25,9 +25,14 @@ public class UserRepository : IUserRepository
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Returns the user as tracking
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public async Task<User?> GetByIdAsync(UserId id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.AsTracking().SingleOrDefaultAsync(u => u.Id == id);
         return user;
     }
 

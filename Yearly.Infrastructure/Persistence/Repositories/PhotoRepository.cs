@@ -20,9 +20,14 @@ public class PhotoRepository : IPhotoRepository
         await _context.Photos.AddAsync(photo);
     }
 
+    /// <summary>
+    /// Returns the photo as tracking
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public Task<Photo?> GetAsync(PhotoId id)
     {
-        return _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+        return _context.Photos.AsTracking().FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<List<Photo>> GetApprovedPhotosForFoodAsync(FoodId foodId)

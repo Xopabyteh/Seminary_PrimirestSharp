@@ -19,10 +19,9 @@ if (app.Environment.IsDevelopment())
     //Seed data
     using var scope = app.Services.CreateScope();
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    dataSeeder.Seed();
+    //dataSeeder.Seed();
 }
 
 app.Run();
 
 //TODO: Change order place ids to some constant
-//Todo: docs by postman!
