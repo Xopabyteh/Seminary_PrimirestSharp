@@ -45,6 +45,11 @@ public sealed class Food : AggregateRoot<FoodId>
             primirestFoodIdentifier);
     }
 
+    public void UpdatePrimirestFoodIdentifier(PrimirestFoodIdentifier newPrimirestFoodIdentifier)
+    {
+        PrimirestFoodIdentifier = newPrimirestFoodIdentifier;
+    }
+
 #pragma warning disable CS8618 //For EF Core
     private Food()
         :base(null!)

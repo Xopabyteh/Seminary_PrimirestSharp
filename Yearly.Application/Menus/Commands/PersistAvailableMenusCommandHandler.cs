@@ -40,6 +40,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
     {
         // Load menu from primirest
         // Persist menu
+        // Todo: delete old menus (not foods, only menus)
 
         var primirestMenusResult = await _primirestMenuProvider.GetMenusThisWeekAsync();
         if (primirestMenusResult.IsError)
@@ -78,7 +79,8 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                     }
                     else
                     {
-                        //TODO: Update primirest food identifier if we already have the food
+                        food.UpdatePrimirestFoodIdentifier(primirestFood.PrimirestFoodIdentifier);
+                        await _foodRepository.UpdatePrimirestFoodIdentifierAsync(food);
                     }
 
 
