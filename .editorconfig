@@ -272,6 +272,8 @@ dotnet_diagnostic.SA1206.severity = silent
 
 # SA1401: Fields should be private
 dotnet_diagnostic.SA1401.severity = none
+dotnet_diagnostic.SA1303.severity = silent
+dotnet_diagnostic.SA1310.severity = silent
 
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion

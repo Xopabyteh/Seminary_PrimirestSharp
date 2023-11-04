@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Repositories;
@@ -42,7 +43,7 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
+    private static void AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
         services.AddDbContext<PrimirestSharpDbContext>(options =>
         {
@@ -53,21 +54,25 @@ public static class DependencyInjection
         services.AddScoped<IWeeklyMenuRepository, WeeklyWeeklyMenuRepository>();
         services.AddScoped<IFoodRepository, FoodRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPhotoRepository, PhotoRepository>();
         //services.AddScoped<ISoupRepository, SoupRepository>();
 
-        services.AddScoped<IPhotoRepository, PhotoRepository>();
-        //services.AddScoped<IPhotoStorage, LocalPhotoStorage>();
-        services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
-        services.AddAzureClients(c =>
+        if (builder.Environment.IsDevelopment())
         {
-            c.AddBlobServiceClient(
-                builder.Configuration.GetSection("Persistence").GetSection("AzureStorageConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
-        });
+            services.AddScoped<IPhotoStorage, LocalPhotoStorage>();
+        }
+        else
+        {
+            services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
+            services.AddAzureClients(c =>
+            {
+                c.AddBlobServiceClient(
+                    builder.Configuration.GetSection("Persistence").GetSection("AzureStorageConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            });
+        }
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddTransient<DataSeeder>();
-
-        return services;
     }
 }

@@ -68,7 +68,9 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                 foreach (var primirestFood in primirestDailyMenu.Foods)
                 {
                     var food = await _foodRepository.GetFoodByNameAsync(primirestFood.Name);
-                    if (food is null) //If we don't have food yet, create it
+
+                    //If we don't have food yet, create it
+                    if (food is null) 
                     {
                         food = Food.Create(primirestFood.Name, primirestFood.Allergens, primirestFood.PrimirestFoodIdentifier);
                         _logger.Log(LogLevel.Information, "New food created - {foodName}", food.Name);
