@@ -1,21 +1,20 @@
 ﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.OutputCaching;
 using Yearly.Application.Menus.Commands;
+using Yearly.Presentation.OutputCaching;
 
-namespace Yearly.Application.BackgroundServices;
-
+namespace Yearly.Presentation.BackgroundServices;
 public class PersistAvailableMenusBackgroundService : BackgroundService
 {
     private readonly ILogger<PersistAvailableMenusBackgroundService> _logger;
     private readonly PeriodicTimer _periodicTimer;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public PersistAvailableMenusBackgroundService(ILogger<PersistAvailableMenusBackgroundService> logger, ISender mediator, IServiceScopeFactory serviceScopeFactory)
+    private readonly IOutputCacheStore _outputCacheStore;
+    public PersistAvailableMenusBackgroundService(ILogger<PersistAvailableMenusBackgroundService> logger, IServiceScopeFactory serviceScopeFactory, IOutputCacheStore outputCacheStore)
     {
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
+        _outputCacheStore = outputCacheStore;
         _periodicTimer = new(TimeSpan.FromDays(1));
     }
 
@@ -27,6 +26,9 @@ public class PersistAvailableMenusBackgroundService : BackgroundService
         {
             _logger.LogInformation("Persisting available menus");
             await mediator.Send(new PersistAvailableMenusCommand(), stoppingToken);
+
+            //Evict old available menus cache
+            await _outputCacheStore.EvictByTagAsync(OutputCachePolicyName.GetAvailableMenus, stoppingToken);
         }
     }
 }

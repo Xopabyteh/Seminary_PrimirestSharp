@@ -17,11 +17,13 @@ namespace Yearly.Presentation.Controllers;
 public class MenuController : ApiController
 {
     private readonly IMapper _mapper;
+    private readonly IOutputCacheStore _outputCacheStore;
 
-    public MenuController(IMapper mapper, ISender mediator) 
+    public MenuController(IMapper mapper, ISender mediator, IOutputCacheStore outputCacheStore) 
         : base(mediator)
     {
         _mapper = mapper;
+        _outputCacheStore = outputCacheStore;
     }
 
     [HttpGet("available")]
@@ -74,11 +76,14 @@ public class MenuController : ApiController
                 var command = new PersistAvailableMenusCommand();
                 var result = await _mediator.Send(command);
 
-                //Revoke old cache
-                //Todo: 
-
                 return result.Match(
-                    _ => Ok(),
+                    _ =>
+                    {
+                        //Evict old available menus cache
+                        _outputCacheStore.EvictByTagAsync(OutputCachePolicyName.GetAvailableMenus, CancellationToken.None);
+                        
+                        return Ok();
+                    },
                     Problem);
             }, 
             UserRole.Admin);

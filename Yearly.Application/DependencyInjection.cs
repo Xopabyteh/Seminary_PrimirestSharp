@@ -2,7 +2,6 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Yearly.Application.BackgroundServices;
 using Yearly.Application.Common.Behaviours;
 
 namespace Yearly.Application;
@@ -18,8 +17,6 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-        services.AddHostedService<PersistAvailableMenusBackgroundService>();
 
         return services;
     }

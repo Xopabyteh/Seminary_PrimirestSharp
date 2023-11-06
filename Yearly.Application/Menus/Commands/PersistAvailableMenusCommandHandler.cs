@@ -105,6 +105,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
         await _unitOfWork.SaveChangesAsync();
 
+
         return Unit.Value;
     }
 }

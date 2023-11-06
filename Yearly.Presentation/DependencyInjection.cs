@@ -2,6 +2,7 @@
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Yearly.Presentation.BackgroundServices;
 using Yearly.Presentation.Errors;
 using Yearly.Presentation.OutputCaching;
 
@@ -25,7 +26,9 @@ public static class DependencyInjection
         {
             b.AddSimpleConsole();
         });
-        
+
+        services.AddHostedService<PersistAvailableMenusBackgroundService>();
+
         return services;
     }
 
@@ -44,8 +47,7 @@ public static class DependencyInjection
         {
             options.AddPolicy(OutputCachePolicyName.GetAvailableMenus, policy =>
             {
-                policy.Tag(OutputCacheTagName.GetAvailableMenusTag); //TODO: Dont forget to evict cache when new menus are received and old ones cleared
-                //policy.NoCache();
+                policy.Tag(OutputCacheTagName.GetAvailableMenusTag);
             });
         });
 
