@@ -7,6 +7,7 @@ using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Repositories;
+using Yearly.Infrastructure.Services;
 
 namespace Yearly.Application.Menus.Commands;
 
@@ -21,26 +22,34 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
     private readonly IFoodRepository _foodRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<PersistAvailableMenusCommandHandler> _logger;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public PersistAvailableMenusCommandHandler(
         IPrimirestMenuProvider primirestMenuProvider,
         IWeeklyMenuRepository weeklyMenuRepository,
         IUnitOfWork unitOfWork,
         IFoodRepository foodRepository,
-        ILogger<PersistAvailableMenusCommandHandler> logger)
+        ILogger<PersistAvailableMenusCommandHandler> logger,
+        IDateTimeProvider dateTimeProvider)
     {
         _primirestMenuProvider = primirestMenuProvider;
         _weeklyMenuRepository = weeklyMenuRepository;
         _unitOfWork = unitOfWork;
         _foodRepository = foodRepository;
         _logger = logger;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<ErrorOr<Unit>> Handle(PersistAvailableMenusCommand request, CancellationToken cancellationToken)
     {
+        // Delete old menus 
         // Load menu from primirest
         // Persist menu
-        // Todo: delete old menus (not foods, only menus)
+
+        //Delete old menus
+        var today = _dateTimeProvider.CzechNow;
+        var deletedCount = await _weeklyMenuRepository.ExecuteDeleteMenusBeforeDateAsync(today);
+        _logger.LogInformation("Deleted {count} old menus before the date {date}", deletedCount, today);
 
         var primirestMenusResult = await _primirestMenuProvider.GetMenusThisWeekAsync();
         if (primirestMenusResult.IsError)
@@ -82,7 +91,6 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                         food.UpdatePrimirestFoodIdentifier(primirestFood.PrimirestFoodIdentifier);
                         await _foodRepository.UpdatePrimirestFoodIdentifierAsync(food);
                     }
-
 
                     foodIdsForDay.Add(food.Id);
                 }

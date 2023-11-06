@@ -16,10 +16,10 @@ public interface IWeeklyMenuRepository
     /// <returns></returns>
     public Task<List<WeeklyMenu>> GetAvailableMenusAsync();
 
-    ///// <summary>
-    ///// Deletes all menus before the given date.
-    ///// </summary>
-    ///// <param name="inclusiveDate"></param>
-    ///// <returns>Count of deleted instances</returns>
-    //public Task<int> DeleteMenusBeforeDayAsync(DateTime inclusiveDate);
+    /// <summary>
+    /// Deletes all menus before the given date.
+    /// </summary>
+    /// <param name="exclusiveDate"></param>
+    /// <returns>Count of deleted instances</returns>
+    public Task<int> ExecuteDeleteMenusBeforeDateAsync(DateTime exclusiveDate);
 }
