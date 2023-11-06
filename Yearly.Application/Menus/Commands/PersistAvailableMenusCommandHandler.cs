@@ -13,7 +13,6 @@ namespace Yearly.Application.Menus.Commands;
 
 /// <summary>
 /// Get's menus from primirest and persists foods and menus for those foods into our db.
-/// TODO: Updates order identifiers for foods if they already exist.
 /// </summary>
 public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvailableMenusCommand, ErrorOr<Unit>>
 {

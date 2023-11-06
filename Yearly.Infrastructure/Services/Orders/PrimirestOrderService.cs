@@ -28,19 +28,25 @@ public class PrimirestOrderService : IPrimirestOrderService
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
         client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
 
-        var responseJson = await client.GetStringAsync(
+        var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/order?menuID={foodIdentifier.MenuId}&dayID={foodIdentifier.DayId}&itemID={foodIdentifier.ItemId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
-        
+
+        //If it is "/CS/auth/login", user are not logged in
+        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+            return Application.Errors.Errors.Authentication.CookieNotSigned;
+
+        var responseJson = await response.Content.ReadAsStringAsync();
+
         //Response is always OK, but there is a "Success" param in body 
-        var response = JsonConvert.DeserializeObject<PrimirestOrderResponse>(responseJson);
+        var responseObj = JsonConvert.DeserializeObject<PrimirestOrderResponse>(responseJson);
         
-        if(response.Success)
+        if(responseObj.Success)
             return Unit.Value;
 
-        if (response.Message! == @"Časový limit pro objednávky již vypršel")
+        if (responseObj.Message! == @"Časový limit pro objednávky již vypršel")
             return Application.Errors.Errors.Orders.TooLateToOrder;
 
-        if(response.Message! == @"Strávník nemá dostatek peněz na kontě")
+        if(responseObj.Message! == @"Strávník nemá dostatek peněz na kontě")
             return Application.Errors.Errors.Orders.InsufficientFunds;
 
         _logger.LogError("Primirest changed error codes");
@@ -52,15 +58,21 @@ public class PrimirestOrderService : IPrimirestOrderService
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
         client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
 
-        var responseJson = await client.GetStringAsync(
+        var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/cancelOrderItem?orderID={foodIdentifier.OrderId}&itemID={foodIdentifier.OrderItemId}&menuID={foodIdentifier.MenuId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
 
-        var response = JsonConvert.DeserializeObject<PrimirestOrderResponse>(responseJson);
+        //If it is "/CS/auth/login", user are not logged in
+        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+            return Application.Errors.Errors.Authentication.CookieNotSigned;
 
-        if(response.Success)
+        var responseJson = await response.Content.ReadAsStringAsync();
+
+        var responseObj = JsonConvert.DeserializeObject<PrimirestOrderResponse>(responseJson);
+
+        if(responseObj.Success)
             return Unit.Value;
 
-        if (response.Message! == @"Časový limit pro zrušení objednávky již vypršel")
+        if (responseObj.Message! == @"Časový limit pro zrušení objednávky již vypršel")
             return Application.Errors.Errors.Orders.TooLateToCancelOrder;
 
         _logger.LogError("Primirest changed error codes");
@@ -79,9 +91,12 @@ public class PrimirestOrderService : IPrimirestOrderService
             HttpMethod.Get,
             @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={id.Value}&menuViewType=FULL&_=0");
 
-        //Todo: handle session cookie not signed error here
-
         var response = await client.SendAsync(message);
+
+        //If it is "/CS/auth/login", user are not logged in
+        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+            return Application.Errors.Errors.Authentication.CookieNotSigned;
+
         var responseJson = await response.Content.ReadAsStringAsync();
 
         var responseRoot = JsonConvert.DeserializeObject<PrimirestMenuResponseRoot>(

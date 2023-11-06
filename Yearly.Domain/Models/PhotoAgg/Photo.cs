@@ -33,8 +33,6 @@ public class Photo : AggregateRoot<PhotoId>
             throw new IllegalStateException("Photo already approved");
 
         this.IsApproved = true;
-
-        // Todo: Publish domain event
     }
 
 #pragma warning disable CS8618 //For EF Core
