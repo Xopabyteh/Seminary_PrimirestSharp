@@ -5,11 +5,11 @@ using Yearly.Domain.Repositories;
 
 namespace Yearly.Infrastructure.Persistence.Repositories;
 
-public class WeeklyWeeklyMenuRepository : IWeeklyMenuRepository
+public class WeeklyMenuRepository : IWeeklyMenuRepository
 {
     private readonly PrimirestSharpDbContext _context;
 
-    public WeeklyWeeklyMenuRepository(PrimirestSharpDbContext context)
+    public WeeklyMenuRepository(PrimirestSharpDbContext context)
     {
         _context = context;
     }

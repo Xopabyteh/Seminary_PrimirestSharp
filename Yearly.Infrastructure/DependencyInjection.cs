@@ -51,7 +51,7 @@ public static class DependencyInjection
                 builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
         });
 
-        services.AddScoped<IWeeklyMenuRepository, WeeklyWeeklyMenuRepository>();
+        services.AddScoped<IWeeklyMenuRepository, WeeklyMenuRepository>();
         services.AddScoped<IFoodRepository, FoodRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IPhotoRepository, PhotoRepository>();
