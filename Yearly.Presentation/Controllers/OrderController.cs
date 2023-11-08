@@ -5,7 +5,6 @@ using Yearly.Application.Orders.Commands.CancelOrder;
 using Yearly.Application.Orders.Commands.NewOrder;
 using Yearly.Application.Orders.Queries;
 using Yearly.Contracts.Order;
-using Yearly.Domain.Models.MenuAgg.ValueObjects;
 
 namespace Yearly.Presentation.Controllers;
 

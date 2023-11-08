@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Infrastructure.Persistence.Repositories;

@@ -1,9 +1,8 @@
 ﻿using ErrorOr;
 using MediatR;
 using Yearly.Domain.Models.Common.ValueObjects;
-using Yearly.Domain.Models.MenuAgg.ValueObjects;
 
 namespace Yearly.Application.Orders.Queries;
 
-public record GetOrdersForWeekQuery(string SessionCookie, WeeklyMenuId WeekId)
+public record GetOrdersForWeekQuery(string SessionCookie, int WeeklyMenuId)
     : IRequest<ErrorOr<IReadOnlyList<Order>>>;

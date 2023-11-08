@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Errors\Exceptions\" />
+    <Folder Include="Models\PhotoAgg\ValueObjects\" />
     <Folder Include="Models\SoupAgg\ValueObjects\" />
   </ItemGroup>
 

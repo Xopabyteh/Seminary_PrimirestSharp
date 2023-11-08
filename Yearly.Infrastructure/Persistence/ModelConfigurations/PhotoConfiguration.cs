@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
 

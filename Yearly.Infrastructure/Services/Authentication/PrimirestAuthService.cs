@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Yearly.Application.Authentication;
 using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Http;
 

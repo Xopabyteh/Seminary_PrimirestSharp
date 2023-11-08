@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.UserAgg;
 

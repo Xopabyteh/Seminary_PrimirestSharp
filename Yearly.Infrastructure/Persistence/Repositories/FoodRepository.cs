@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Domain.Models.FoodAgg;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Infrastructure.Persistence.Repositories;

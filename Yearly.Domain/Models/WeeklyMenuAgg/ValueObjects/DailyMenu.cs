@@ -1,16 +1,14 @@
-﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
-
-namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
+﻿namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
 
 public sealed class DailyMenu : ValueObject
 {
-    private readonly List<FoodId> _foodIds;
-    public IReadOnlyList<FoodId> FoodIds => _foodIds.AsReadOnly();
+    private readonly List<Guid> _foodIds;
+    public IReadOnlyList<Guid> FoodIds => _foodIds.AsReadOnly();
 
     public DateTime Date { get; private set; }
 
     public DailyMenu(
-        List<FoodId> foodIds,
+        List<Guid> foodIds,
         DateTime date)
     {
         _foodIds = foodIds;

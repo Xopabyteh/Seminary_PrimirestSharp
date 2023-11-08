@@ -3,7 +3,6 @@ using MediatR;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Authentication.Commands.Login;

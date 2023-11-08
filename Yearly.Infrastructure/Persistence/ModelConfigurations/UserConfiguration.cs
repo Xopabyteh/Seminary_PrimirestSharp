@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
 

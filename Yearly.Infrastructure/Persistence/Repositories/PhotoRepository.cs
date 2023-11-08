@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Infrastructure.Persistence.Repositories;
@@ -30,7 +28,7 @@ public class PhotoRepository : IPhotoRepository
         return _context.Photos.AsTracking().FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<List<Photo>> GetApprovedPhotosForFoodAsync(FoodId foodId)
+    public async Task<List<Photo>> GetApprovedPhotosForFoodAsync(Guid foodId)
     {
         return await _context.Photos.Where(p => p.FoodId == foodId && p.IsApproved).ToListAsync();
     }

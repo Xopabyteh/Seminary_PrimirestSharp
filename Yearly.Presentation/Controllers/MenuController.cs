@@ -2,12 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using Yearly.Application.Foods.Queries;
 using Yearly.Application.Menus.Commands;
-using Yearly.Application.Menus.Queries;
-using Yearly.Application.Photos.Queries.ForFood;
-using Yearly.Contracts.Common;
-using Yearly.Contracts.Menu;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
 using Yearly.Presentation.OutputCaching;

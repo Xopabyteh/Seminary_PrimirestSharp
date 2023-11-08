@@ -1,5 +1,4 @@
 ﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.FoodAgg;
 

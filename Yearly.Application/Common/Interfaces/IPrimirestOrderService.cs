@@ -2,7 +2,6 @@
 using MediatR;
 using Yearly.Application.Menus;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.MenuAgg.ValueObjects;
 
 namespace Yearly.Application.Common.Interfaces;
 
@@ -15,7 +14,7 @@ public interface IPrimirestOrderService
     /// Get the foods that a person has ordered for the given week
     /// </summary>
     /// <param name="sessionCookie"></param>
-    /// <param name="id"></param>
+    /// <param name="weeklyMenuId"></param>
     /// <returns></returns>
-    public Task<ErrorOr<IReadOnlyList<PrimirestFoodOrderIdentifier>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id);
+    public Task<ErrorOr<IReadOnlyList<PrimirestFoodOrderIdentifier>>> GetOrdersForPersonForWeekAsync(string sessionCookie, int weeklyMenuId);
 }

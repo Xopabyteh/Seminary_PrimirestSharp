@@ -1,14 +1,12 @@
-﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.PhotoAgg;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
+﻿using Yearly.Domain.Models.PhotoAgg;
 
 namespace Yearly.Domain.Repositories;
 
 public interface IPhotoRepository
 {
     public Task AddAsync(Photo photo);
-    public Task<Photo?> GetAsync(PhotoId id);
-    public Task<List<Photo>> GetApprovedPhotosForFoodAsync(FoodId foodId);
+    public Task<Photo?> GetAsync(Guid id);
+    public Task<List<Photo>> GetApprovedPhotosForFoodAsync(Guid foodId);
 
     /// <returns>Photos that haven't been approved yet</returns>
     public Task<List<Photo>> GetWaitingPhotosAsync();

@@ -1,5 +1,4 @@
 ﻿using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Repositories;
 

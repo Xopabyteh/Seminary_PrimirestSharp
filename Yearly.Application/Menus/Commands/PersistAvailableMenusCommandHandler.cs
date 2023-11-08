@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Repositories;
@@ -60,7 +59,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
         foreach (var primirestWeeklyMenu in primirestWeeklyMenus)
         {
-            var weeklyMenuId = new WeeklyMenuId(primirestWeeklyMenu.PrimirestMenuId);
+            var weeklyMenuId = primirestWeeklyMenu.PrimirestMenuId;
 
             //If we already have this menu, skip it
             if (await _weeklyMenuRepository.DoesMenuForWeekExistAsync(weeklyMenuId))
@@ -71,7 +70,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
             //Handle foods from this week menu
             foreach (var primirestDailyMenu in primirestWeeklyMenu.DailyMenus)
             {
-                var foodIdsForDay = new List<FoodId>(3);
+                var foodIdsForDay = new List<Guid>(3);
 
                 //Handle foods
                 foreach (var primirestFood in primirestDailyMenu.Foods)

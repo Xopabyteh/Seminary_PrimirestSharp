@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yearly.Domain.Models.FoodAgg;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.WeeklyMenuAgg;

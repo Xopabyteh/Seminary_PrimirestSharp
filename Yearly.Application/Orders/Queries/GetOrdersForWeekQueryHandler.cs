@@ -20,7 +20,7 @@ public class GetOrdersForWeekQueryHandler : IRequestHandler<GetOrdersForWeekQuer
 
     public async Task<ErrorOr<IReadOnlyList<Order>>> Handle(GetOrdersForWeekQuery request, CancellationToken cancellationToken)
     {
-        var ordersResult = await _primirestOrderService.GetOrdersForPersonForWeekAsync(request.SessionCookie, request.WeekId);
+        var ordersResult = await _primirestOrderService.GetOrdersForPersonForWeekAsync(request.SessionCookie, request.WeeklyMenuId);
         if(ordersResult.IsError)
             return ordersResult.Errors;
 

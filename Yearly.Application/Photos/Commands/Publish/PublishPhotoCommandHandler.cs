@@ -2,7 +2,6 @@
 using MediatR;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.PhotoAgg;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Services;
 

@@ -5,8 +5,6 @@ using Yearly.Application.Photos.Commands.Publish;
 using Yearly.Application.Photos.Commands.Reject;
 using Yearly.Application.Photos.Queries.Waiting;
 using Yearly.Contracts.Photos;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Presentation.Controllers;

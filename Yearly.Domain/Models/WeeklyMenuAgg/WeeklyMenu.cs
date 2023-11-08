@@ -2,17 +2,17 @@
 
 namespace Yearly.Domain.Models.WeeklyMenuAgg;
 
-public class WeeklyMenu : AggregateRoot<Guid>
+public class WeeklyMenu : AggregateRoot<int>
 {
     private List<DailyMenu> _dailyMenus;
     public IReadOnlyList<DailyMenu> DailyMenus => _dailyMenus;
-    protected WeeklyMenu(Guid id, List<DailyMenu> dailyMenus) 
+    protected WeeklyMenu(int id, List<DailyMenu> dailyMenus) 
         : base(id)
     {
         _dailyMenus = dailyMenus;
     }
 
-    public static WeeklyMenu Create(Guid id ,List<DailyMenu> dailyMenus)
+    public static WeeklyMenu Create(int id ,List<DailyMenu> dailyMenus)
     {
         return new(id, dailyMenus);
     }
