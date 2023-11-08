@@ -3,6 +3,7 @@ using MediatR;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.PhotoAgg;
+using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Photos.Commands.Reject;
@@ -30,7 +31,7 @@ public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, Err
 
         request.Rejector.RejectPhoto(photo);
 
-        await _photoStorage.DeletePhotoAsync(Photo.NameFrom(photo.Id, photo.FoodId));
+        await _photoStorage.DeletePhotoAsync(Photo.NameFrom(new PhotoId(photo.Id.Value), photo.FoodId));
         await _photoRepository.DeletePhotoAsync(photo);
         await _unitOfWork.SaveChangesAsync();
 

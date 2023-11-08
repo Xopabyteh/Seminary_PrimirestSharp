@@ -1,8 +1,8 @@
 ﻿namespace Yearly.Domain.Models.PhotoAgg.ValueObjects;
 
-public class PhotoId : ValueObject
+public sealed class PhotoId : AggregateRootId<Guid>
 {
-    public Guid Value { get; private set; }
+    public override Guid Value { get; protected set; }
     
     public override IEnumerable<object> GetEqualityComponents()
     {

@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Yearly.Contracts.Common;
+using Yearly.Contracts.Menu;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Repositories;

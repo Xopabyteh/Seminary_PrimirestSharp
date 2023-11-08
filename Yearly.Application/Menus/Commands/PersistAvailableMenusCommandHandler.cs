@@ -91,7 +91,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                         await _foodRepository.UpdatePrimirestFoodIdentifierAsync(food);
                     }
 
-                    foodIdsForDay.Add(food.Id);
+                    foodIdsForDay.Add(new FoodId(food.Id.Value));
                 }
 
                 var menuForDay = new DailyMenu(foodIdsForDay, primirestDailyMenu.Date);

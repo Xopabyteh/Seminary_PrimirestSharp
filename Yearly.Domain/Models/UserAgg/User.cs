@@ -6,7 +6,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.UserAgg;
 
-public class User : AggregateRoot<UserId>
+public class User : AggregateRoot<UserId, int>
 {
     public string Username { get; private set; }
 
@@ -51,7 +51,7 @@ public class User : AggregateRoot<UserId>
     {
         var photo = new Photo(
             photoId,
-            this.Id,
+            new UserId(this.Id.Value),
             publishDate,
             forFoodId,
             photoLink);
@@ -65,5 +65,13 @@ public class User : AggregateRoot<UserId>
             photo.Approve();
 
         return photo;
+    }
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    private User()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        : base(null!)
+    {
+        
     }
 }

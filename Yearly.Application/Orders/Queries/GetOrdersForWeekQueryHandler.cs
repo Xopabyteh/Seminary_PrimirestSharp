@@ -3,6 +3,7 @@ using MediatR;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.Common.ValueObjects;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Orders.Queries;
@@ -35,7 +36,7 @@ public class GetOrdersForWeekQueryHandler : IRequestHandler<GetOrdersForWeekQuer
                 throw new IllegalStateException("There was no match for the ItemId from ordersResult in our repository. This means that the order has a different ItemId than the foods in our system.");
             }
 
-            orders.Add(new Order(food.Id, primirestOrder));
+            orders.Add(new Order(new FoodId(food.Id.Value), primirestOrder));
         }
 
         return orders;

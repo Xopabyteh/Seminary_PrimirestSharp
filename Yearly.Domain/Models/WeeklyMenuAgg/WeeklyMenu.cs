@@ -2,7 +2,7 @@
 
 namespace Yearly.Domain.Models.WeeklyMenuAgg;
 
-public class WeeklyMenu : AggregateRoot<WeeklyMenuId>
+public class WeeklyMenu : AggregateRoot<WeeklyMenuId, int>
 {
     private List<DailyMenu> _dailyMenus;
     public IReadOnlyList<DailyMenu> DailyMenus => _dailyMenus;

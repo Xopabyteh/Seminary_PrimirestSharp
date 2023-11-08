@@ -3,9 +3,9 @@
 /// <summary>
 /// This Id is from Primirest (UserID) and is used to identify the user in their auth system.
 /// </summary>
-public class UserId : ValueObject
+public sealed class UserId : AggregateRootId<int>
 {
-    public int Value { get; private set; }
+    public override int Value { get; protected set; }
 
     public override IEnumerable<object> GetEqualityComponents()
     {

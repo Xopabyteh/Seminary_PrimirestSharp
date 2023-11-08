@@ -1,8 +1,8 @@
 ﻿namespace Yearly.Domain.Models.FoodAgg.ValueObjects;
 
-public class FoodId : ValueObject
+public sealed class FoodId : AggregateRootId<Guid>
 {
-    public Guid Value { get; private set; }
+    public override Guid Value { get; protected set; }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
