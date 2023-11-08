@@ -30,7 +30,7 @@ public class UserRepository : IUserRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<User?> GetByIdAsync(UserId id)
+    public async Task<User?> GetByIdAsync(int id)
     {
         var user = await _context.Users.AsTracking().SingleOrDefaultAsync(u => u.Id == id);
         return user;

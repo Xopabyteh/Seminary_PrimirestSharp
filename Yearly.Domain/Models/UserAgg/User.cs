@@ -6,7 +6,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.UserAgg;
 
-public class User : AggregateRoot<UserId>
+public class User : AggregateRoot<int>
 {
     public string Username { get; private set; }
 
@@ -16,15 +16,15 @@ public class User : AggregateRoot<UserId>
     /// <summary>
     /// Published photos by this user
     /// </summary>
-    private readonly List<PhotoId> _photoIds;
-    public IReadOnlyList<PhotoId> PhotoIds => _photoIds.AsReadOnly();
+    private readonly List<Guid> _photoIds;
+    public IReadOnlyList<Guid> PhotoIds => _photoIds.AsReadOnly();
 
-    public User(UserId id, string username)
+    public User(int id, string username)
         : base(id)
     {
         Username = username;
         _roles = new List<UserRole>();
-        _photoIds = new List<PhotoId>();
+        _photoIds = new List<Guid>();
     }
 
     public void AddRole(UserRole role)
@@ -47,7 +47,7 @@ public class User : AggregateRoot<UserId>
         // Publish Domain events
     }
 
-    public Photo PublishPhoto(PhotoId photoId, DateTime publishDate, FoodId forFoodId, string photoLink)
+    public Photo PublishPhoto(Guid photoId, DateTime publishDate, Guid forFoodId, string photoLink)
     {
         var photo = new Photo(
             photoId,

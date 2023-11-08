@@ -3,12 +3,12 @@ using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.FoodAgg;
 
-public sealed class Food : AggregateRoot<FoodId>
+public sealed class Food : AggregateRoot<Guid>
 {
-    public FoodId? AliasForFoodId { get; private set; }
+    public Guid? AliasForFoodId { get; private set; }
     
-    private readonly List<PhotoId> _photoIds; 
-    public IReadOnlyList<PhotoId> PhotoIds => _photoIds.AsReadOnly();
+    private readonly List<Guid> _photoIds; 
+    public IReadOnlyList<Guid> PhotoIds => _photoIds.AsReadOnly();
     
     public string Name { get; private set; } 
     public string Allergens { get; private set; } // Todo: primitive obsession
@@ -16,9 +16,9 @@ public sealed class Food : AggregateRoot<FoodId>
     public PrimirestFoodIdentifier PrimirestFoodIdentifier { get; private set; }
 
     private Food(
-        FoodId id,
-        List<PhotoId> photoIds,
-        FoodId? aliasForFoodId,
+        Guid id,
+        List<Guid> photoIds,
+        Guid? aliasForFoodId,
         string name,
         string allergens,
         PrimirestFoodIdentifier primirestFoodIdentifier) 
@@ -37,8 +37,8 @@ public sealed class Food : AggregateRoot<FoodId>
         PrimirestFoodIdentifier primirestFoodIdentifier)
     { 
         return new Food(
-            new FoodId(Guid.NewGuid()),
-            new List<PhotoId>(),
+            Guid.NewGuid(), 
+            new List<Guid>(),
             null,
             name,
             allergens,
@@ -52,7 +52,6 @@ public sealed class Food : AggregateRoot<FoodId>
 
 #pragma warning disable CS8618 //For EF Core
     private Food()
-        :base(null!)
 #pragma warning restore CS8618
     {
 

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yearly.Domain.Models.FoodAgg;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.WeeklyMenuAgg;
@@ -13,6 +15,15 @@ public class PrimirestSharpDbContext : DbContext
 
         base.OnModelCreating(modelBuilder);
     }
+
+    //protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    //{
+
+    //    configurationBuilder.Properties<FoodId>()
+    //        .HaveConversion<FoodIdConverter>();
+
+    //    base.ConfigureConventions(configurationBuilder);
+    //}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,4 +42,14 @@ public class PrimirestSharpDbContext : DbContext
     //public DbSet<Soup> Soups { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<User> Users { get; set; }
+
+    //private class FoodIdConverter : ValueConverter<FoodId, Guid>
+    //{
+    //    public FoodIdConverter()
+    //        : base(
+    //            foodId => foodId.Value,
+    //            foodIdValue => new FoodId(foodIdValue))
+    //    { }
+    //}
 }
+

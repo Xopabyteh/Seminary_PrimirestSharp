@@ -1,14 +1,14 @@
 ﻿namespace Yearly.Domain.Models;
 
 public class Entity<TId> : IEquatable<Entity<TId>>
-    where TId : ValueObject
+    where TId : notnull
 {
     protected Entity(TId id)
     {
         Id = id;
     }
 
-    public TId Id { get; private set; } = null!;
+    public TId Id { get; private set; }
 
     public bool Equals(Entity<TId>? other)
     {

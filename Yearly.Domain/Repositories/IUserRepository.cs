@@ -9,7 +9,7 @@ public interface IUserRepository
 
     public Task UpdateAsync(User user);
 
-    public Task<User?> GetByIdAsync(UserId id);
+    public Task<User?> GetByIdAsync(int id);
 
     public Task<bool> DoesUserExistAsync(string username);
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
 
@@ -32,6 +33,7 @@ public class WeeklyMenuConfiguration : IEntityTypeConfiguration<WeeklyMenu>
                 foodIdBuilder.WithOwner();
 
                 foodIdBuilder.HasKey(f => f.Value);
+
                 foodIdBuilder
                     .Property(f => f.Value)
                     .HasColumnName("FoodId")

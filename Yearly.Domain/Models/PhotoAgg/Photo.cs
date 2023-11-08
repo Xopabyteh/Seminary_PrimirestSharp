@@ -5,18 +5,18 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.PhotoAgg;
 
-public class Photo : AggregateRoot<PhotoId>
+public class Photo : AggregateRoot<Guid>
 {
-    public static string NameFrom(PhotoId photoId, FoodId foodId)
-        => $"{foodId.Value}-{photoId.Value}";
+    public static string NameFrom(Guid photoId, Guid foodId)
+        => $"{foodId}-{photoId}";
 
-    public UserId PublisherId { get; private set; }
+    public int PublisherId { get; private set; }
     public DateTime PublishDate { get; private set; }
-    public FoodId FoodId { get; private set; }
+    public Guid FoodId { get; private set; }
     public string Link { get; private set; }
     public bool IsApproved { get; private set; }
 
-    public Photo(PhotoId id, UserId publisherId, DateTime publishDate, FoodId foodId, string link) 
+    public Photo(Guid id, int publisherId, DateTime publishDate, Guid foodId, string link) 
         : base(id)
     {
         PublisherId = publisherId;
@@ -37,7 +37,6 @@ public class Photo : AggregateRoot<PhotoId>
 
 #pragma warning disable CS8618 //For EF Core
     private Photo()
-        : base(null!)
 #pragma warning restore CS8618
     {
 

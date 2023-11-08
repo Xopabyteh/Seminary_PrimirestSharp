@@ -25,7 +25,7 @@ public class PhotoRepository : IPhotoRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Task<Photo?> GetAsync(PhotoId id)
+    public Task<Photo?> GetAsync(Guid id)
     {
         return _context.Photos.AsTracking().FirstOrDefaultAsync(p => p.Id == id);
     }
