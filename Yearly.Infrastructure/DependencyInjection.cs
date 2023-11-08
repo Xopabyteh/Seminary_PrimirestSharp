@@ -10,6 +10,7 @@ using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Persistence;
 using Yearly.Infrastructure.Persistence.PhotosStorage;
 using Yearly.Infrastructure.Persistence.Repositories;
+using Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
@@ -56,6 +57,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IPhotoRepository, PhotoRepository>();
         //services.AddScoped<ISoupRepository, SoupRepository>();
+
+        services.AddScoped<WeeklyMenuDTORepository>();
 
         if (builder.Environment.IsDevelopment())
         {

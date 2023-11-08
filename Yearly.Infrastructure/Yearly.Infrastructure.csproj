@@ -9,11 +9,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Yearly.Application\Yearly.Application.csproj" />
+    <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Http\" />
+    <Folder Include="Persistence\Repositories\DTORepositories\" />
     <Folder Include="Persistence\Seeding\" />
     <Folder Include="Services\Orders\" />
   </ItemGroup>
