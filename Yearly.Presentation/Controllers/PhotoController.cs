@@ -28,7 +28,7 @@ public class PhotoController : ApiController
             if (user.Roles.Contains(UserRole.BlackListedFromTakingPhotos))
                 Unauthorized();
 
-            var result = await _mediator.Send(new PublishPhotoCommand(photo, new FoodId(foodId), user));
+            var result = await _mediator.Send(new PublishPhotoCommand(photo, foodId, user));
             return result.Match(
                 createdPhoto => Created(createdPhoto.Link, null),
                 Problem);
@@ -44,7 +44,7 @@ public class PhotoController : ApiController
             sessionCookie,
             async user =>
         {
-            var result = await _mediator.Send(new ApprovePhotoCommand(new PhotoId(photoId), user));
+            var result = await _mediator.Send(new ApprovePhotoCommand(photoId, user));
             return result.Match(
                 _ => Ok(),
                 Problem);
@@ -61,7 +61,7 @@ public class PhotoController : ApiController
             sessionCookie,
             async user =>
         {
-            var result = await _mediator.Send(new RejectPhotoCommand(new PhotoId(photoId), user));
+            var result = await _mediator.Send(new RejectPhotoCommand(photoId, user));
             return result.Match(
                 _ => Ok(),
                 Problem);
@@ -74,7 +74,7 @@ public class PhotoController : ApiController
     {
         var result = await _mediator.Send(new WaitingPhotosQuery());
 
-        var response = new WaitingPhotosResponse(result.Select(p => p.Id.Value).ToList());
+        var response = new WaitingPhotosResponse(result.Select(p => p.Id).ToList());
         
         return Ok(response);
     }

@@ -23,7 +23,7 @@ public class FoodRepository : IFoodRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<Food?> GetFoodByIdAsync(FoodId id)
+    public async Task<Food?> GetFoodByIdAsync(Guid id)
     {
         return await _context.Foods.AsTracking().SingleOrDefaultAsync(f => f.Id == id);
     }

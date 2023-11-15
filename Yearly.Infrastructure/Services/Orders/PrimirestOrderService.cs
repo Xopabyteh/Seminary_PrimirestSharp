@@ -78,7 +78,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         return Error.Failure("Unknown");
     }
 
-    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrderIdentifier>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id)
+    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrderIdentifier>>> GetOrdersForPersonForWeekAsync(string sessionCookie, int id)
     {
         // Call the same API as when getting menus
         // This time grab the orders
@@ -88,7 +88,7 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var message = new HttpRequestMessage(
             HttpMethod.Get,
-            @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={id.Value}&menuViewType=FULL&_=0");
+            @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={id}&menuViewType=FULL&_=0");
 
         var response = await client.SendAsync(message);
 
@@ -116,7 +116,7 @@ public class PrimirestOrderService : IPrimirestOrderService
                 OrderItemId: item.ID,
                 OrderId: item.IDOrder,
                 FoodItemId: item.IDItem,
-                MenuId: id.Value);
+                MenuId: id);
 
             foodOrders.Add(reconstructedOrder);
         }

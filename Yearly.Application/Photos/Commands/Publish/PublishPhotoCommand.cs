@@ -8,5 +8,5 @@ namespace Yearly.Application.Photos.Commands.Publish;
 
 public record PublishPhotoCommand(
     IFormFile File,
-    FoodId FoodId,
+    Guid FoodId,
     User Publisher) : IRequest<ErrorOr<Photo>>;

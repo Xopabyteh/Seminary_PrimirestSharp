@@ -29,7 +29,7 @@ public class WeeklyMenuDTORepository
                             new(0, 0, 0)))
                         .ToList()))
                     .ToList(),
-                w.Id.Value))
+                w.Id))
             .ToListAsync();
 
         return new AvailableMenusResponse(weeklyMenus);

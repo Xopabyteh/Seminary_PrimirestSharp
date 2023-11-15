@@ -19,7 +19,7 @@ public class OrderMappings : IRegister
             .Map(dst => dst.PrimirestFoodOrderIdentifier, src => src.Request.PrimirestOrderIdentifier);
 
         config.NewConfig<Order, OrderResponse>()
-            .Map(dst => dst.SharpFoodId, src => src.ForFoodId.Value)
+            .Map(dst => dst.SharpFoodId, src => src.ForFoodId)
             .Map(dst => dst.PrimirestOrderIdentifier, src => src.PrimirestOrderIdentifier);
     }
 }

@@ -11,33 +11,31 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
         builder
             .Property(u => u.Id)
-            .HasConversion(
-                id => id.Value,
-                idValue => new UserId(idValue));
+            .ValueGeneratedNever();
 
         builder.Property(u => u.Username)
             .HasMaxLength(100)
             .IsRequired();
 
         builder.OwnsMany(u => u.Roles, roleBuilder =>
-            {
-                roleBuilder.ToTable("UserRoles");
-
-                roleBuilder.WithOwner().HasForeignKey(nameof(UserId));
-
-                roleBuilder.HasKey(r => r.RoleCode);
-
-                roleBuilder
-                    .Property(r => r.RoleCode)
-                    .HasMaxLength(3);
-            });
-
-
-        builder.OwnsMany(u => u.PhotoIds, photoIdBuilder =>
         {
-            photoIdBuilder.ToTable("UserPhotoIds");
+            roleBuilder.ToTable("UserRoles");
 
-            photoIdBuilder.WithOwner().HasForeignKey(nameof(UserId));
+            //roleBuilder.WithOwner().HasForeignKey(nameof(UserId));
+
+            roleBuilder.HasKey(r => r.RoleCode);
+
+            roleBuilder
+                .Property(r => r.RoleCode)
+                .HasMaxLength(3);
         });
+
+
+        //builder.OwnsMany(u => u.PhotoIds, photoIdBuilder =>
+        //{
+        //    photoIdBuilder.ToTable("UserPhotoIds");
+
+        //    photoIdBuilder.WithOwner().HasForeignKey(nameof(UserId));
+        //});
     }
 }

@@ -11,24 +11,16 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
         builder.HasKey(p => p.Id);
         builder
             .Property(p => p.Id)
-            .HasConversion(
-                id => id.Value,
-                idValue => new PhotoId(idValue));
+            .ValueGeneratedNever();
 
         builder
             .Property(p => p.PublisherId)
-            .HasConversion(
-                id => id.Value,
-                idValue => new UserId(idValue))
             .ValueGeneratedNever();
 
         builder.Property(p => p.PublishDate);
 
         builder
             .Property(p => p.FoodId)
-            .HasConversion(
-                id => id.Value,
-                idValue => new FoodId(idValue))
             .ValueGeneratedNever();
 
         builder

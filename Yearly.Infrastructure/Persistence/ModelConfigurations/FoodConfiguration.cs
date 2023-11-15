@@ -9,31 +9,22 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
     public void Configure(EntityTypeBuilder<Food> builder)
     {
         builder.HasKey(f => f.Id);
-        builder
-            .Property(f => f.Id)
-            .HasConversion(
-                id => id.Value,
-                idValue => new FoodId(idValue));
 
         builder
             .Property(f => f.AliasForFoodId)
-            .HasConversion(
-                id => id!.Value,
-                idValue => new FoodId(idValue))
             .IsRequired(false);
 
-        builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
-        {
-            photoIdBuilder.ToTable("FoodPhotoIds");
+        //builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
+        //{
+        //    photoIdBuilder.ToTable("FoodPhotoIds");
 
-            photoIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
+        //    photoIdBuilder.WithOwner().HasForeignKey("Id");
 
-            photoIdBuilder.HasKey(p => p.Value);
-            photoIdBuilder
-                .Property(p => p.Value)
-                .HasColumnName("PhotoId")
-                .ValueGeneratedNever();
-        });
+        //    photoIdBuilder.HasKey(p => p);
+        //    photoIdBuilder
+        //        .HasColumnName("PhotoId")
+        //        .ValueGeneratedNever();
+        //});
 
         builder
             .Property(f => f.Name)
@@ -47,7 +38,7 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
 
         builder.OwnsOne(f => f.PrimirestFoodIdentifier, pIdBuilder =>
         {
-            pIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
+            //pIdBuilder.WithOwner().HasForeignKey(nameof());
 
             pIdBuilder
                 .Property(i => i.DayId)

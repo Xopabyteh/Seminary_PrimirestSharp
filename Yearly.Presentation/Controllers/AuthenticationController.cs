@@ -53,7 +53,7 @@ public class AuthenticationController : ApiController
             sessionCookie,
             async _ =>
             {
-                var command = new AddRoleToUserCommand(new UserId(request.UserId), new UserRole(request.RoleCode));
+                var command = new AddRoleToUserCommand(request.UserId, new UserRole(request.RoleCode));
                 var result = await _mediator.Send(command);
                 return result.Match(
                     _ => Ok(),

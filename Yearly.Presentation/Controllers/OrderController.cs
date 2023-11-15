@@ -46,7 +46,7 @@ public class OrderController : ApiController
         [FromHeader] string sessionCookie,
         [FromQuery] int menuForWeekId)
     {
-        var orders = await _mediator.Send(new GetOrdersForWeekQuery(sessionCookie, new WeeklyMenuId(menuForWeekId)));
+        var orders = await _mediator.Send(new GetOrdersForWeekQuery(sessionCookie, menuForWeekId));
         if (orders.IsError)
             return Problem(orders.Errors);
 

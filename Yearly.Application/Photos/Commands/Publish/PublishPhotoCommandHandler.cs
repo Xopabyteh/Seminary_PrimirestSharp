@@ -27,7 +27,7 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
 
     public async Task<ErrorOr<Photo>> Handle(PublishPhotoCommand request, CancellationToken cancellationToken) {
 
-        var photoId = new PhotoId(Guid.NewGuid());
+        var photoId = Guid.NewGuid();
         var linkResult = await _photoStorage.UploadPhotoAsync(request.File, Photo.NameFrom(photoId, request.FoodId));
 
         if (linkResult.IsError)

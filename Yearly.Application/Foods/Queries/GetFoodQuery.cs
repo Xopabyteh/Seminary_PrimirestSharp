@@ -3,4 +3,4 @@ using Yearly.Domain.Models.FoodAgg;
 
 namespace Yearly.Application.Foods.Queries;
 
-public record GetFoodQuery(FoodId Id) : IRequest<Food>;
+public record GetFoodQuery(Guid Id) : IRequest<Food>;
