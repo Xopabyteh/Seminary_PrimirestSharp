@@ -9,6 +9,7 @@ using Yearly.Application.Photos.Queries.ForFood;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Menu;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
+using Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
 using Yearly.Presentation.OutputCaching;
 
 namespace Yearly.Presentation.Controllers;
@@ -18,51 +19,52 @@ public class MenuController : ApiController
 {
     private readonly IMapper _mapper;
     private readonly IOutputCacheStore _outputCacheStore;
-
-    public MenuController(IMapper mapper, ISender mediator, IOutputCacheStore outputCacheStore) 
+    private readonly WeeklyMenuDTORepository _weeklyMenuDtoRepository;
+    public MenuController(IMapper mapper, ISender mediator, IOutputCacheStore outputCacheStore, WeeklyMenuDTORepository weeklyMenuDtoRepository) 
         : base(mediator)
     {
         _mapper = mapper;
         _outputCacheStore = outputCacheStore;
+        _weeklyMenuDtoRepository = weeklyMenuDtoRepository;
     }
 
     [HttpGet("available")]
     [OutputCache(PolicyName = OutputCachePolicyName.GetAvailableMenus)]
     public async Task<IActionResult> GetAvailableMenus()
     {
-        var weeklyMenus = await _mediator.Send(new GetAvailableWeeklyMenusQuery());
+        //var weeklyMenus = await _mediator.Send(new GetAvailableWeeklyMenusQuery());
 
-        //Todo: optimize this mess
+        ////Todo: optimize this mess
 
-        var weeklyMenusResponse = new List<WeeklyMenuResponse>();
-        foreach (var weeklyMenu in weeklyMenus)
-        {
-            var dailyMenusResponse = new List<DailyMenuResponse>();
-            foreach (var dailyMenu in weeklyMenu.DailyMenus)
-            {
-                var foodsResponse = new List<FoodResponse>();
-                foreach (var foodForDayId in dailyMenu.FoodIds)
-                {
-                    var foodForDay = await _mediator.Send(new GetFoodQuery(foodForDayId));
+        //var weeklyMenusResponse = new List<WeeklyMenuResponse>();
+        //foreach (var weeklyMenu in weeklyMenus)
+        //{
+        //    var dailyMenusResponse = new List<DailyMenuResponse>();
+        //    foreach (var dailyMenu in weeklyMenu.DailyMenus)
+        //    {
+        //        var foodsResponse = new List<FoodResponse>();
+        //        foreach (var foodForDayId in dailyMenu.FoodIds)
+        //        {
+        //            var foodForDay = await _mediator.Send(new GetFoodQuery(foodForDayId));
 
-                    var photoLinks = await _mediator.Send(new PhotosForFoodQuery(foodForDay.Id));
+        //            var photoLinks = await _mediator.Send(new PhotosForFoodQuery(foodForDay.Id));
 
-                    foodsResponse.Add(new(
-                        foodForDay.Name,
-                        foodForDay.Allergens,
-                        photoLinks.Select(p => p.Link).ToList(),
-                        foodForDay.Id.Value,
-                        _mapper.Map<PrimirestFoodIdentifierContract>(foodForDay.PrimirestFoodIdentifier)));
-                }
+        //            foodsResponse.Add(new(
+        //                foodForDay.Name,
+        //                foodForDay.Allergens,
+        //                photoLinks.Select(p => p.Link).ToList(),
+        //                foodForDay.Id.Value,
+        //                _mapper.Map<PrimirestFoodIdentifierContract>(foodForDay.PrimirestFoodIdentifier)));
+        //        }
 
-                dailyMenusResponse.Add(new DailyMenuResponse(dailyMenu.Date, foodsResponse));
-            }
+        //        dailyMenusResponse.Add(new DailyMenuResponse(dailyMenu.Date, foodsResponse));
+        //    }
 
-            weeklyMenusResponse.Add(new WeeklyMenuResponse(dailyMenusResponse, weeklyMenu.Id.Value));
-        }
+        //    weeklyMenusResponse.Add(new WeeklyMenuResponse(dailyMenusResponse, weeklyMenu.Id.Value));
+        //}
 
-        var response = new AvailableMenusResponse(weeklyMenusResponse);
-
+        //var response = new AvailableMenusResponse(weeklyMenusResponse);
+        var response = await _weeklyMenuDtoRepository.GetAvailableMenusAsync();
         return Ok(response);
     }
 
@@ -80,7 +82,7 @@ public class MenuController : ApiController
                     _ =>
                     {
                         //Evict old available menus cache
-                        _outputCacheStore.EvictByTagAsync(OutputCachePolicyName.GetAvailableMenus, CancellationToken.None);
+                        _outputCacheStore.EvictByTagAsync(OutputCachePolicyName.GetAvailableMenus, CancellationToken.None); //Todo: doesn't work for some reason
                         
                         return Ok();
                     },

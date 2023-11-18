@@ -35,7 +35,7 @@ public class GetOrdersForWeekQueryHandler : IRequestHandler<GetOrdersForWeekQuer
                 throw new IllegalStateException("There was no match for the ItemId from ordersResult in our repository. This means that the order has a different ItemId than the foods in our system.");
             }
 
-            orders.Add(new Order(food.Id, primirestOrder));
+            orders.Add(new Order(food.IdTyped, primirestOrder));
         }
 
         return orders;

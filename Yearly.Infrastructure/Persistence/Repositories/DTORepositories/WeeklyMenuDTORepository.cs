@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Contracts.Menu;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
 
@@ -12,7 +13,7 @@ public class WeeklyMenuDTORepository
         _context = context;
     }
 
-    public async Task<AvailableMenusResponse> GetAvailableMenus()
+    public async Task<AvailableMenusResponse> GetAvailableMenusAsync()
     {
         //Todo: make this work...
         var weeklyMenus = await _context
@@ -21,13 +22,13 @@ public class WeeklyMenuDTORepository
                 w.DailyMenus.Select(d => new DailyMenuResponse(
                         d.Date,
                         _context.Foods
-                            .Where(f => d.FoodIds.Any(dFId => dFId == f.Id))
+                            .Where(f => d.FoodIds.Contains(f.Id))
                             .Select(f => new FoodResponse(
-                                "",
-                                "",
+                                f.Name,
+                                f.Allergens,
                                 new(),
-                                Guid.Empty,
-                                new(0, 0, 0)))
+                                f.Id.Value,
+                                new(f.PrimirestFoodIdentifier.MenuId, f.PrimirestFoodIdentifier.DayId, f.PrimirestFoodIdentifier.ItemId)))
                             .ToList()))
                     .ToList(),
                 w.Id.Value))

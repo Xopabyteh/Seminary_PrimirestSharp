@@ -30,7 +30,7 @@ public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, Err
 
         request.Rejector.RejectPhoto(photo);
 
-        await _photoStorage.DeletePhotoAsync(Photo.NameFrom(photo.Id, photo.FoodId));
+        await _photoStorage.DeletePhotoAsync(Photo.NameFrom(photo.IdTyped, photo.FoodId));
         await _photoRepository.DeletePhotoAsync(photo);
         await _unitOfWork.SaveChangesAsync();
 

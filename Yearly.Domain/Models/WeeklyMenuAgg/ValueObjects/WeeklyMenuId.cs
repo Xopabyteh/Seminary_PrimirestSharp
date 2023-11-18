@@ -3,9 +3,9 @@
 /// <summary>
 /// This Id is from Primirest (MenuID) and is used to identify the menu for a week.
 /// </summary>
-public sealed class WeeklyMenuId : ValueObject
+public sealed class WeeklyMenuId : AggregateRootId<int>
 {
-    public int Value { get; private set; }
+    public override int Value { get; protected set; }
 
     public override IEnumerable<object> GetEqualityComponents()
     {

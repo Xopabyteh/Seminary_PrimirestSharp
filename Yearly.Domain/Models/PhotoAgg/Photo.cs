@@ -5,7 +5,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.PhotoAgg;
 
-public class Photo : AggregateRoot<PhotoId>
+public class Photo : AggregateRoot<PhotoId, Guid>
 {
     public static string NameFrom(PhotoId photoId, FoodId foodId)
         => $"{foodId.Value}-{photoId.Value}";

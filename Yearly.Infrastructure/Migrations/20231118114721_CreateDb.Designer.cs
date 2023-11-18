@@ -12,7 +12,7 @@ using Yearly.Infrastructure.Persistence;
 namespace Yearly.Infrastructure.Migrations
 {
     [DbContext(typeof(PrimirestSharpDbContext))]
-    [Migration("20231104103839_CreateDb")]
+    [Migration("20231118114721_CreateDb")]
     partial class CreateDb
     {
         /// <inheritdoc />

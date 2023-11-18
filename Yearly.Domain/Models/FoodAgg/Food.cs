@@ -3,7 +3,7 @@ using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.FoodAgg;
 
-public sealed class Food : AggregateRoot<FoodId>
+public sealed class Food : AggregateRoot<FoodId, Guid>
 {
     public FoodId? AliasForFoodId { get; private set; }
     
