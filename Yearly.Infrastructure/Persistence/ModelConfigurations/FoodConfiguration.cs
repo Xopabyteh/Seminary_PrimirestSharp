@@ -9,22 +9,22 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
     public void Configure(EntityTypeBuilder<Food> builder)
     {
         builder.HasKey(f => f.Id);
+        builder
+            .Property(f => f.Id)
+            .ValueGeneratedNever();
 
         builder
             .Property(f => f.AliasForFoodId)
             .IsRequired(false);
 
-        //builder.OwnsMany(f => f.PhotoIds, photoIdBuilder =>
-        //{
-        //    photoIdBuilder.ToTable("FoodPhotoIds");
+        builder
+            .Property(f => f.PhotoIds)
+            .HasField("_photoIds")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        //    photoIdBuilder.WithOwner().HasForeignKey("Id");
+        //var navigation = builder.Metadata.FindNavigation("PhotoIds");
+        //navigation.SetPropertyAccessMode(PropertyAccessMode.FieldDuringConstruction);
 
-        //    photoIdBuilder.HasKey(p => p);
-        //    photoIdBuilder
-        //        .HasColumnName("PhotoId")
-        //        .ValueGeneratedNever();
-        //});
 
         builder
             .Property(f => f.Name)
@@ -38,8 +38,6 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
 
         builder.OwnsOne(f => f.PrimirestFoodIdentifier, pIdBuilder =>
         {
-            //pIdBuilder.WithOwner().HasForeignKey(nameof());
-
             pIdBuilder
                 .Property(i => i.DayId)
                 .HasColumnName("PrimirestDayId");

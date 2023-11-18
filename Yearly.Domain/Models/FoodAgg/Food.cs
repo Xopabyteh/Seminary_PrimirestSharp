@@ -7,7 +7,7 @@ public sealed class Food : AggregateRoot<Guid>
     public Guid? AliasForFoodId { get; private set; }
     
     private readonly List<Guid> _photoIds; 
-    public IReadOnlyList<Guid> PhotoIds => _photoIds.AsReadOnly();
+    public List<Guid> PhotoIds => _photoIds;
     
     public string Name { get; private set; } 
     public string Allergens { get; private set; } // Todo: primitive obsession

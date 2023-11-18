@@ -21,21 +21,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         {
             roleBuilder.ToTable("UserRoles");
 
-            //roleBuilder.WithOwner().HasForeignKey(nameof(UserId));
+            roleBuilder.WithOwner().HasForeignKey(nameof(User.Id));
 
             roleBuilder.HasKey(r => r.RoleCode);
-
             roleBuilder
                 .Property(r => r.RoleCode)
                 .HasMaxLength(3);
         });
 
+        builder.Property(u => u.PhotoIds);
 
-        //builder.OwnsMany(u => u.PhotoIds, photoIdBuilder =>
-        //{
-        //    photoIdBuilder.ToTable("UserPhotoIds");
-
-        //    photoIdBuilder.WithOwner().HasForeignKey(nameof(UserId));
-        //});
     }
 }
