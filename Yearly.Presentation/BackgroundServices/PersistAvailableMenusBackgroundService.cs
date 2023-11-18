@@ -28,7 +28,7 @@ public class PersistAvailableMenusBackgroundService : BackgroundService
             await mediator.Send(new PersistAvailableMenusCommand(), stoppingToken);
 
             //Evict old available menus cache
-            await _outputCacheStore.EvictByTagAsync(OutputCachePolicyName.GetAvailableMenus, stoppingToken);
+            await _outputCacheStore.EvictByTagAsync(OutputCacheTagName.GetAvailableMenusTag, stoppingToken);
         }
     }
 }

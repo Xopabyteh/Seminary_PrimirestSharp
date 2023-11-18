@@ -80,7 +80,7 @@ public class MenuController : ApiController
                     _ =>
                     {
                         //Evict old available menus cache
-                        _outputCacheStore.EvictByTagAsync(OutputCachePolicyName.GetAvailableMenus, CancellationToken.None);
+                        _outputCacheStore.EvictByTagAsync(OutputCacheTagName.GetAvailableMenusTag, CancellationToken.None);
                         
                         return Ok();
                     },
