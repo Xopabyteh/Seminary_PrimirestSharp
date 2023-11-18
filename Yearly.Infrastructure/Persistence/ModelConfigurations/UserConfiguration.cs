@@ -29,7 +29,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 .HasMaxLength(3);
         });
 
-        builder.Property(u => u.PhotoIds);
-
+        builder
+            .HasMany(u => u.Photos)
+            .WithOne(p => p.Publisher);
     }
 }

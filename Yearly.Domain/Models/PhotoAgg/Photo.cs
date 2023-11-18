@@ -1,4 +1,6 @@
 ﻿using Yearly.Domain.Errors.Exceptions;
+using Yearly.Domain.Models.FoodAgg;
+using Yearly.Domain.Models.UserAgg;
 
 namespace Yearly.Domain.Models.PhotoAgg;
 
@@ -7,18 +9,20 @@ public class Photo : AggregateRoot<Guid>
     public static string NameFrom(Guid photoId, Guid foodId)
         => $"{foodId}-{photoId}";
 
-    public int PublisherId { get; private set; }
+    //public int PublisherId { get; private set; }
+    public User Publisher { get; private set; }
     public DateTime PublishDate { get; private set; }
-    public Guid FoodId { get; private set; }
+    //public Guid FoodId { get; private set; }
+    public Food Food { get; private set; }
     public string Link { get; private set; }
     public bool IsApproved { get; private set; }
 
-    public Photo(Guid id, int publisherId, DateTime publishDate, Guid foodId, string link) 
+    public Photo(Guid id, User publisher, DateTime publishDate, Food food, string link) 
         : base(id)
     {
-        PublisherId = publisherId;
+        Publisher = publisher;
         PublishDate = publishDate;
-        FoodId = foodId;
+        Food = food;
         Link = link;
 
         IsApproved = false;

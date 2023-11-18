@@ -70,7 +70,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
             //Handle foods from this week menu
             foreach (var primirestDailyMenu in primirestWeeklyMenu.DailyMenus)
             {
-                var foodIdsForDay = new List<Guid>(3);
+                var foodsForDay = new List<Food>(3);
 
                 //Handle foods
                 foreach (var primirestFood in primirestDailyMenu.Foods)
@@ -90,10 +90,10 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                         await _foodRepository.UpdatePrimirestFoodIdentifierAsync(food);
                     }
 
-                    foodIdsForDay.Add(food.Id);
+                    foodsForDay.Add(food);
                 }
 
-                var menuForDay = new DailyMenu(foodIdsForDay, primirestDailyMenu.Date);
+                var menuForDay = new DailyMenu(foodsForDay, primirestDailyMenu.Date);
                 dailyMenus.Add(menuForDay);
             }
 

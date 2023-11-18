@@ -1,17 +1,21 @@
-﻿namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
+﻿using Yearly.Domain.Models.FoodAgg;
+
+namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
 
 public sealed class DailyMenu : ValueObject
 {
-    private readonly List<Guid> _foodIds;
-    public IReadOnlyList<Guid> FoodIds => _foodIds.AsReadOnly();
+    //private readonly List<Guid> _foodIds;
+    //public IReadOnlyList<Guid> FoodIds => _foodIds.AsReadOnly();
+    private readonly List<Food> _foods;
+    public IReadOnlyList<Food> Foods => _foods.AsReadOnly();
 
     public DateTime Date { get; private set; }
 
     public DailyMenu(
-        List<Guid> foodIds,
+        List<Food> foods,
         DateTime date)
     {
-        _foodIds = foodIds;
+        _foods = foods;
         Date = date;
     }
 
@@ -25,9 +29,9 @@ public sealed class DailyMenu : ValueObject
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return Date;
-        foreach (var foodId in _foodIds)
+        foreach (var food in _foods)
         {
-            yield return foodId;
+            yield return food;
         }
     }
 }

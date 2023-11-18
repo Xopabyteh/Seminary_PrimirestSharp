@@ -1,14 +1,18 @@
 ﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Domain.Models.PhotoAgg;
 
 namespace Yearly.Domain.Models.FoodAgg;
 
 public sealed class Food : AggregateRoot<Guid>
 {
+    //public Guid? AliasForFoodId { get; private set; }
     public Guid? AliasForFoodId { get; private set; }
     
-    private readonly List<Guid> _photoIds; 
-    public List<Guid> PhotoIds => _photoIds;
-    
+    //private readonly List<Guid> _photoIds; 
+    //public List<Guid> PhotoIds => _photoIds;
+    private readonly List<Photo> _photos;
+    public IReadOnlyList<Photo> Photos => _photos.AsReadOnly();
+
     public string Name { get; private set; } 
     public string Allergens { get; private set; } // Todo: primitive obsession
     
@@ -16,14 +20,13 @@ public sealed class Food : AggregateRoot<Guid>
 
     private Food(
         Guid id,
-        List<Guid> photoIds,
         Guid? aliasForFoodId,
         string name,
         string allergens,
         PrimirestFoodIdentifier primirestFoodIdentifier) 
         : base(id)
     {
-        _photoIds = photoIds;
+        _photos = new();
         AliasForFoodId = aliasForFoodId;
         Name = name;
         Allergens = allergens;
@@ -37,7 +40,6 @@ public sealed class Food : AggregateRoot<Guid>
     { 
         return new Food(
             Guid.NewGuid(), 
-            new List<Guid>(),
             null,
             name,
             allergens,

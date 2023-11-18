@@ -12,16 +12,18 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
     private readonly IPhotoStorage _photoStorage;
     private readonly IPhotoRepository _photoRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
+    private readonly IFoodRepository _foodRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public PublishPhotoCommandHandler(IPhotoStorage photoStorage, IPhotoRepository photoRepository, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork, IUserRepository userRepository)
+    public PublishPhotoCommandHandler(IPhotoStorage photoStorage, IPhotoRepository photoRepository, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork, IUserRepository userRepository, IFoodRepository foodRepository)
     {
         _photoStorage = photoStorage;
         _photoRepository = photoRepository;
         _dateTimeProvider = dateTimeProvider;
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
+        _foodRepository = foodRepository;
     }
 
 
@@ -33,10 +35,15 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
         if (linkResult.IsError)
             return linkResult.Errors;
 
+        var forFood = await _foodRepository.GetFoodByIdAsync(request.FoodId);
+
+        if (forFood is null)
+            return Errors.Errors.Food.FoodNotFound;
+
         var photo = request.Publisher.PublishPhoto(
             photoId,
             _dateTimeProvider.UtcNow,
-            request.FoodId,
+            forFood,
             linkResult.Value);
 
         await _userRepository.UpdateAsync(request.Publisher);

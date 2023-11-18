@@ -14,14 +14,14 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
             .ValueGeneratedNever();
 
         builder
-            .Property(p => p.PublisherId)
-            .ValueGeneratedNever();
+            .HasOne(p => p.Publisher)
+            .WithMany(u => u.Photos);
 
         builder.Property(p => p.PublishDate);
 
         builder
-            .Property(p => p.FoodId)
-            .ValueGeneratedNever();
+            .HasOne(p => p.Food)
+            .WithMany(f => f.Photos);
 
         builder
             .Property(p => p.Link)
