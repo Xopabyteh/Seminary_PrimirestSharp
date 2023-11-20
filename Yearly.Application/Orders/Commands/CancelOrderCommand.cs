@@ -1,8 +1,12 @@
 ﻿using ErrorOr;
 using MediatR;
 using Yearly.Application.Common.Interfaces;
+using Yearly.Application.Menus;
 
-namespace Yearly.Application.Orders.Commands.CancelOrder;
+namespace Yearly.Application.Orders.Commands;
+
+public record CancelOrderCommand(PrimirestFoodOrderIdentifier PrimirestFoodOrderIdentifier, string SessionCookie)
+    : IRequest<ErrorOr<Unit>>;
 
 public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand, ErrorOr<Unit>>
 {

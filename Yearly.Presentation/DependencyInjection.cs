@@ -1,9 +1,8 @@
-﻿using Hangfire;
-using System.Reflection;
+﻿using System.Reflection;
+using Hangfire;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.IdentityModel.Protocols;
 using Yearly.Presentation.BackgroundJobs;
 using Yearly.Presentation.Errors;
 using Yearly.Presentation.OutputCaching;

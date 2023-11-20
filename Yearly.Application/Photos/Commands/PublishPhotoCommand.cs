@@ -1,12 +1,32 @@
 ﻿using ErrorOr;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Yearly.Application.Common.Interfaces;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
+using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Services;
 
-namespace Yearly.Application.Photos.Commands.Publish;
+namespace Yearly.Application.Photos.Commands;
+
+public record PublishPhotoCommand(
+    IFormFile File,
+    FoodId FoodId,
+    User Publisher) : IRequest<ErrorOr<Photo>>;
+
+public class PublishPhotoCommandValidator : AbstractValidator<PublishPhotoCommand>
+{
+    public PublishPhotoCommandValidator()
+    {
+        RuleFor(x => x.File)
+            .NotNull();
+
+        RuleFor(x => x.FoodId).NotNull();
+    }
+}
 
 public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, ErrorOr<Photo>>
 {
@@ -26,7 +46,8 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
     }
 
 
-    public async Task<ErrorOr<Photo>> Handle(PublishPhotoCommand request, CancellationToken cancellationToken) {
+    public async Task<ErrorOr<Photo>> Handle(PublishPhotoCommand request, CancellationToken cancellationToken)
+    {
 
         var photoId = new PhotoId(Guid.NewGuid());
         var linkResult = await _photoStorage.UploadPhotoAsync(request.File, Photo.NameFrom(photoId, request.FoodId));

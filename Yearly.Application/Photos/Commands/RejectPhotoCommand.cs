@@ -3,9 +3,13 @@ using MediatR;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.PhotoAgg;
+using Yearly.Domain.Models.PhotoAgg.ValueObjects;
+using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Repositories;
 
-namespace Yearly.Application.Photos.Commands.Reject;
+namespace Yearly.Application.Photos.Commands;
+
+public record RejectPhotoCommand(PhotoId PhotoId, User Rejector) : IRequest<ErrorOr<Unit>>;
 
 public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, ErrorOr<Unit>>
 {
@@ -25,7 +29,7 @@ public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, Err
     {
         var photo = await _photoRepository.GetAsync(request.PhotoId);
 
-        if(photo is null)
+        if (photo is null)
             return Errors.Errors.Photo.PhotoNotFound;
 
         request.Rejector.RejectPhoto(photo);
