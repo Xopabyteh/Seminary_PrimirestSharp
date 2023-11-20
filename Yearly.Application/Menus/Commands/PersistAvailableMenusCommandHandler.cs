@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Reflection.Metadata.Ecma335;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
@@ -22,6 +23,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<PersistAvailableMenusCommandHandler> _logger;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IFoodSimilarityService _foodSimilarityService;
 
     public PersistAvailableMenusCommandHandler(
         IPrimirestMenuProvider primirestMenuProvider,
@@ -29,7 +31,8 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
         IUnitOfWork unitOfWork,
         IFoodRepository foodRepository,
         ILogger<PersistAvailableMenusCommandHandler> logger,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IFoodSimilarityService foodSimilarityService)
     {
         _primirestMenuProvider = primirestMenuProvider;
         _weeklyMenuRepository = weeklyMenuRepository;
@@ -37,6 +40,7 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
         _foodRepository = foodRepository;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
+        _foodSimilarityService = foodSimilarityService;
     }
 
     public async Task<ErrorOr<Unit>> Handle(PersistAvailableMenusCommand request, CancellationToken cancellationToken)
@@ -50,20 +54,45 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
         var deletedCount = await _weeklyMenuRepository.ExecuteDeleteMenusBeforeDateAsync(today);
         _logger.LogInformation("Deleted {count} old menus before the date {date}", deletedCount, today);
 
+        //Load menu from primirest
         var primirestMenusResult = await _primirestMenuProvider.GetMenusThisWeekAsync();
         if (primirestMenusResult.IsError)
             return primirestMenusResult.Errors;
 
+        //Check if there are any
         var primirestWeeklyMenus = primirestMenusResult.Value;
         if (primirestWeeklyMenus.Count == 0)
             return Unit.Value; //No menus available -> nothing to persist
 
+        //Persist menus
+        var newlyPersistedFoods = await PersistFoodsAndMenus(primirestWeeklyMenus);
+
+        //Create similarity table
+        if (newlyPersistedFoods.Count > 0)
+        {
+            await _foodSimilarityService.AddToSimilarityTableAsync(newlyPersistedFoods);
+        }
+
+        await _unitOfWork.SaveChangesAsync();
+
+
+        return Unit.Value;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="primirestWeeklyMenus"></param>
+    /// <returns>Newly persisted foods: foods that were not yet present in the repository and have a unique name.</returns>
+    private async Task<List<Food>> PersistFoodsAndMenus(List<PrimirestWeeklyMenu> primirestWeeklyMenus)
+    {
+        var newlyPersistedFoods = new List<Food>(primirestWeeklyMenus.Count * 3);
         foreach (var primirestWeeklyMenu in primirestWeeklyMenus)
         {
             var weeklyMenuId = new WeeklyMenuId(primirestWeeklyMenu.PrimirestMenuId);
 
             //If we already have this menu, skip it
-            if (await _weeklyMenuRepository.DoesMenuForWeekExistAsync(weeklyMenuId))
+            if (await _weeklyMenuRepository.DoesMenuExist(weeklyMenuId))
                 continue;
 
             var dailyMenus = new List<DailyMenu>(5);
@@ -79,16 +108,21 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
                     var food = await _foodRepository.GetFoodByNameAsync(primirestFood.Name);
 
                     //If we don't have food yet, create it
-                    if (food is null) 
+                    if (food is null)
                     {
-                        food = Food.Create(primirestFood.Name, primirestFood.Allergens, primirestFood.PrimirestFoodIdentifier);
+                        food = Food.Create(
+                            primirestFood.Name,
+                            primirestFood.Allergens,
+                            primirestFood.PrimirestFoodIdentifier);
+
                         _logger.Log(LogLevel.Information, "New food created - {foodName}", food.Name);
+                        newlyPersistedFoods.Add(food);
                         await _foodRepository.AddFoodAsync(food);
                     }
                     else
                     {
                         food.UpdatePrimirestFoodIdentifier(primirestFood.PrimirestFoodIdentifier);
-                        await _foodRepository.UpdatePrimirestFoodIdentifierAsync(food);
+                        await _foodRepository.UpdateFoodAsync(food);
                     }
 
                     foodIdsForDay.Add(food.Id);
@@ -103,9 +137,6 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
             await _weeklyMenuRepository.AddMenuAsync(menuForWeek);
         }
 
-        await _unitOfWork.SaveChangesAsync();
-
-
-        return Unit.Value;
+        return newlyPersistedFoods;
     }
 }

@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
 
-namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
+namespace Yearly.Infrastructure.Persistence.ModelConfigurations.Domain;
 
 public class WeeklyMenuConfiguration : IEntityTypeConfiguration<WeeklyMenu>
 {
     public void Configure(EntityTypeBuilder<WeeklyMenu> builder)
     {
-        builder.ToTable("WeeklyMenus");
+        builder.ToTable("WeeklyMenus", DatabaseSchemas.Domain);
 
         builder.HasKey(m => m.Id);
         builder
@@ -41,5 +41,5 @@ public class WeeklyMenuConfiguration : IEntityTypeConfiguration<WeeklyMenu>
 
             menuForDayBuilder.Property(d => d.Date);
         });
-    }        
+    }
 }

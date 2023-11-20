@@ -7,7 +7,7 @@ public interface IWeeklyMenuRepository
     public Task AddMenuAsync(WeeklyMenu weeklyMenu);
     //public Task<bool> DoesMenuExistForDateAsync(DateTime date);
 
-    public Task<bool> DoesMenuForWeekExistAsync(WeeklyMenuId id);
+    public Task<bool> DoesMenuExist(WeeklyMenuId id);
 
     /// <summary>
     /// Get's all the menus that are available since the given date.

@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 
-namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
+namespace Yearly.Infrastructure.Persistence.ModelConfigurations.Domain;
 
 public class FoodConfiguration : IEntityTypeConfiguration<Food>
 {
     public void Configure(EntityTypeBuilder<Food> builder)
     {
+        builder.ToTable("Foods", DatabaseSchemas.Domain);
+
         builder.HasKey(f => f.Id);
         builder
             .Property(f => f.Id)

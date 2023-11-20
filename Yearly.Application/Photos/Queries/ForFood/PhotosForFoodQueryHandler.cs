@@ -13,9 +13,19 @@ namespace Yearly.Application.Photos.Queries.ForFood
             _photoRepository = photoRepository;
         }
 
-        public Task<List<Photo>> Handle(PhotosForFoodQuery request, CancellationToken cancellationToken)
+        public async Task<List<Photo>> Handle(PhotosForFoodQuery request, CancellationToken cancellationToken)
         {
-            return _photoRepository.GetApprovedPhotosForFoodAsync(request.Id);
+            if (request.Food.AliasForFoodId is null)
+            {
+                //The root food
+                return await _photoRepository.GetApprovedPhotosForFoodAsync(request.Food.Id);
+            }
+            else //Alias is not null
+            {
+                //The food is an alias for another food
+                //Return photos of the alias
+                return await _photoRepository.GetApprovedPhotosForFoodAsync(request.Food.AliasForFoodId);
+            }
         }
     }
 }

@@ -13,14 +13,6 @@ public record DailyMenuResponse(
     //SoupResponse Soup
     );
 
-public record FoodResponse(
-    string Name,
-    string Allergens,
-    List<string> PhotoLinks,
-    Guid FoodId, //The id of the food in our system, not the primirest id
-    PrimirestFoodIdentifierContract PrimirestFoodIdentifier
-    );
-
 //public record SoupResponse(
 //    string Name,
 //    List<string> ImageLinks);

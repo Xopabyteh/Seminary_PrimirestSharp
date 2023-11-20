@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
-namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
+namespace Yearly.Infrastructure.Persistence.ModelConfigurations.Domain;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.ToTable("Users", DatabaseSchemas.Domain);
+
         builder.HasKey(u => u.Id);
         builder
             .Property(u => u.Id)

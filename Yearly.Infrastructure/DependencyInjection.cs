@@ -14,6 +14,7 @@ using Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
+using Yearly.Infrastructure.Services.Foods;
 using Yearly.Infrastructure.Services.Menus;
 using Yearly.Infrastructure.Services.Orders;
 
@@ -35,6 +36,7 @@ public static class DependencyInjection
 
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
         services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();
+        services.AddScoped<IFoodSimilarityService, FoodSimilarityService>();
 
         services.Configure<PrimirestAdminCredentialsOptions>(
             builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
@@ -59,6 +61,7 @@ public static class DependencyInjection
         //services.AddScoped<ISoupRepository, SoupRepository>();
 
         services.AddScoped<WeeklyMenuDTORepository>();
+        services.AddScoped<FoodSimilarityTableDTORepository>();
 
         if (builder.Environment.IsDevelopment())
         {

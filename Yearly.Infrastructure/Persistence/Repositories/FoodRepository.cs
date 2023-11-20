@@ -43,7 +43,7 @@ public class FoodRepository : IFoodRepository
         return foods;
     }
 
-    public Task UpdatePrimirestFoodIdentifierAsync(Food food)
+    public Task UpdateFoodAsync(Food food)
     {
         _context.Foods.Update(food);
         return Task.CompletedTask;

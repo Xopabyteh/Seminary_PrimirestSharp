@@ -5,12 +5,14 @@ using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
-namespace Yearly.Infrastructure.Persistence.ModelConfigurations;
+namespace Yearly.Infrastructure.Persistence.ModelConfigurations.Domain;
 
 public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
 {
     public void Configure(EntityTypeBuilder<Photo> builder)
     {
+        builder.ToTable("Photos", DatabaseSchemas.Domain);
+
         builder.HasKey(p => p.Id);
         builder
             .Property(p => p.Id)

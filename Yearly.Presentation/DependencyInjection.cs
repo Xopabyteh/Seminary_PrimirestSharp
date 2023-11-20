@@ -1,8 +1,10 @@
-﻿using System.Reflection;
+﻿using Hangfire;
+using System.Reflection;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Yearly.Presentation.BackgroundServices;
+using Microsoft.IdentityModel.Protocols;
+using Yearly.Presentation.BackgroundJobs;
 using Yearly.Presentation.Errors;
 using Yearly.Presentation.OutputCaching;
 
@@ -10,13 +12,21 @@ namespace Yearly.Presentation;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, WebApplicationBuilder builder)
     {
         services.AddMappings();
 
         services
             .AddControllers()
             .AddNewtonsoftJson();
+
+        services.AddTransient<PersistAvailableMenusJob>();
+        services.AddHangfire(configuration => configuration
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+        services.AddHangfireServer();
 
         services.AddSingleton<ProblemDetailsFactory, YearlyProblemDetailsFactory>();
 
@@ -26,8 +36,6 @@ public static class DependencyInjection
         {
             b.AddSimpleConsole();
         });
-
-        services.AddHostedService<PersistAvailableMenusBackgroundService>();
 
         return services;
     }
@@ -50,6 +58,5 @@ public static class DependencyInjection
                 policy.Tag(OutputCacheTagName.GetAvailableMenusTag);
             });
         });
-
     }
 }

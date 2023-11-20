@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Yearly.Contracts.Common;
 using Yearly.Contracts.Menu;
 
 namespace Yearly.Infrastructure.Persistence.Repositories.DTORepositories;

@@ -45,7 +45,7 @@ public class MenuController : ApiController
                 {
                     var foodForDay = await _mediator.Send(new GetFoodQuery(foodForDayId));
 
-                    var photoLinks = await _mediator.Send(new PhotosForFoodQuery(foodForDay.Id));
+                    var photoLinks = await _mediator.Send(new PhotosForFoodQuery(foodForDay));
 
                     foodsResponse.Add(new(
                         foodForDay.Name,

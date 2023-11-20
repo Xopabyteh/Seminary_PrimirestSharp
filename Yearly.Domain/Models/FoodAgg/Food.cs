@@ -1,4 +1,5 @@
-﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
+﻿using Yearly.Domain.Errors.Exceptions;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.FoodAgg;
@@ -50,7 +51,16 @@ public sealed class Food : AggregateRoot<FoodId>
         PrimirestFoodIdentifier = newPrimirestFoodIdentifier;
     }
 
+    public void SetAliasForFood(Food forFood)
+    {
+        if (forFood.AliasForFoodId is not null)
+            throw new IllegalStateException("Cannot set an alias to a food that is already an alias of another food, set the alias to the root food instead..");
+        
+        AliasForFoodId = forFood.Id;
+    }
+
 #pragma warning disable CS8618 //For EF Core
+    // ReSharper disable once UnusedMember.Local
     private Food()
         :base(null!)
 #pragma warning restore CS8618
