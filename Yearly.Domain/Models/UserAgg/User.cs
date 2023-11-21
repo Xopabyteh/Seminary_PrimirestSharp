@@ -32,6 +32,11 @@ public class User : AggregateRoot<UserId>
         _roles.Add(role);
     }
 
+    public void RemoveRole(UserRole role)
+    {
+        _roles.Remove(role);
+    }
+
     public void ApprovePhoto(Photo photo)
     {
         photo.Approve();

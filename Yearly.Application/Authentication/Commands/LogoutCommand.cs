@@ -1,6 +1,8 @@
 ﻿using MediatR;
 
-namespace Yearly.Application.Authentication.Commands.Logout;
+namespace Yearly.Application.Authentication.Commands;
+
+public record LogoutCommand(string SessionCookie) : IRequest;
 
 public class LogoutCommandHandler : IRequestHandler<LogoutCommand>
 {

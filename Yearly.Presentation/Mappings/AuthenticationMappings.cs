@@ -1,5 +1,5 @@
 ﻿using Mapster;
-using Yearly.Application.Authentication.Commands.Login;
+using Yearly.Application.Authentication.Commands;
 using Yearly.Contracts.Authentication;
 
 namespace Yearly.Presentation.Mappings;

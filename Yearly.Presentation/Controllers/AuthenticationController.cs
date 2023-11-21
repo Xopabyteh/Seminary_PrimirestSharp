@@ -1,9 +1,7 @@
 ﻿using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Yearly.Application.Authentication.Commands.Login;
-using Yearly.Application.Authentication.Commands.Logout;
-using Yearly.Application.Authentication.Commands.Roles;
+using Yearly.Application.Authentication.Commands;
 using Yearly.Contracts.Authentication;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
@@ -46,7 +44,7 @@ public class AuthenticationController : ApiController
 
     [HttpPost("add-role")]
     public Task<IActionResult> AddRole(
-        [FromBody] AddRoleRequest request,
+        [FromBody] RoleRequest request,
         [FromHeader] string sessionCookie)
     {
         return PerformAuthorizedActionAsync(
@@ -54,6 +52,25 @@ public class AuthenticationController : ApiController
             async _ =>
             {
                 var command = new AddRoleToUserCommand(new UserId(request.UserId), new UserRole(request.RoleCode));
+                var result = await _mediator.Send(command);
+                return result.Match(
+                    _ => Ok(),
+                    Problem);
+            },
+            UserRole.Admin);
+    }
+
+    [HttpPost("remove-role")]
+    public Task<IActionResult> RemoveRole(
+        [FromBody] RoleRequest request,
+        [FromHeader] string sessionCookie)
+
+    {
+        return PerformAuthorizedActionAsync(
+            sessionCookie,
+            async _ =>
+            {
+                var command = new RemoveRoleFromUserCommand(new UserId(request.UserId), new UserRole(request.RoleCode));
                 var result = await _mediator.Send(command);
                 return result.Match(
                     _ => Ok(),

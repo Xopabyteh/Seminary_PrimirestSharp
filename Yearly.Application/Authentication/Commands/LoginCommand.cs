@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using FluentValidation;
 using MediatR;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Errors.Exceptions;
@@ -6,7 +7,22 @@ using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
-namespace Yearly.Application.Authentication.Commands.Login;
+namespace Yearly.Application.Authentication.Commands;
+
+public record LoginCommand(string Username, string Password) : IRequest<ErrorOr<LoginResult>>;
+
+public class LoginCommandValidator : AbstractValidator<LoginCommand>
+{
+    public LoginCommandValidator()
+    {
+        RuleFor(x => x.Username)
+            .NotEmpty()
+            .WithMessage("Username is required");
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .WithMessage("Password is required");
+    }
+}
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginResult>>
 {
@@ -53,3 +69,5 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         return new LoginResult(externalLoginResult.Value, sharpUser);
     }
 }
+
+public record LoginResult(string SessionCookie, User User);

@@ -1,5 +1,5 @@
 ﻿namespace Yearly.Contracts.Authentication;
 
-public record AddRoleRequest(
+public record RoleRequest(
     int UserId,
     string RoleCode);

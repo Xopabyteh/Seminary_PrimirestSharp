@@ -1,20 +1,21 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Photos.Commands;
-using Yearly.Application.Photos.Queries;
-using Yearly.Contracts.Photos;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
+using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
 [Route("photo")]
 public class PhotoController : ApiController
 {
-    public PhotoController(ISender mediator)
+    private readonly WaitingPhotosDTORepository _waitingPhotosDtoRepository;
+    public PhotoController(ISender mediator, WaitingPhotosDTORepository waitingPhotosDtoRepository)
         : base(mediator)
     {
+        _waitingPhotosDtoRepository = waitingPhotosDtoRepository;
     }
 
     [HttpPost("publish")]
@@ -72,10 +73,7 @@ public class PhotoController : ApiController
     [HttpGet("waiting")]
     public async Task<IActionResult> GetWaitingPhotos()
     {
-        var result = await _mediator.Send(new WaitingPhotosQuery());
-
-        var response = new WaitingPhotosResponse(result.Select(p => p.Id.Value).ToList());
-        
+        var response = await _waitingPhotosDtoRepository.GetWaitingPhotosAsync();
         return Ok(response);
     }
 }

@@ -35,19 +35,25 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
+    private readonly IFoodRepository _foodRepository;
 
-    public PublishPhotoCommandHandler(IPhotoStorage photoStorage, IPhotoRepository photoRepository, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork, IUserRepository userRepository)
+    public PublishPhotoCommandHandler(IPhotoStorage photoStorage, IPhotoRepository photoRepository, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork, IUserRepository userRepository, IFoodRepository foodRepository)
     {
         _photoStorage = photoStorage;
         _photoRepository = photoRepository;
         _dateTimeProvider = dateTimeProvider;
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
+        _foodRepository = foodRepository;
     }
 
 
     public async Task<ErrorOr<Photo>> Handle(PublishPhotoCommand request, CancellationToken cancellationToken)
     {
+        //Check if the food exists
+        var food = await _foodRepository.GetFoodByIdAsync(request.FoodId);
+        if(food is null)
+            return Errors.Errors.Food.FoodNotFound(request.FoodId);
 
         var photoId = new PhotoId(Guid.NewGuid());
         var linkResult = await _photoStorage.UploadPhotoAsync(request.File, Photo.NameFrom(photoId, request.FoodId));
