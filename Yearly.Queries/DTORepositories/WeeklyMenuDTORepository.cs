@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Menu;
+using Yearly.Infrastructure.Persistence;
 
-namespace Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
+namespace Yearly.Queries.DTORepositories;
 
 public class WeeklyMenuDTORepository
 {
@@ -15,7 +16,6 @@ public class WeeklyMenuDTORepository
 
     public async Task<AvailableMenusResponse> GetAvailableMenus()
     {
-        //Todo: make this work...
         var weeklyMenus = await _context
             .WeeklyMenus
             .AsSplitQuery()

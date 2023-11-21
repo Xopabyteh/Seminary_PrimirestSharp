@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Yearly.Application.Menus.Commands;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
-using Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
 using Yearly.Presentation.OutputCaching;
+using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 

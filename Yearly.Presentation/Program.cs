@@ -4,13 +4,15 @@ using Yearly.Infrastructure;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
+using Yearly.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddApplication()
     .AddPresentation(builder)
-    .AddInfrastructure(builder);
+    .AddQueries()
+    .AddInfrastructure(builder)
+    .AddApplication();
 
 var app = builder.Build();
 

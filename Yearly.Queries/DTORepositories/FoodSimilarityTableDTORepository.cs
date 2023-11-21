@@ -2,8 +2,9 @@
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Foods;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Infrastructure.Persistence;
 
-namespace Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
+namespace Yearly.Queries.DTORepositories;
 
 public class FoodSimilarityTableDTORepository
 {

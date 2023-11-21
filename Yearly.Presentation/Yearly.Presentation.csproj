@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
     <ProjectReference Include="..\Yearly.Infrastructure\Yearly.Infrastructure.csproj" />
+    <ProjectReference Include="..\Yearly.Queries\Yearly.Queries.csproj" />
   </ItemGroup>
 
   <ItemGroup>

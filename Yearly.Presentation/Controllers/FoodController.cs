@@ -5,7 +5,7 @@ using Yearly.Application.Foods.Commands.FoodSimilarity;
 using Yearly.Contracts.Foods;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
-using Yearly.Infrastructure.Persistence.Repositories.DTORepositories;
+using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
