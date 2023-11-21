@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
 
@@ -25,19 +26,21 @@ public class WeeklyMenuConfiguration : IEntityTypeConfiguration<WeeklyMenu>
 
             menuForDayBuilder.WithOwner().HasForeignKey(nameof(WeeklyMenuId));
 
-            menuForDayBuilder.OwnsMany(d => d.FoodIds, foodIdBuilder =>
+            menuForDayBuilder.OwnsMany(d => d.Foods, foodIdBuilder =>
             {
                 foodIdBuilder.ToTable("MenuFoodIds");
 
                 foodIdBuilder.WithOwner();
 
-                foodIdBuilder.HasKey(f => f.Value);
+                foodIdBuilder.HasKey(f => f.FoodId);
                 foodIdBuilder
-                    .Property(f => f.Value)
+                    .Property(f => f.FoodId)
+                    .HasConversion(
+                        id => id.Value,
+                        idValue => new FoodId(idValue))
                     .HasColumnName("FoodId")
                     .ValueGeneratedNever();
             });
-
 
             menuForDayBuilder.Property(d => d.Date);
         });

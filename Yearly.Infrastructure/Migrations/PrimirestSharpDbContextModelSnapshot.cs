@@ -236,9 +236,9 @@ namespace Yearly.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("WeeklyMenuId");
 
-                            b1.OwnsMany("Yearly.Domain.Models.FoodAgg.ValueObjects.FoodId", "FoodIds", b2 =>
+                            b1.OwnsMany("Yearly.Domain.Models.MenuAgg.ValueObjects.MenuFood", "Foods", b2 =>
                                 {
-                                    b2.Property<Guid>("Value")
+                                    b2.Property<Guid>("FoodId")
                                         .HasColumnType("uniqueidentifier")
                                         .HasColumnName("FoodId");
 
@@ -248,7 +248,7 @@ namespace Yearly.Infrastructure.Migrations
                                     b2.Property<int>("DailyMenuWeeklyMenuId")
                                         .HasColumnType("int");
 
-                                    b2.HasKey("Value");
+                                    b2.HasKey("FoodId");
 
                                     b2.HasIndex("DailyMenuWeeklyMenuId", "DailyMenuId");
 
@@ -258,7 +258,7 @@ namespace Yearly.Infrastructure.Migrations
                                         .HasForeignKey("DailyMenuWeeklyMenuId", "DailyMenuId");
                                 });
 
-                            b1.Navigation("FoodIds");
+                            b1.Navigation("Foods");
                         });
 
                     b.Navigation("DailyMenus");

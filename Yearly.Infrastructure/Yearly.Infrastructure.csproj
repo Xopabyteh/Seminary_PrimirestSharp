@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Http\" />
+    <Folder Include="Persistence\ModelConfigurations\Infrastructure\" />
     <Folder Include="Persistence\Seeding\" />
     <Folder Include="Services\Orders\" />
   </ItemGroup>

@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Infrastructure.Services.Foods;
 
-namespace Yearly.Infrastructure.Persistence.ModelConfigurations.Infrastructure;
+namespace Yearly.Infrastructure.Persistence.ModelConfigurations.Domain;
 
 public class FoodSimilarityRecordConfiguration : IEntityTypeConfiguration<FoodSimilarityRecord>
 {
@@ -20,7 +19,7 @@ public class FoodSimilarityRecordConfiguration : IEntityTypeConfiguration<FoodSi
         builder
             .Property(fs => fs.PotentialAliasOriginId)
             .HasConversion(
-                id => id.Value, 
+                id => id.Value,
                 value => new FoodId(value));
 
         builder.Property(fs => fs.Similarity);

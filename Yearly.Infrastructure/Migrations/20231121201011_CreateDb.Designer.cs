@@ -12,7 +12,7 @@ using Yearly.Infrastructure.Persistence;
 namespace Yearly.Infrastructure.Migrations
 {
     [DbContext(typeof(PrimirestSharpDbContext))]
-    [Migration("20231104103839_CreateDb")]
+    [Migration("20231121201011_CreateDb")]
     partial class CreateDb
     {
         /// <inheritdoc />
@@ -45,7 +45,23 @@ namespace Yearly.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Foods");
+                    b.ToTable("Foods", "Domain");
+                });
+
+            modelBuilder.Entity("Yearly.Domain.Models.FoodAgg.ValueObjects.FoodSimilarityRecord", b =>
+                {
+                    b.Property<Guid>("NewlyPersistedFoodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PotentialAliasOriginId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Similarity")
+                        .HasColumnType("float");
+
+                    b.HasKey("NewlyPersistedFoodId", "PotentialAliasOriginId");
+
+                    b.ToTable("FoodSimilarities", "Domain");
                 });
 
             modelBuilder.Entity("Yearly.Domain.Models.PhotoAgg.Photo", b =>
@@ -72,7 +88,7 @@ namespace Yearly.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Photos");
+                    b.ToTable("Photos", "Domain");
                 });
 
             modelBuilder.Entity("Yearly.Domain.Models.UserAgg.User", b =>
@@ -87,7 +103,7 @@ namespace Yearly.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", "Domain");
                 });
 
             modelBuilder.Entity("Yearly.Domain.Models.WeeklyMenuAgg.WeeklyMenu", b =>
@@ -97,7 +113,7 @@ namespace Yearly.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WeeklyMenus", (string)null);
+                    b.ToTable("WeeklyMenus", "Domain");
                 });
 
             modelBuilder.Entity("Yearly.Domain.Models.FoodAgg.Food", b =>
@@ -115,7 +131,7 @@ namespace Yearly.Infrastructure.Migrations
 
                             b1.HasIndex("FoodId");
 
-                            b1.ToTable("FoodPhotoIds", (string)null);
+                            b1.ToTable("FoodPhotoIds", "Domain");
 
                             b1.WithOwner()
                                 .HasForeignKey("FoodId");
@@ -140,7 +156,7 @@ namespace Yearly.Infrastructure.Migrations
 
                             b1.HasKey("FoodId");
 
-                            b1.ToTable("Foods");
+                            b1.ToTable("Foods", "Domain");
 
                             b1.WithOwner()
                                 .HasForeignKey("FoodId");
@@ -170,7 +186,7 @@ namespace Yearly.Infrastructure.Migrations
 
                             b1.HasKey("UserId", "Id");
 
-                            b1.ToTable("UserPhotoIds", (string)null);
+                            b1.ToTable("UserPhotoIds", "Domain");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -189,7 +205,7 @@ namespace Yearly.Infrastructure.Migrations
 
                             b1.HasIndex("UserId");
 
-                            b1.ToTable("UserRoles", (string)null);
+                            b1.ToTable("UserRoles", "Domain");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -218,14 +234,14 @@ namespace Yearly.Infrastructure.Migrations
 
                             b1.HasKey("WeeklyMenuId", "Id");
 
-                            b1.ToTable("DailyMenus", (string)null);
+                            b1.ToTable("DailyMenus", "Domain");
 
                             b1.WithOwner()
                                 .HasForeignKey("WeeklyMenuId");
 
-                            b1.OwnsMany("Yearly.Domain.Models.FoodAgg.ValueObjects.FoodId", "FoodIds", b2 =>
+                            b1.OwnsMany("Yearly.Domain.Models.MenuAgg.ValueObjects.MenuFood", "Foods", b2 =>
                                 {
-                                    b2.Property<Guid>("Value")
+                                    b2.Property<Guid>("FoodId")
                                         .HasColumnType("uniqueidentifier")
                                         .HasColumnName("FoodId");
 
@@ -235,17 +251,17 @@ namespace Yearly.Infrastructure.Migrations
                                     b2.Property<int>("DailyMenuWeeklyMenuId")
                                         .HasColumnType("int");
 
-                                    b2.HasKey("Value");
+                                    b2.HasKey("FoodId");
 
                                     b2.HasIndex("DailyMenuWeeklyMenuId", "DailyMenuId");
 
-                                    b2.ToTable("MenuFoodIds", (string)null);
+                                    b2.ToTable("MenuFoodIds", "Domain");
 
                                     b2.WithOwner()
                                         .HasForeignKey("DailyMenuWeeklyMenuId", "DailyMenuId");
                                 });
 
-                            b1.Navigation("FoodIds");
+                            b1.Navigation("Foods");
                         });
 
                     b.Navigation("DailyMenus");

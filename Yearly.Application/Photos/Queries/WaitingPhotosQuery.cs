@@ -4,7 +4,7 @@ using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Photos.Queries;
 
-public record WaitingPhotosQuery() : IRequest<List<Photo>>;
+public record WaitingPhotosQuery : IRequest<List<Photo>>;
 
 public class WaitingPhotosQueryHandler : IRequestHandler<WaitingPhotosQuery, List<Photo>>
 {

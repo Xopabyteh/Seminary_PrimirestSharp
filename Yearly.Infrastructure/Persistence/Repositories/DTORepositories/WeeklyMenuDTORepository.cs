@@ -18,17 +18,21 @@ public class WeeklyMenuDTORepository
         //Todo: make this work...
         var weeklyMenus = await _context
             .WeeklyMenus
+            .AsSplitQuery()
             .Select(w => new WeeklyMenuResponse(
                 w.DailyMenus.Select(d => new DailyMenuResponse(
                         d.Date,
                         _context.Foods
-                            .Where(f => d.FoodIds.Any(dFId => dFId == f.Id))
+                            .Where(f => d.Foods.Any(dFId => dFId.FoodId == f.Id))
                             .Select(f => new FoodResponse(
-                                "",
-                                "",
-                                new(),
-                                Guid.Empty,
-                                new(0, 0, 0)))
+                                f.Name,
+                                f.Allergens,
+                                _context.Photos
+                                    .Where(p => p.FoodId == f.Id)
+                                    .Select(p => p.Link)
+                                    .ToList(),
+                                f.Id.Value,
+                                new(f.PrimirestFoodIdentifier.MenuId, f.PrimirestFoodIdentifier.DayId, f.PrimirestFoodIdentifier.ItemId)))
                             .ToList()))
                     .ToList(),
                 w.Id.Value))

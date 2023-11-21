@@ -11,8 +11,12 @@ namespace Yearly.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Domain");
+
             migrationBuilder.CreateTable(
                 name: "Foods",
+                schema: "Domain",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -29,7 +33,22 @@ namespace Yearly.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FoodSimilarities",
+                schema: "Domain",
+                columns: table => new
+                {
+                    NewlyPersistedFoodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PotentialAliasOriginId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Similarity = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FoodSimilarities", x => new { x.NewlyPersistedFoodId, x.PotentialAliasOriginId });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Photos",
+                schema: "Domain",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -46,6 +65,7 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Users",
+                schema: "Domain",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
@@ -58,6 +78,7 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "WeeklyMenus",
+                schema: "Domain",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -69,6 +90,7 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "FoodPhotoIds",
+                schema: "Domain",
                 columns: table => new
                 {
                     PhotoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -80,6 +102,7 @@ namespace Yearly.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_FoodPhotoIds_Foods_FoodId",
                         column: x => x.FoodId,
+                        principalSchema: "Domain",
                         principalTable: "Foods",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -87,6 +110,7 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserPhotoIds",
+                schema: "Domain",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
@@ -100,6 +124,7 @@ namespace Yearly.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserPhotoIds_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "Domain",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -107,6 +132,7 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserRoles",
+                schema: "Domain",
                 columns: table => new
                 {
                     RoleCode = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
@@ -118,6 +144,7 @@ namespace Yearly.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "Domain",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -125,6 +152,7 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "DailyMenus",
+                schema: "Domain",
                 columns: table => new
                 {
                     WeeklyMenuId = table.Column<int>(type: "int", nullable: false),
@@ -138,6 +166,7 @@ namespace Yearly.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_DailyMenus_WeeklyMenus_WeeklyMenuId",
                         column: x => x.WeeklyMenuId,
+                        principalSchema: "Domain",
                         principalTable: "WeeklyMenus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -145,6 +174,7 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "MenuFoodIds",
+                schema: "Domain",
                 columns: table => new
                 {
                     FoodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -157,6 +187,7 @@ namespace Yearly.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_MenuFoodIds_DailyMenus_DailyMenuWeeklyMenuId_DailyMenuId",
                         columns: x => new { x.DailyMenuWeeklyMenuId, x.DailyMenuId },
+                        principalSchema: "Domain",
                         principalTable: "DailyMenus",
                         principalColumns: new[] { "WeeklyMenuId", "Id" },
                         onDelete: ReferentialAction.Cascade);
@@ -164,16 +195,19 @@ namespace Yearly.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_FoodPhotoIds_FoodId",
+                schema: "Domain",
                 table: "FoodPhotoIds",
                 column: "FoodId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MenuFoodIds_DailyMenuWeeklyMenuId_DailyMenuId",
+                schema: "Domain",
                 table: "MenuFoodIds",
                 columns: new[] { "DailyMenuWeeklyMenuId", "DailyMenuId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_UserId",
+                schema: "Domain",
                 table: "UserRoles",
                 column: "UserId");
         }
@@ -182,31 +216,44 @@ namespace Yearly.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "FoodPhotoIds");
+                name: "FoodPhotoIds",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "MenuFoodIds");
+                name: "FoodSimilarities",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "Photos");
+                name: "MenuFoodIds",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "UserPhotoIds");
+                name: "Photos",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
+                name: "UserPhotoIds",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "Foods");
+                name: "UserRoles",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "DailyMenus");
+                name: "Foods",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "DailyMenus",
+                schema: "Domain");
 
             migrationBuilder.DropTable(
-                name: "WeeklyMenus");
+                name: "Users",
+                schema: "Domain");
+
+            migrationBuilder.DropTable(
+                name: "WeeklyMenus",
+                schema: "Domain");
         }
     }
 }
