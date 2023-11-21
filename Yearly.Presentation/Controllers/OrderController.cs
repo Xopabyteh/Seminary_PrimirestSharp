@@ -50,10 +50,10 @@ public class OrderController : ApiController
         if (orders.IsError)
             return Problem(orders.Errors);
 
-        var ordersResponse = new List<OrderResponse>(orders.Value.Count);
+        var ordersResponse = new List<OrderDTO>(orders.Value.Count);
         foreach (var order in orders.Value)
         {
-            ordersResponse.Add(_mapper.Map<OrderResponse>(order));
+            ordersResponse.Add(_mapper.Map<OrderDTO>(order));
         }
 
         var response = new MyOrdersResponse(ordersResponse);

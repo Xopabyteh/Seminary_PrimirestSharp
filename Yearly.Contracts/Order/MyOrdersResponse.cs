@@ -3,11 +3,11 @@
 namespace Yearly.Contracts.Order;
 
 public record MyOrdersResponse(
-    List<OrderResponse> Orders
+    List<OrderDTO> Orders
 );
 
 
-public record OrderResponse(
+public record OrderDTO(
     Guid SharpFoodId, //Id of the food in the sharp system
-    PrimirestOrderIdentifierContract PrimirestOrderIdentifier
+    PrimirestOrderIdentifierDTO PrimirestOrderIdentifier
 );

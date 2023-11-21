@@ -11,7 +11,7 @@ public class FoodMappings : IRegister
         config.NewConfig<FoodId, Guid>()
             .Map(dst => dst, src => src.Value);
 
-        config.NewConfig<FoodSimilarityRecord, FoodSimilarityRecordResponse>()
+        config.NewConfig<FoodSimilarityRecord, FoodSimilarityRecordDTO>()
             .Map(dst => dst, src => src);
     }
 }

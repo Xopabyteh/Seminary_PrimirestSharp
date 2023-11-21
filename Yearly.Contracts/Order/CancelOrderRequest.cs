@@ -2,4 +2,4 @@
 
 namespace Yearly.Contracts.Order;
 
-public readonly record struct CancelOrderRequest(PrimirestOrderIdentifierContract PrimirestOrderIdentifier);
+public readonly record struct CancelOrderRequest(PrimirestOrderIdentifierDTO PrimirestOrderIdentifier);

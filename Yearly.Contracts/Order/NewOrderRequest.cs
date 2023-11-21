@@ -2,4 +2,4 @@
 
 namespace Yearly.Contracts.Order;
 
-public readonly record struct NewOrderRequest(PrimirestFoodIdentifierContract PrimirestFoodIdentifier);
+public readonly record struct NewOrderRequest(PrimirestFoodIdentifierDTO PrimirestFoodIdentifier);

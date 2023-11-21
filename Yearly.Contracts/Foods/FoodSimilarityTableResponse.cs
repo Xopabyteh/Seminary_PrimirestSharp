@@ -1,10 +1,10 @@
 ﻿namespace Yearly.Contracts.Foods;
 
-public record FoodSimilarityTableResponse(List<FoodSimilarityRecordResponse> Records);
+public record FoodSimilarityTableResponse(List<FoodSimilarityRecordDTO> Records);
 
-public record FoodSimilarityRecordResponse(
-    FoodSimilarityRecordSliceResponse NewlyPersistedFood,
-    FoodSimilarityRecordSliceResponse PotentialAlias,
+public record FoodSimilarityRecordDTO(
+    FoodSimilarityRecordSliceDTO NewlyPersistedFood,
+    FoodSimilarityRecordSliceDTO PotentialAlias,
     double Similarity);
 
-public record FoodSimilarityRecordSliceResponse(string Name, Guid Id);
+public record FoodSimilarityRecordSliceDTO(string Name, Guid Id);

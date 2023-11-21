@@ -19,12 +19,12 @@ public class WeeklyMenuDTORepository
         var weeklyMenus = await _context
             .WeeklyMenus
             .AsSplitQuery()
-            .Select(w => new WeeklyMenuResponse(
-                w.DailyMenus.Select(d => new DailyMenuResponse(
+            .Select(w => new WeeklyMenuDTO(
+                w.DailyMenus.Select(d => new DailyMenuDTO(
                         d.Date,
                         _context.Foods
                             .Where(f => d.Foods.Any(dFId => dFId.FoodId == f.Id))
-                            .Select(f => new FoodResponse(
+                            .Select(f => new FoodDTO(
                                 f.Name,
                                 f.Allergens,
                                 _context.Photos

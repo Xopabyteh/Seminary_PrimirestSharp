@@ -17,7 +17,7 @@ public class OrderMappings : IRegister
             .Map(dst => dst.SessionCookie, src => src.SessionCookie)
             .Map(dst => dst.PrimirestFoodOrderIdentifier, src => src.Request.PrimirestOrderIdentifier);
 
-        config.NewConfig<Order, OrderResponse>()
+        config.NewConfig<Order, OrderDTO>()
             .Map(dst => dst.SharpFoodId, src => src.ForFood.Value)
             .Map(dst => dst.PrimirestOrderIdentifier, src => src.PrimirestOrderIdentifier);
     }

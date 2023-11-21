@@ -14,14 +14,14 @@ public class FoodSimilarityTableDTORepository
         _context = context;
     }
 
-    public async Task<List<FoodSimilarityRecordResponse>> GetFoodSimilarityTableAsync()
+    public async Task<List<FoodSimilarityRecordDTO>> GetFoodSimilarityTableAsync()
     {
         var foodSimilarityRecords =
-            await _context.FoodSimilarityTable.Select(r => new FoodSimilarityRecordResponse(
+            await _context.FoodSimilarityTable.Select(r => new FoodSimilarityRecordDTO(
                 _context.Foods.Where(f => f.Id == r.NewlyPersistedFoodId)
-                    .Select(f => new FoodSimilarityRecordSliceResponse(f.Name, f.Id.Value)).First(),
+                    .Select(f => new FoodSimilarityRecordSliceDTO(f.Name, f.Id.Value)).First(),
                 _context.Foods.Where(f => f.Id == r.PotentialAliasOriginId)
-                    .Select(f => new FoodSimilarityRecordSliceResponse(f.Name, f.Id.Value)).First(),
+                    .Select(f => new FoodSimilarityRecordSliceDTO(f.Name, f.Id.Value)).First(),
                 r.Similarity)).ToListAsync();
 
         return foodSimilarityRecords;
