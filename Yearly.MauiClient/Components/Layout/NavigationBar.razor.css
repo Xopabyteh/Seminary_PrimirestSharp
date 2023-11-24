@@ -1,0 +1,69 @@
+#navbar {
+    position: absolute;
+    z-index: 100;
+
+    bottom: 0;
+    padding: 0;
+
+    display:grid;
+    grid-template-columns: 1fr 60px 1fr;
+
+    background-color: var(--front);
+
+    height: 4rem;
+    width: 100%;
+
+    border-radius: 1rem 1rem 0 0;
+}
+
+#order-page-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    aspect-ratio : 1/1;
+    border-radius: 50%;
+
+    background-color: var(--interesting);
+
+    transform: translateY(-1rem);
+}
+
+#order-page-button svg {
+    width: 100%;
+}
+
+#finance {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-evenly;
+}
+    #finance .money-block {
+        color: var(--gray);
+        font-weight: 600;
+    }
+
+    #finance .money-block .value {
+        color: var(--gray);
+        font-size: 0.7rem;
+    }
+
+.titled {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+    .titled .title {
+        margin-top: 2px;
+        font-size: 0.5rem;
+        font-weight: 600;
+        color: var(--gray);
+    }
+
+#lesser-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}

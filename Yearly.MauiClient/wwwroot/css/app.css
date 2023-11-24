@@ -1,9 +1,18 @@
 ﻿html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    
+    --back: #FFFFFF;
+    --front: #F0F0F0;
+    --text: #000000;
+    --gray: #636363;
+    --interesting: #007FFF;
+
+
 }
 
 a, .btn-link {
     color: #006bb7;
+    text-decoration: none;
 }
 
 .btn-primary {
