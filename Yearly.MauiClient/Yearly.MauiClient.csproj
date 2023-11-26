@@ -58,10 +58,25 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Components\Pages\OrderPage.razor.css" />
+      <None Remove="Components\Pages\Orders\FoodBlock.razor.css" />
+      <None Remove="Components\Pages\Orders\OrderPage.razor.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Components\Pages\Orders\FoodBlock.razor.css" />
+      <Content Include="Components\Pages\Orders\OrderPage.razor.css" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

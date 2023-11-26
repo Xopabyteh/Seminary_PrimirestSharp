@@ -1,0 +1,17 @@
+﻿@page "/";
+<header>
+    <h1 class='fs-huge fw-bold color-black'>Login</h1>
+    <h2 class='fw-semi-bold fs-large color-secondary'>Prosím přihlašte se.</h2>
+</header>
+
+<form method='post' @onsubmit="SubmitLogin">
+    <InputText DisplayName='Uživatelské jméno' @bind-Value='ModelUsername'></InputText>
+    <InputText DisplayName='Heslo' @bind-Value='ModelPassword'></InputText>
+    <button class='button bg-primary' type='submit'>Přihlásit se</button>
+</form>
+
+<footer>
+    <p class='fs-tiny color-secondary'>Primirest#</p>
+</footer>
+
+

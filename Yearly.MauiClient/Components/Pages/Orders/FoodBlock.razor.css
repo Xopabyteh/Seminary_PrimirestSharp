@@ -1,0 +1,32 @@
+﻿.card {
+    display: grid;
+    grid-template-columns: auto 108px; /* 108px is the width of the image */
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.card-image {
+    border-radius: 0.25rem;
+    width: 100%;
+    height: 100%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-body p {
+    flex-grow: 0;
+}
+
+.food-details {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.ordered {
+    border: 0.25rem dashed var(--clr-primary);
+}
