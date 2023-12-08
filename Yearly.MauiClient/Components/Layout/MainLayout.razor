@@ -1,11 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
 
 <div class="page bg-white">
     <main>
         @Body
     </main>
     
-    <Authorized>
-        <NavigationBar/>
-    </Authorized>
+    <NavigationBar/>
 </div>

@@ -11,10 +11,10 @@ public partial class IndexPage
     [Inject]
     public NavigationManager NavigationManager { get; set; } = null!;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         var hasSession = await AuthService.TryLoadSessionAsync();
-        if (!hasSession)
+        if (hasSession)
         {
             NavigationManager.NavigateTo("/login");
             return;

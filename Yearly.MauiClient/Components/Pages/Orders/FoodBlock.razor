@@ -1,9 +1,9 @@
 ﻿<div class='card @(Ordered ? "ordered" : string.Empty)'>
     <div class='card-body'>
-        <p class='fs-regular fw-regular'>@FoodName</p>
+        <p class='fs-regular fw-regular'>@Food.Name</p>
         <div class='food-details fs-small color-secondary'>
             <p>73Kč</p>
-            <p>@(string.IsNullOrEmpty(Allergens) ? "-" : Allergens)</p>
+            <p>@(string.IsNullOrEmpty(Food.Allergens) ? "-" : Food.Allergens)</p>
         </div>
         <button class='button @(Ordered ? "accent" : string.Empty)'>
             @if (Ordered)
@@ -21,6 +21,6 @@
             }
         </button>
     </div>
-    <img width='108px' height='108px' class='card-image' src='@ImageUrl' alt='@FoodName' />
+    <img width='108px' height='108px' class='card-image' src='@Food.PhotoLinks.FirstOrDefault()' alt='@Food.Name' />
 </div>
 

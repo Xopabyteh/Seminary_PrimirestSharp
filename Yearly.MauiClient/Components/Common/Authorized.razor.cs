@@ -17,7 +17,7 @@ public partial class Authorized : IDisposable
 
     private bool authorized = false;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         ResetAuthorized();
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
 using Yearly.MauiClient.Services;
+using Yearly.MauiClient.Services.SharpApiFacades;
 
 namespace Yearly.MauiClient;
 
@@ -27,7 +28,11 @@ public static class MauiProgram
 #endif
 
         builder.Services.AddSingleton<AuthService>();
-        builder.Services.AddSingleton<SharpAPIFacade>();
+        builder.Services.AddSingleton<SharpAPIClient>();
+
+        builder.Services.AddTransient<MenusFacade>();
+        builder.Services.AddTransient<AuthenticationFacade>();
+        builder.Services.AddTransient<OrdersFacade>();
 
         return builder.Build();
     }

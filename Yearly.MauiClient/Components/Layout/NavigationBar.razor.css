@@ -17,6 +17,10 @@
     border-radius: 1rem 1rem 0 0;
 }
 
+#navbar.hidden {
+    visibility: hidden;
+}
+
 #order-page-button {
     display: flex;
     justify-content: center;

@@ -10,9 +10,26 @@
 </header>
 <br/>
 <div class='container mt-400'>
-    <FoodBlock />
+    @*     <FoodBlock />
     <br/>
     <FoodBlock/>
     <br/>
-    <FoodBlock/>
+    <FoodBlock/> *@
+    
+    @foreach (var weeklyMenu in weeklyMenus)
+    {
+        <br/>
+        @foreach (var dailyMenu in weeklyMenu.DailyMenus)
+        {
+            <br/>
+            <h2 class='fs-regular fw-regular color-secondary'>@dailyMenu.Date</h2>
+            <br/>
+            @foreach (var food in dailyMenu.Foods)
+            {
+                <FoodBlock Food='@food'/>
+                <br/>
+            }
+        }
+        <br/>
+    }
 </div>
