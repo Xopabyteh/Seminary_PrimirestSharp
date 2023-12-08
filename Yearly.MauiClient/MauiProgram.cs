@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient;
 
@@ -19,10 +20,15 @@ public static class MauiProgram
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
-        builder.Logging.AddDebug();
+        builder.Services.AddLogging(c =>
+        {
+            c.AddDebug();
+        });
 #endif
+
+        builder.Services.AddSingleton<AuthService>();
+        builder.Services.AddSingleton<SharpAPIFacade>();
+
         return builder.Build();
-
-
     }
 }
