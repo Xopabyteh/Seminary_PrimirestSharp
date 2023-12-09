@@ -4,4 +4,9 @@ public readonly record struct LoginResponse(string SessionCookie, UserDetailsRes
 
 public readonly record struct UserDetailsResponse(string Username, List<UserRoleDTO> Roles);
 
-public readonly record struct UserRoleDTO(string RoleCode);
+public readonly record struct UserRoleDTO(string RoleCode)
+{
+    public static readonly UserRoleDTO PhotoApprover = new("PhA");
+    public static readonly UserRoleDTO Admin = new("Adm");
+    public static readonly UserRoleDTO BlackListedFromTakingPhotos = new("BFP");
+}

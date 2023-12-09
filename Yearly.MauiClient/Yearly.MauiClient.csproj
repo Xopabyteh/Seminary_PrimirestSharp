@@ -81,4 +81,12 @@
       <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Components\Pages\Settings\SettingsPage.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Pages\Settings\SettingsPage.razor" />
+    </ItemGroup>
+
 </Project>

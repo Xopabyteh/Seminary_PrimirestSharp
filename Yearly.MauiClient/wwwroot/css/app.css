@@ -1,12 +1,13 @@
 ﻿:root {
     --clr-black: #000000;
     --clr-white: #FFFFFF;
-    
     --clr-accent: #DADADA;
     /*--clr-accent: #EDEDED;*/
-
+    --clr-success: #659B5E;
     --clr-secondary: #636363;
     --clr-primary: #007FFF;
+    --clr-danger: #BF211E;
+
     --fw--regular: 400;
     --fw--semi-bold: 500;
     --fw--bold: 700;
@@ -59,6 +60,12 @@
 .color-primary {
     color: var(--clr-primary);
 }
+.color-danger {
+    color: var(--clr-danger);
+}
+.color-success {
+    color: var(--clr-success);
+}
 
 .bg-black {
     background-color: var(--clr-black);
@@ -74,6 +81,12 @@
 }
 .bg-primary {
     background-color: var(--clr-primary);
+}
+.bg-danger {
+    background-color: var(--clr-danger);
+}
+.bg-success {
+    background-color: var(--clr-success);
 }
 
 
@@ -262,6 +275,11 @@ br {
 
 .mt-400 {
     margin-top: 2rem;
+}
+
+.mh-100 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
 }
 
 /*Navbar nav elements*/
