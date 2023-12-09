@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Yearly.Domain.Models.UserAgg;
 
 namespace Yearly.Application.Authentication;
 
@@ -21,10 +20,10 @@ public interface IAuthService
     /// <returns></returns>
     public Task<ErrorOr<PrimirestUserInfo>> GetPrimirestUserInfoAsync(string sessionCookie);
 
-    /// <summary>
-    /// Gets our applications info about the logged user from our repository.
-    /// </summary>
-    /// <param name="sessionCookie"></param>
-    /// <returns></returns>
-    public Task<ErrorOr<User>> GetSharpUserAsync(string sessionCookie);
+    ///// <summary>
+    ///// Gets our applications info about the logged user from our repository.
+    ///// </summary>
+    ///// <param name="sessionCookie"></param>
+    ///// <returns></returns>
+    //public Task<ErrorOr<User>> GetSharpUserAsync(string sessionCookie);
 }

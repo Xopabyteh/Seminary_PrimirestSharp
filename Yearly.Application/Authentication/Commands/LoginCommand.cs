@@ -29,12 +29,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
     private readonly IAuthService _authService;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-
-    public LoginCommandHandler(IAuthService authService, IUserRepository userRepository, IUnitOfWork unitOfWork)
+    private readonly ISessionCache _sessionCache;
+    public LoginCommandHandler(IAuthService authService, IUserRepository userRepository, IUnitOfWork unitOfWork, ISessionCache sessionCache)
     {
         _authService = authService;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _sessionCache = sessionCache;
     }
 
     public async Task<ErrorOr<LoginResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -65,6 +66,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
             await _userRepository.AddAsync(sharpUser);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        //Add to cache
+        _sessionCache.Add(externalLoginResult.Value, sharpUser);
 
         return new LoginResult(externalLoginResult.Value, sharpUser);
     }

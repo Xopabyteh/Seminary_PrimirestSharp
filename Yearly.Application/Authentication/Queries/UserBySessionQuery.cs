@@ -8,15 +8,20 @@ public record UserBySessionQuery(string SessionCookie) : IRequest<ErrorOr<User>>
 
 public class UserBySessionQueryHandler : IRequestHandler<UserBySessionQuery, ErrorOr<User>>
 {
-    private readonly IAuthService _authService;
+    private readonly ISessionCache _sessionCache;
 
-    public UserBySessionQueryHandler(IAuthService authService)
+    public UserBySessionQueryHandler(ISessionCache sessionCache)
     {
-        _authService = authService;
+        _sessionCache = sessionCache;
     }
 
-    public Task<ErrorOr<User>> Handle(UserBySessionQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<User>> Handle(UserBySessionQuery request, CancellationToken cancellationToken)
     {
-        return _authService.GetSharpUserAsync(request.SessionCookie);
+        var user = _sessionCache.Get(request.SessionCookie);
+
+        if (user is null)
+            return Errors.Errors.Authentication.CookieNotSigned;
+
+        return user!;
     }
 }

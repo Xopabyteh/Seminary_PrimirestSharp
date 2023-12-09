@@ -17,12 +17,12 @@ public class PrimirestAuthService : IAuthService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly PrimirestAdminCredentialsOptions _adminCredentials;
-    private readonly IUserRepository _userRepository;
-    public PrimirestAuthService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider, IOptions<PrimirestAdminCredentialsOptions> adminCredentials, IUserRepository userRepository)
+    //private readonly IUserRepository _userRepository;
+    public PrimirestAuthService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider, IOptions<PrimirestAdminCredentialsOptions> adminCredentials/*, IUserRepository userRepository*/)
     {
         _httpClientFactory = httpClientFactory;
         _dateTimeProvider = dateTimeProvider;
-        _userRepository = userRepository;
+        //_userRepository = userRepository;
         _adminCredentials = adminCredentials.Value;
     }
 
@@ -68,42 +68,42 @@ public class PrimirestAuthService : IAuthService
         await client.SendAsync(requestMessage);
     }
 
-    /// <summary>
-    /// Gets id of the logged in user via Primirest auth and returns the user from our repository.
-    /// The user must already exist in our repository for this to work.
-    /// </summary>
-    /// <param name="sessionCookie"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public async Task<ErrorOr<User>> GetSharpUserAsync(string sessionCookie)
-    {
-        var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
+    ///// <summary>
+    ///// Gets id of the logged in user via Primirest auth and returns the user from our repository.
+    ///// The user must already exist in our repository for this to work.
+    ///// </summary>
+    ///// <param name="sessionCookie"></param>
+    ///// <returns></returns>
+    ///// <exception cref="InvalidOperationException"></exception>
+    //public async Task<ErrorOr<User>> GetSharpUserAsync(string sessionCookie)
+    //{
+    //    var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 
-        var path = $"cs/context/available?q=&_={timeStamp}";
-        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+    //    var path = $"cs/context/available?q=&_={timeStamp}";
+    //    var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
 
-        var requestMessage = new HttpRequestMessage(HttpMethod.Get, path);
-        requestMessage.Headers.Add("cookie", sessionCookie);
+    //    var requestMessage = new HttpRequestMessage(HttpMethod.Get, path);
+    //    requestMessage.Headers.Add("cookie", sessionCookie);
 
-        var response = await client.SendAsync(requestMessage);
+    //    var response = await client.SendAsync(requestMessage);
 
-        var resultJson = await response.Content.ReadAsStringAsync();
+    //    var resultJson = await response.Content.ReadAsStringAsync();
 
-        if (resultJson.StartsWith("<!doctype html>"))
-        {
-            //We have been redirected to the login page, so the cookie is not valid
-            return Application.Errors.Errors.Authentication.CookieNotSigned;
-        }
+    //    if (resultJson.StartsWith("<!doctype html>"))
+    //    {
+    //        //We have been redirected to the login page, so the cookie is not valid
+    //        return Application.Errors.Errors.Authentication.CookieNotSigned;
+    //    }
 
-        dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
-        dynamic userDetailsObj = userObj.Items[0];
+    //    dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
+    //    dynamic userDetailsObj = userObj.Items[0];
 
-        //return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
-        var userId = new UserId(int.Parse(userDetailsObj.ID.ToString()));
-        var sharpUser = await _userRepository.GetByIdAsync(userId);
+    //    //return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
+    //    var userId = new UserId(int.Parse(userDetailsObj.ID.ToString()));
+    //    var sharpUser = await _userRepository.GetByIdAsync(userId);
         
-        return sharpUser!; //The user is already in our repository, so no worry about null.
-    }
+    //    return sharpUser!; //The user is already in our repository, so no worry about null.
+    //}
 
     public async Task<ErrorOr<PrimirestUserInfo>> GetPrimirestUserInfoAsync(string sessionCookie)
     {

@@ -6,18 +6,14 @@ namespace Yearly.MauiClient.Services.SharpApiFacades;
 public class AuthenticationFacade
 {
     private readonly SharpAPIClient _sharpAPIClient;
-    private readonly AuthService _authService;
 
-    public AuthenticationFacade(SharpAPIClient sharpAPIClient, AuthService authService)
+    public AuthenticationFacade(SharpAPIClient sharpAPIClient)
     {
         _sharpAPIClient = sharpAPIClient;
-        _authService = authService;
     }
 
     /// <summary>
-    /// Calls login, sets session cookie in <see cref="AuthService.SetSessionAsync"/>,
-    /// sets SessionCookie on the <see cref="SharpAPIClient.HttpClient"/>, making it usable for authenticated actions
-    /// and returns the login response.
+    /// Calls login on the API and returns the login response.
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
@@ -27,8 +23,6 @@ public class AuthenticationFacade
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-            await _authService.SetSessionAsync(result);
-            _sharpAPIClient.HttpClient.DefaultRequestHeaders.Add("SessionCookie", result.SessionCookie);
 
             return result;
         }
@@ -38,5 +32,17 @@ public class AuthenticationFacade
         }
 
         return default;
+    }
+
+    public async Task<UserDetailsResponse?> GetMyDetailsAsync()
+    {
+        var response = await _sharpAPIClient.HttpClient.GetAsync("/auth/my-details");
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<UserDetailsResponse>();
+            return result;
+        }
+
+        return null;
     }
 }

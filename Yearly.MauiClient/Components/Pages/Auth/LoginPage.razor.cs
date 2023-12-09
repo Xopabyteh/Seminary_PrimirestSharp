@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Yearly.Contracts.Authentication;
-using Yearly.MauiClient.Components.Layout;
+using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApiFacades;
 
 namespace Yearly.MauiClient.Components.Pages.Auth;
 
 public partial class LoginPage
 {
-    [Inject]
-    private AuthenticationFacade AuthenticationFacade { get; set; } = null!;
-    [Inject]
-    private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private AuthenticationFacade AuthenticationFacade { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private AuthService AuthService { get; set; } = null!;
 
 
     [SupplyParameterFromForm]
@@ -30,6 +29,7 @@ public partial class LoginPage
         var loginResult = await AuthenticationFacade.LoginAsync(request);
         if (loginResult != default)
         {
+            await AuthService.SetSessionAsync(loginResult);
             NavigationManager.NavigateTo("/orders");
         }
     }

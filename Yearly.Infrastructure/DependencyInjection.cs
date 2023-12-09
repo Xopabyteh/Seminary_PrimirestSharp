@@ -33,6 +33,9 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, PrimirestAuthService>();
         services.AddScoped<PrimirestAuthService>();
 
+        services.AddSingleton<ISessionCache,  SessionCache>();
+        services.AddMemoryCache(); // For the session cache
+
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
         services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();
         services.AddScoped<IFoodSimilarityService, FoodSimilarityService>();

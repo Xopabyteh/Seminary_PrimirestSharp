@@ -13,8 +13,8 @@ public partial class IndexPage
 
     protected override async Task OnInitializedAsync()
     {
-        var hasSession = await AuthService.TryLoadSessionAsync();
-        if (hasSession)
+        var hasSession = await AuthService.TryLoadStoredSessionAsync();
+        if (!hasSession)
         {
             NavigationManager.NavigateTo("/login");
             return;

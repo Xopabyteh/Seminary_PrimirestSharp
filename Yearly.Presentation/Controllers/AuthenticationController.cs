@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Authentication.Commands;
+using Yearly.Application.Authentication.Queries;
 using Yearly.Contracts.Authentication;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
@@ -18,11 +19,20 @@ public class AuthenticationController : ApiController
         _mapper = mapper;
     }
 
+    [HttpGet("my-details")]
+    public async Task<IActionResult> GetMyDetails([FromHeader] string sessionCookie)
+    {
+        var userResult = await _mediator.Send(new UserBySessionQuery(sessionCookie));
+
+        return userResult.Match(
+            value => Ok(_mapper.Map<UserDetailsResponse>(value)),
+            Problem);
+    }
+
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        //var loginQuery = new LoginQuery(request.Username, request.Password);
         var loginQuery = _mapper.Map<LoginCommand>(request);
         var loginResult = await _mediator.Send(loginQuery);
 
