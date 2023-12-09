@@ -17,4 +17,9 @@ public interface ISessionCache
     /// <param name="sessionCookie"></param>
     /// <returns></returns>
     public User? Get(string sessionCookie);
+
+    /// <summary>
+    /// Removes the user from the cache.
+    /// </summary>
+    public void Remove(string sessionCookie);
 }

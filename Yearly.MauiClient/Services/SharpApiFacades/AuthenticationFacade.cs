@@ -45,4 +45,9 @@ public class AuthenticationFacade
 
         return null;
     }
+
+    public async Task LogoutAsync()
+    {
+        await _sharpAPIClient.HttpClient.PostAsync("/auth/logout", null);
+    }
 }

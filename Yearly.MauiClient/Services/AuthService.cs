@@ -16,7 +16,6 @@ public class AuthService
     public bool IsLoggedIn => SessionCookie is not null;
 
     public event Action OnLogin = null!; 
-    
 
     private readonly AuthenticationFacade _authenticationFacade;
     private readonly SharpAPIClient _sharpAPIClient;
@@ -77,5 +76,15 @@ public class AuthService
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         OnLogin?.Invoke();
+    }
+
+    public async Task LogoutAsync()
+    {
+        await _authenticationFacade.LogoutAsync();
+
+        SessionCookie = null;
+        UserDetails = null;
+
+        SecureStorage.Remove(k_SessionCookieKey);
     }
 }

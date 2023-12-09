@@ -25,4 +25,9 @@ public class SessionCache : ISessionCache
     {
         return _cache.Get<User>(sessionCookie);
     }
+
+    public void Remove(string sessionCookie)
+    {
+        _cache.Remove(sessionCookie);
+    }
 }
