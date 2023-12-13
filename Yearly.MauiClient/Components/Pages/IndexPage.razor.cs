@@ -13,12 +13,25 @@ public partial class IndexPage
 
     protected override async Task OnInitializedAsync()
     {
-        var hasSession = await AuthService.TryLoadStoredSessionAsync();
-        if (!hasSession)
+        //The exception type that throws this message: "No connection could be made because the target machine actively refused it" is:
+        try
         {
+            var hasSession = await AuthService.TryLoadStoredSessionAsync();
+            
+            if (!hasSession)
+            {
+                NavigationManager.NavigateTo("/login");
+                return;
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            //Todo: 
             NavigationManager.NavigateTo("/login");
             return;
         }
+
+
 
         NavigationManager.NavigateTo("/orders");
     }

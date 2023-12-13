@@ -23,7 +23,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         _logger = logger;
     }
 
-    public async Task<ErrorOr<Unit>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier)
+    public async Task<ErrorOr<PrimirestFoodOrderIdentifier>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier)
     {
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
         client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
@@ -38,10 +38,20 @@ public class PrimirestOrderService : IPrimirestOrderService
         var responseJson = await response.Content.ReadAsStringAsync();
 
         //Response is always OK, but there is a "Success" param in body 
-        var responseObj = JsonConvert.DeserializeObject<PrimirestOrderResponse>(responseJson);
-        
-        if(responseObj.Success)
-            return Unit.Value;
+        var responseObj = JsonConvert.DeserializeObject<PrimirestOrderResponseRoot>(responseJson)!;
+
+        if (responseObj.Success)
+        {
+            var orderIdentifierItem = responseObj.Orders[0].Items[0]; //Why the fuck does primirest store it like this wtf
+
+            var reconstructedOrder = new PrimirestFoodOrderIdentifier(
+                OrderItemId: orderIdentifierItem.ID,
+                OrderId: orderIdentifierItem.IDOrder,
+                FoodItemId: orderIdentifierItem.IDItem,
+                MenuId: foodIdentifier.MenuId);
+
+            return reconstructedOrder;
+        }
 
         if (responseObj.Message! == @"Časový limit pro objednávky již vypršel")
             return Application.Errors.Errors.Orders.TooLateToOrder;
@@ -67,7 +77,7 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var responseJson = await response.Content.ReadAsStringAsync();
 
-        var responseObj = JsonConvert.DeserializeObject<PrimirestOrderResponse>(responseJson);
+        var responseObj = JsonConvert.DeserializeObject<PrimirestOrderResponseRoot>(responseJson);
 
         if(responseObj.Success)
             return Unit.Value;
@@ -124,6 +134,4 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         return foodOrders;
     }
-
-    private readonly record struct PrimirestOrderResponse(bool Success, string? Message);
 }

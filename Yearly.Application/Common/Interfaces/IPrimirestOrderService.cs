@@ -8,7 +8,7 @@ namespace Yearly.Application.Common.Interfaces;
 
 public interface IPrimirestOrderService
 {
-    public Task<ErrorOr<Unit>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier);
+    public Task<ErrorOr<PrimirestFoodOrderIdentifier>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier);
     public Task<ErrorOr<Unit>> CancelOrderAsync(string sessionCookie, PrimirestFoodOrderIdentifier foodIdentifier);
 
     /// <summary>

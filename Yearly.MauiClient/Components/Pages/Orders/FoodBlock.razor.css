@@ -28,5 +28,5 @@
 }
 
 .ordered {
-    border: 0.25rem dashed var(--clr-primary);
+    border-inline: 0.25rem dashed var(--clr-success);
 }

@@ -2,6 +2,7 @@
 using Microsoft.Maui.LifecycleEvents;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services.Toast;
 
 namespace Yearly.MauiClient;
 
@@ -27,6 +28,9 @@ public static class MauiProgram
         });
 #endif
 
+        builder.Services.AddTransient<ToastService>();
+        
+        //Sharp API
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SharpAPIClient>();
 

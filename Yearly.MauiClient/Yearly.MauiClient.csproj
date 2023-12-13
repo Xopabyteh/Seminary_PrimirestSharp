@@ -89,4 +89,9 @@
       <_ContentIncludedByDefault Remove="Components\Pages\Settings\SettingsPage.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Exceptions\" />
+      <Folder Include="Services\Toast\" />
+    </ItemGroup>
+
 </Project>
