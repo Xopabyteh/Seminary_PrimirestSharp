@@ -1,9 +1,14 @@
 ﻿using ErrorOr;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Menus;
+using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Domain.Models.MenuAgg.ValueObjects;
+using Yearly.Domain.Models.WeeklyMenuAgg;
+using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Services.Authentication;
 
@@ -12,10 +17,60 @@ namespace Yearly.Infrastructure.Services.Menus;
 public class PrimirestMenuProvider : IPrimirestMenuProvider
 {
     private readonly PrimirestAuthService _authService;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IWeeklyMenuRepository _weeklyMenuRepository;
+    private readonly ILogger<PrimirestMenuProvider> _logger;
+    private readonly IFoodRepository _foodRepository;
 
-    public PrimirestMenuProvider(PrimirestAuthService authService)
+    public PrimirestMenuProvider(PrimirestAuthService authService, IDateTimeProvider dateTimeProvider, IWeeklyMenuRepository weeklyMenuRepository, ILogger<PrimirestMenuProvider> logger, IFoodRepository foodRepository)
     {
         _authService = authService;
+        _dateTimeProvider = dateTimeProvider;
+        _weeklyMenuRepository = weeklyMenuRepository;
+        _logger = logger;
+        _foodRepository = foodRepository;
+    }
+
+    public async Task<ErrorOr<List<Food>>> PersistAvailableMenusAsync()
+    {
+        await DeleteOldMenusAsync();
+
+        //Load menu from primirest
+        var primirestMenusResult = await GetMenusThisWeekAsync();
+        if (primirestMenusResult.IsError)
+            return primirestMenusResult.Errors;
+
+        //Check if there are any
+        var primirestWeeklyMenus = primirestMenusResult.Value;
+        if (primirestWeeklyMenus.Count == 0)
+            return new List<Food>(); //No menus available -> nothing to persist
+
+        var newlyPersistedFoods = await PersistNewMenusAsync(primirestWeeklyMenus);
+
+        return newlyPersistedFoods;
+    }
+
+    /// <summary>
+    /// Scrape the index page of Primirest to get the menu ids
+    /// </summary>
+    /// <returns></returns>
+    private static async Task<string[]> GetMenuIds(HttpClient loggedClient)
+    {
+        //Get index page
+        var indexPageHtml = await loggedClient.GetStringAsync(
+            "CS/boarding/index?purchasePlaceID=24087276&suppressOptionsDialog=true&menuViewType=SIMPLE");
+
+        //Scrape the menu ids
+        var indexPageDoc = new HtmlDocument();
+        indexPageDoc.LoadHtml(indexPageHtml);
+
+        const string xpath = @"//div[@class='menu-select panel-control responsive-control']//select//option";
+        var idOptionElements = indexPageDoc.DocumentNode.SelectNodes(xpath);
+        var idsResult = idOptionElements
+            .Select(e => e.GetAttributeValue("value", string.Empty))
+            .ToArray();
+
+        return idsResult;
     }
 
     /// <summary>
@@ -24,7 +79,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     /// </summary>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync()
+    private async Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
@@ -134,26 +189,57 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
         });
     }
 
-    /// <summary>
-    /// Scrape the index page of Primirest to get the menu ids
-    /// </summary>
-    /// <returns></returns>
-    private static async Task<string[]> GetMenuIds(HttpClient loggedClient)
+    private async Task DeleteOldMenusAsync()
     {
-        //Get index page
-        var indexPageHtml = await loggedClient.GetStringAsync(
-        "CS/boarding/index?purchasePlaceID=24087276&suppressOptionsDialog=true&menuViewType=SIMPLE");
+        var today = _dateTimeProvider.CzechNow;
+        var deletedCount = await _weeklyMenuRepository.ExecuteDeleteMenusBeforeDateAsync(today);
+        _logger.LogInformation("Deleted {count} old menus before the date {date}", deletedCount, today);
+    }
 
-        //Scrape the menu ids
-        var indexPageDoc = new HtmlDocument();
-        indexPageDoc.LoadHtml(indexPageHtml);
+    /// <returns>Returns newly persisted foods</returns>
+    private async Task<List<Food>> PersistNewMenusAsync(List<PrimirestWeeklyMenu> primirestWeeklyMenusToPersist)
+    {
+        var newlyPersistedFoods = new List<Food>(primirestWeeklyMenusToPersist.Count * 3);
+        foreach (var primirestWeeklyMenu in primirestWeeklyMenusToPersist)
+        {
+            var weeklyMenuId = new WeeklyMenuId(primirestWeeklyMenu.PrimirestMenuId);
 
-        const string xpath = @"//div[@class='menu-select panel-control responsive-control']//select//option";
-        var idOptionElements = indexPageDoc.DocumentNode.SelectNodes(xpath);
-        var idsResult = idOptionElements
-            .Select(e => e.GetAttributeValue("value", string.Empty))
-            .ToArray();
+            //If we already have this menu, skip it
+            //We only want to persist menus and foods from menus, that we don't have yet
+            if (await _weeklyMenuRepository.DoesMenuExist(weeklyMenuId))
+                continue;
 
-        return idsResult;
+            var dailyMenus = new List<DailyMenu>(5);
+
+            //Handle foods from this weekly menu
+            foreach (var primirestDailyMenu in primirestWeeklyMenu.DailyMenus)
+            {
+                var foodIdsForDay = new List<FoodId>(3);
+
+                //Handle foods
+                foreach (var primirestFood in primirestDailyMenu.Foods)
+                {
+                    var food = Food.Create(
+                        primirestFood.Name,
+                        primirestFood.Allergens,
+                        primirestFood.PrimirestFoodIdentifier);
+
+                    _logger.Log(LogLevel.Information, "New food created - {foodName}", food.Name);
+                    newlyPersistedFoods.Add(food);
+                    await _foodRepository.AddFoodAsync(food); //Todo: optimize with addRange
+
+                    foodIdsForDay.Add(food.Id);
+                }
+
+                var menuForDay = new DailyMenu(foodIdsForDay, primirestDailyMenu.Date);
+                dailyMenus.Add(menuForDay);
+            }
+
+            //Construct menu for week and store it
+            var menuForWeek = WeeklyMenu.Create(weeklyMenuId, dailyMenus);
+            await _weeklyMenuRepository.AddMenuAsync(menuForWeek);
+        }
+
+        return newlyPersistedFoods;
     }
 }

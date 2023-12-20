@@ -29,13 +29,11 @@ app.UseOutputCache();
 app.UseHangfireDashboard();
 
 //Add background jobs
-{
-    RecurringJob.AddOrUpdate<PersistAvailableMenusJob>(
-        "Persist available menus",
-        x => x.ExecuteAsync(),
-        @"0 8 * * FRI"); //Every friday at 8:00 - https://crontab.guru/#0_8_*_*_FRI
-}
+//{
+//    RecurringJob.AddOrUpdate<PersistAvailableMenusJob>(
+//        "Persist available menus",
+//        x => x.ExecuteAsync(),
+//        @"0 8 * * FRI"); //Every friday at 8:00 - https://crontab.guru/#0_8_*_*_FRI
+//}
 
 app.Run();
-
-//TODO: Change order place ids to some constant

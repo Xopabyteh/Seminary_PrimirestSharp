@@ -1,9 +1,9 @@
 ﻿using ErrorOr;
-using Yearly.Application.Menus;
+using Yearly.Domain.Models.FoodAgg;
 
 namespace Yearly.Application.Common.Interfaces;
 
 public interface IPrimirestMenuProvider
 {
-    public Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync();
+    public Task<ErrorOr<List<Food>>> PersistAvailableMenusAsync();
 }

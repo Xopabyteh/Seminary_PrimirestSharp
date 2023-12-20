@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Yearly.Contracts.Common;
 using Yearly.Contracts.Foods;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Infrastructure.Persistence;
 
 namespace Yearly.Queries.DTORepositories;

@@ -45,12 +45,6 @@ public sealed class Food : AggregateRoot<FoodId>
             allergens,
             primirestFoodIdentifier);
     }
-
-    public void UpdatePrimirestFoodIdentifier(PrimirestFoodIdentifier newPrimirestFoodIdentifier)
-    {
-        PrimirestFoodIdentifier = newPrimirestFoodIdentifier;
-    }
-
     public void SetAliasForFood(Food forFood)
     {
         if (forFood.AliasForFoodId is not null)

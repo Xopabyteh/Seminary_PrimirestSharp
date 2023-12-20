@@ -16,7 +16,6 @@ public interface IFoodSimilarityService
     /// <returns></returns>
     public Task<ErrorOr<Unit>> AddToSimilarityTableAsync(List<Food> newlyPersistedFoods);
 
-    public Task<List<FoodSimilarityRecord>> GetSimilarityTableAsync();
-
     public void RemoveRecordFromTable(FoodId newlyPersistedFoodId, FoodId potentialAliasOriginId);
+    public Task AutoAliasIdenticalFoodsAsync();
 }

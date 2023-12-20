@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
+using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Persistence;
 
 namespace Yearly.Infrastructure.Services.Foods;
@@ -11,10 +12,13 @@ namespace Yearly.Infrastructure.Services.Foods;
 public class FoodSimilarityService : IFoodSimilarityService
 {
     private readonly PrimirestSharpDbContext _dbContext;
+    private const float k_SimilarityThreshold = 0.8f; //If the foods are under this threshold, don't bother counting them in 
+    private readonly IFoodRepository _foodRepository;
 
-    public FoodSimilarityService(PrimirestSharpDbContext dbContext)
+    public FoodSimilarityService(PrimirestSharpDbContext dbContext, IFoodRepository foodRepository)
     {
         _dbContext = dbContext;
+        _foodRepository = foodRepository;
     }
 
     public async Task<ErrorOr<Unit>> AddToSimilarityTableAsync(List<Food> newlyPersistedFoods)
@@ -25,6 +29,7 @@ public class FoodSimilarityService : IFoodSimilarityService
         // Load foods from db (only name and id, because we don't want to kill the memory)
         // We also don't care about foods, that already have an alias
         var viewsFromDb = await _dbContext.Foods
+            .AsNoTracking()
             .Where(f => f.AliasForFoodId == null)
             .Select(f => new FoodView(f.Id, f.Name))
             .ToListAsync();
@@ -35,8 +40,7 @@ public class FoodSimilarityService : IFoodSimilarityService
             .ToList();
 
         var similarityAlg = new F23.StringSimilarity.JaroWinkler();
-        var similarityTable = new List<FoodSimilarityRecord>(
-            (newlyPersistedFoods.Count * newlyPersistedFoods.Count) + (newlyPersistedFoods.Count * viewsFromDb.Count));
+        var similarFoods = new List<FoodSimilarityRecord>();
 
         for (int f = 0; f < newlyPersistedFoods.Count; f++)
         {
@@ -47,7 +51,10 @@ public class FoodSimilarityService : IFoodSimilarityService
             {
                 var secondFood = newlyPersistedFoodViews[s];
                 var similarity = similarityAlg.Similarity(firstFood.Name, secondFood.Name);
-                similarityTable.Add(new (firstFood.Id, secondFood.Id, similarity));
+                if (similarity >= k_SimilarityThreshold)
+                {
+                    similarFoods.Add(new (firstFood.Id, secondFood.Id, similarity));
+                }
             }
 
             //Compare to foods from db
@@ -55,22 +62,16 @@ public class FoodSimilarityService : IFoodSimilarityService
             {
                 var secondFood = viewsFromDb[s];
                 var similarity = similarityAlg.Similarity(firstFood.Name, secondFood.Name);
-                similarityTable.Add(new (firstFood.Id, secondFood.Id, similarity));
+                if (similarity >= k_SimilarityThreshold)
+                {
+                    similarFoods.Add(new (firstFood.Id, secondFood.Id, similarity));
+                }
             }
         }
-
-        const float similarityThreshold = 0.8f; //If the foods are under this threshold, don't bother counting them in 
-        var similarFoods = similarityTable
-            .Where(r => r.Similarity >= similarityThreshold);
 
         await _dbContext.FoodSimilarityTable.AddRangeAsync(similarFoods);
 
         return Unit.Value;
-    }
-
-    public async Task<List<FoodSimilarityRecord>> GetSimilarityTableAsync()
-    {
-        return await _dbContext.FoodSimilarityTable.ToListAsync();
     }
 
     public void RemoveRecordFromTable(FoodId newlyPersistedFoodId, FoodId potentialAliasOriginId)
@@ -79,6 +80,36 @@ public class FoodSimilarityService : IFoodSimilarityService
         _dbContext.FoodSimilarityTable.Remove(record);
     }
 
+    public async Task AutoAliasIdenticalFoodsAsync()
+    {
+        var identicalFoodRecords = await _dbContext.FoodSimilarityTable
+            .Where(r => r.Similarity >= 1)
+            //.Include(foodSimilarityRecord => foodSimilarityRecord.NewlyPersistedFoodId)
+            //.Include(foodSimilarityRecord => foodSimilarityRecord.PotentialAliasOriginId)
+            .ToListAsync();
+
+        var updatedFoods = new List<Food>();
+        foreach (var foodSimilarityRecord in identicalFoodRecords)
+        {
+            var food = await _dbContext.Foods.FindAsync(foodSimilarityRecord.NewlyPersistedFoodId);
+            var potentialAlias = await _dbContext.Foods.FindAsync(foodSimilarityRecord.PotentialAliasOriginId);
+
+            if (potentialAlias!.AliasForFoodId is not null)
+            {
+                //Drop the record, the food became an alias in this process
+                //We don't want to have an alias for a food with an alias already
+                //We want to find the root food
+                continue;
+            }
+            food!.SetAliasForFood(potentialAlias!);
+            await _foodRepository.UpdateFoodAsync(food);
+            updatedFoods.Add(food);
+        }
+
+        await _dbContext.FoodSimilarityTable
+            .Where(r => r.Similarity >= 1)
+            .ExecuteDeleteAsync();
+    }
 
     private readonly record struct FoodView(FoodId Id, string Name);
 }
