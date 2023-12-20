@@ -13,12 +13,10 @@ public class FoodSimilarityService : IFoodSimilarityService
 {
     private readonly PrimirestSharpDbContext _dbContext;
     private const float k_SimilarityThreshold = 0.8f; //If the foods are under this threshold, don't bother counting them in 
-    private readonly IFoodRepository _foodRepository;
 
-    public FoodSimilarityService(PrimirestSharpDbContext dbContext, IFoodRepository foodRepository)
+    public FoodSimilarityService(PrimirestSharpDbContext dbContext)
     {
         _dbContext = dbContext;
-        _foodRepository = foodRepository;
     }
 
     public async Task<ErrorOr<Unit>> AddToSimilarityTableAsync(List<Food> newlyPersistedFoods)
@@ -91,7 +89,7 @@ public class FoodSimilarityService : IFoodSimilarityService
         var updatedFoods = new List<Food>();
         foreach (var foodSimilarityRecord in identicalFoodRecords)
         {
-            var food = await _dbContext.Foods.FindAsync(foodSimilarityRecord.NewlyPersistedFoodId);
+            var food = await _dbContext.Foods.AsTracking().FirstAsync(f=> f.Id == foodSimilarityRecord.NewlyPersistedFoodId);
             var potentialAlias = await _dbContext.Foods.FindAsync(foodSimilarityRecord.PotentialAliasOriginId);
 
             if (potentialAlias!.AliasForFoodId is not null)
@@ -102,9 +100,10 @@ public class FoodSimilarityService : IFoodSimilarityService
                 continue;
             }
             food!.SetAliasForFood(potentialAlias!);
-            await _foodRepository.UpdateFoodAsync(food);
             updatedFoods.Add(food);
         }
+
+        _dbContext.Foods.UpdateRange(updatedFoods);
 
         await _dbContext.FoodSimilarityTable
             .Where(r => r.Similarity >= 1)
