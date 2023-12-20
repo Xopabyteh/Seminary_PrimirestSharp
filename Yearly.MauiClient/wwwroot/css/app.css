@@ -290,3 +290,16 @@ nav {
 nav a {
     text-decoration: none;
 }
+
+/*Placeholders and loading*/
+
+.placeholder-glow {
+    background: var(--clr-secondary);
+    animation: placeholder-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes placeholder-glow {
+    50% {
+        opacity: 0.2;
+    }
+}

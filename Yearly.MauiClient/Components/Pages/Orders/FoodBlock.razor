@@ -6,7 +6,7 @@
             <p>73Kč</p>
             <p>@(string.IsNullOrEmpty(Food.Allergens) ? "-" : Food.Allergens)</p>
         </div>
-        <button @onclick='OnOrderedClicked' class='button @(isOrdered ? "accent" : string.Empty)'>
+        <button @onclick='OnOrderedClicked' class='button @(!IsLoaded ? "placeholder-glow" : string.Empty) @(isOrdered ? "accent" : string.Empty)'>
             @if (isOrdered)
             {
                 <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">

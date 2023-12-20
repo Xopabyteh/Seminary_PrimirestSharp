@@ -14,5 +14,8 @@ public static partial class Errors
 
         public static readonly Error TooLateToCancelOrder
             = Error.Validation("Orders.TooLateToCancelOrder", "It is too late to cancel the order");
+
+        public static readonly Error AlreadyConsumed
+            = Error.Validation("Orders.AlreadyConsumed","You ate this already");
     }
 }

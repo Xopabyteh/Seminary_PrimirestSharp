@@ -85,6 +85,9 @@ public class PrimirestOrderService : IPrimirestOrderService
         if (responseObj.Message! == @"Časový limit pro zrušení objednávky již vypršel")
             return Application.Errors.Errors.Orders.TooLateToCancelOrder;
 
+        if (responseObj.Message == @"Objednávka nebo některé její položky již byly zkonzumovány")
+            return Application.Errors.Errors.Orders.AlreadyConsumed;
+
         _logger.LogError("Primirest changed error codes");
         return Error.Failure("Unknown");
     }

@@ -11,8 +11,8 @@ public class ToastService
         _js = js;
     }
 
-    public async Task ShowErrorAsync(string message, string title)
+    public async Task ShowErrorAsync(string message)
     {
-        //_js.InvokeAsync()
+        await _js.InvokeVoidAsync("toastError", message);
     }
 }

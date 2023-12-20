@@ -27,7 +27,8 @@
                     var food = dailyMenu.Foods[i];
                     <FoodBlock
                         Food='@food'
-                        OrderIdentifier='@myOrders.FirstOrDefault(o => o.SharpFoodId == food.FoodId)?.PrimirestOrderIdentifier'/>
+                        OrderIdentifier='@myOrders.FirstOrDefault(o => o.SharpFoodId == food.FoodId)?.PrimirestOrderIdentifier'
+                        IsLoaded='@allOrdersLoaded'/>
 
                     //Don't show br for the last one
                     if (i != dailyMenu.Foods.Count - 1)

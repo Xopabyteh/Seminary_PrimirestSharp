@@ -14,6 +14,7 @@ public partial class OrderPage
 
     private List<WeeklyMenuDTO> weeklyMenus = new();
     private List<OrderDTO> myOrders = new();
+    private bool allOrdersLoaded = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -33,9 +34,11 @@ public partial class OrderPage
             {
                 myOrders.AddRange(ordersForWeek.Orders);
             }
+
         });
 
         await Task.WhenAll(getOrdersTasks);
+        allOrdersLoaded = true;
         StateHasChanged();
     }
 }
