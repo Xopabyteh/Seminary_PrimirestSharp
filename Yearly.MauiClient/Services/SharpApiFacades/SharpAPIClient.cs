@@ -7,6 +7,8 @@ public class SharpAPIClient
     public HttpClient HttpClient => _httpClient;
 
     private const string k_BaseAddress = "https://localhost:7217";
+    //private const string k_BaseAddress = "http://192.168.1.113:1337";
+    //private const string k_BaseAddress = "http://10.0.2.2:5281";
 
     public SharpAPIClient()
     {

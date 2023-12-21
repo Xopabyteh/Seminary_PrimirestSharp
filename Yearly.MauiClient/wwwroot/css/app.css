@@ -292,6 +292,9 @@ nav a {
 }
 
 /*Placeholders and loading*/
+.placeholder * {
+    opacity: 0;
+}
 
 .placeholder-glow {
     background: var(--clr-secondary);

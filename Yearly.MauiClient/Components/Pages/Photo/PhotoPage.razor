@@ -1,0 +1,29 @@
+﻿@page "/photo"
+@layout NoMenuLayout
+
+<GoBackButton Text='Přidat Fotku'/>
+
+<img src='https://picsum.photos/256/256' />
+
+@* <EditForm Model=''> *@
+    <InputRadioGroup @bind-Value='selectedFoodId'>
+        <div class='card'>
+            <InputRadio Value='1'/>
+            <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
+        </div>
+        <div class='card'>
+            <InputRadio Value='2'/>
+            <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
+        </div>
+        <div class='card'>
+            <InputRadio Value='3'/>
+            <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
+        </div>
+    </InputRadioGroup>
+@* </EditForm> *@
+
+<button>Odeslat</button>
+
+@code {
+    private int selectedFoodId;
+}

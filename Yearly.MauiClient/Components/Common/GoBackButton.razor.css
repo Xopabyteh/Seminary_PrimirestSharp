@@ -1,0 +1,11 @@
+﻿div {
+    display: flex;
+    align-items: center;
+}
+
+a {
+    padding-right: 2rem;
+    transform: translateY(-2px);
+}
+
+

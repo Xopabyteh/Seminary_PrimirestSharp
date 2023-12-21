@@ -58,12 +58,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AndroidResource Remove="Platforms\Android\Resources\values\network_security_config.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Components\Common\GoBackButton.razor.css" />
       <None Remove="Components\Pages\OrderPage.razor.css" />
       <None Remove="Components\Pages\Orders\FoodBlock.razor.css" />
       <None Remove="Components\Pages\Orders\OrderPage.razor.css" />
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="Components\Common\GoBackButton.razor.css" />
       <Content Include="Components\Pages\Orders\FoodBlock.razor.css" />
       <Content Include="Components\Pages\Orders\OrderPage.razor.css" />
     </ItemGroup>

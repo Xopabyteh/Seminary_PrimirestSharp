@@ -1,6 +1,6 @@
 window.toastError = (message = "") => {
     Toastify({
-        text: "asd",
+        text: message,
         duration: 3000,
         close: true,
         gravity: "bottom", // `top` or `bottom`
