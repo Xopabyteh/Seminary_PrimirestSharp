@@ -29,6 +29,8 @@ public static class MauiProgram
 #endif
 
         builder.Services.AddTransient<ToastService>();
+
+        builder.Services.AddSingleton<MenuAndOrderCacheService>();
         
         //Sharp API
         builder.Services.AddSingleton<AuthService>();

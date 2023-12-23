@@ -1,20 +1,14 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.Maui.Animations;
 using Yearly.Contracts.Menu;
-using Yearly.Contracts.Order;
-using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient.Components.Pages.Orders;
 
 public partial class OrderPage
 {
-    [Inject] private MenusFacade MenusFacade { get; set; } = null!;
-    [Inject] private OrdersFacade OrdersFacade { get; set; } = null!;
+    [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
 
-
-    private List<WeeklyMenuDTO> weeklyMenus = new();
-    private List<OrderDTO> myOrders = new();
-    private bool allOrdersLoaded = false;
+    private IReadOnlyList<WeeklyMenuDTO> weeklyMenus = Array.Empty<WeeklyMenuDTO>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -22,23 +16,7 @@ public partial class OrderPage
             return;
 
         //Get weekly menus
-        var weeklyMenusResponse = await MenusFacade.GetAvailableMenusAsync();
-        weeklyMenus = weeklyMenusResponse.WeeklyMenus;
-        StateHasChanged();
-
-        //Get orders
-        var getOrdersTasks = weeklyMenus.Select(async weeklyMenu =>
-        {
-            var ordersForWeek = await OrdersFacade.GetMyOrdersForWeekAsync(weeklyMenu.PrimirestMenuId);
-            lock (myOrders)
-            {
-                myOrders.AddRange(ordersForWeek.Orders);
-            }
-
-        });
-
-        await Task.WhenAll(getOrdersTasks);
-        allOrdersLoaded = true;
+        weeklyMenus = await MenuAndOrderCacheService.AvailableMenusCachedAsync();
         StateHasChanged();
     }
 }

@@ -1,0 +1,31 @@
+﻿@using Yearly.Contracts.Menu
+@using Yearly.Contracts.Order
+@using Yearly.MauiClient.Services
+@foreach (var dailyMenu in WeeklyMenuDTO.DailyMenus)
+ {
+     <DailyMenu 
+         Parent='this'
+         DailyMenuDTO='dailyMenu'
+         WeekOrders='orders'
+         WeekOrdersLoaded='ordersLoaded'/>
+ }
+
+@code {
+    [Parameter] public WeeklyMenuDTO WeeklyMenuDTO { get; set; }
+    
+    [Inject] public MenuAndOrderCacheService MenuAndOrderCacheService { get; set; }
+
+    private IReadOnlyList<OrderDTO> orders = Array.Empty<OrderDTO>();
+    private bool ordersLoaded;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        //Get orders of this menu
+        orders = await MenuAndOrderCacheService.MyOrdersForWeekCachedAsync(WeeklyMenuDTO.PrimirestMenuId);
+        ordersLoaded = true;
+        StateHasChanged();
+    }
+}

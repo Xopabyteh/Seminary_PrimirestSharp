@@ -21,7 +21,7 @@ public class OrderController : ApiController
     }
 
     [HttpPost("new-order")]
-    public async Task<IActionResult> OrderFood([FromBody] NewOrderRequest request, [FromHeader] string sessionCookie)
+    public async Task<IActionResult> NewOrder([FromBody] NewOrderRequest request, [FromHeader] string sessionCookie)
     {
         var command = _mapper.Map<OrderFoodCommand>((request, sessionCookie));
         var result = await _mediator.Send(command);
@@ -32,7 +32,7 @@ public class OrderController : ApiController
     }
 
     [HttpPost("cancel-order")]
-    public async Task<IActionResult> OrderFood([FromBody] CancelOrderRequest request, [FromHeader] string sessionCookie)
+    public async Task<IActionResult> CancelOrder([FromBody] CancelOrderRequest request, [FromHeader] string sessionCookie)
     {
         var command = _mapper.Map<CancelOrderCommand>((request, sessionCookie));
         var result = await _mediator.Send(command);

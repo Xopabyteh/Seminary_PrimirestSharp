@@ -10,33 +10,8 @@
 </header>
 <br/>
 <div class='container mt-400'>
-    @*     <FoodBlock />
-    <br/>
-    <FoodBlock/>
-    <br/>
-    <FoodBlock/> *@
-    
     @foreach (var weeklyMenu in weeklyMenus)
     {
-        @foreach (var dailyMenu in weeklyMenu.DailyMenus)
-        {
-            <section class='mv-300'>
-                <h2 class='fs-regular fw-regular color-secondary'>@(dailyMenu.Date.ToString("dddd dd.MMMM"))</h2>
-                @for (var i = 0; i < dailyMenu.Foods.Count; i++)
-                {
-                    var food = dailyMenu.Foods[i];
-                    <FoodBlock
-                        Food='@food'
-                        OrderIdentifier='@myOrders.FirstOrDefault(o => o.SharpFoodId == food.FoodId)?.PrimirestOrderIdentifier'
-                        IsLoaded='@allOrdersLoaded'/>
-
-                    //Don't show br for the last one
-                    if (i != dailyMenu.Foods.Count - 1)
-                    {
-                        <br/>
-                    }
-                }
-            </section>
-        }
+        <WeeklyMenu WeeklyMenuDTO='weeklyMenu'/>
     }
 </div>
