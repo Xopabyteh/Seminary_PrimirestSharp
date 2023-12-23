@@ -1,28 +1,37 @@
 ﻿@page "/photo"
-@layout NoMenuLayout
+@layout SingleFullPageFlex
 
 <GoBackButton Text='Přidat Fotku'/>
 
-<img src='https://picsum.photos/256/256' />
+<div class='container mt-400'>
+    <div class='photos'>
+        <img class='photo__big' src='https://picsum.photos/256/256' />
+        <div class='photo__thumbnail'>
+            <p class='color-secondary fs-small fw-regular'>Náhledovka</p>
+            <img src='https://picsum.photos/256/256' width='108' height='108' />
+        </div>
+    </div>
+    @* <EditForm Model=''> *@  
+    <div class='card-holder'>
+        <InputRadioGroup @bind-Value='selectedFoodId'>
+            <div class='card bg-accent'>
+                <InputRadio Value='1'/>
+                <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
+            </div>
+            <div class='card bg-accent'>
+                <InputRadio Value='2'/>
+                <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
+            </div>
+            <div class='card bg-accent'>
+                <InputRadio Value='3'/>
+                <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
+            </div>
+        </InputRadioGroup>
+    </div>
+    <button class='button bg-success'>Poslat</button>
+    @* </EditForm> *@
+</div>
 
-@* <EditForm Model=''> *@
-    <InputRadioGroup @bind-Value='selectedFoodId'>
-        <div class='card'>
-            <InputRadio Value='1'/>
-            <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
-        </div>
-        <div class='card'>
-            <InputRadio Value='2'/>
-            <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
-        </div>
-        <div class='card'>
-            <InputRadio Value='3'/>
-            <p>Obalovaná treska, vařené brambory s pažitkou, kuře s kuřetem a tzaki</p>
-        </div>
-    </InputRadioGroup>
-@* </EditForm> *@
-
-<button>Odeslat</button>
 
 @code {
     private int selectedFoodId;

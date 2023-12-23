@@ -1,8 +1,8 @@
 ﻿:root {
     --clr-black: #000000;
     --clr-white: #FFFFFF;
-    --clr-accent: #DADADA;
-    /*--clr-accent: #EDEDED;*/
+    /*--clr-accent: #DADADA;*/
+    --clr-accent: #EDEDED;
     --clr-success: #659B5E;
     --clr-secondary: #636363;
     --clr-primary: #007FFF;
@@ -218,7 +218,6 @@ select {
     border-radius: 0.25rem;
 
     color: var(--clr-white);
-    background-color: var(--clr-primary);
 
     padding: 0.5rem 1rem;
 
@@ -273,9 +272,14 @@ br {
     margin-bottom: 2rem;
 }
 
+.mt-200 {
+    margin-top: 1rem;
+}
+
 .mt-400 {
     margin-top: 2rem;
 }
+
 
 .mh-100 {
     margin-left: 0.5rem;
