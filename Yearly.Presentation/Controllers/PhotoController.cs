@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Photos.Commands;
+using Yearly.Contracts.Photos;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
@@ -20,8 +21,7 @@ public class PhotoController : ApiController
 
     [HttpPost("publish")]
     public Task<IActionResult> UploadPhoto(
-        [FromForm] IFormFile photo, 
-        [FromForm] Guid foodId,
+        [FromForm] PublishPhotoRequest request,
         [FromHeader] string sessionCookie)
     {
         return PerformAuthenticatedActionAsync(sessionCookie, async user =>
@@ -29,7 +29,9 @@ public class PhotoController : ApiController
             if (user.Roles.Contains(UserRole.BlackListedFromTakingPhotos))
                 Unauthorized();
 
-            var result = await _mediator.Send(new PublishPhotoCommand(photo, new FoodId(foodId), user));
+            var result = await _mediator.Send(
+                new PublishPhotoCommand(request.Photo, new FoodId(request.FoodId), user));
+
             return result.Match(
                 createdPhoto => Created(createdPhoto.Link, null),
                 Problem);
