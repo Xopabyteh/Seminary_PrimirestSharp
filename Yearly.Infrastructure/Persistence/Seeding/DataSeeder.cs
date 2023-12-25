@@ -18,26 +18,20 @@ public class DataSeeder
         _context = context;
     }
 
-    public void Seed()
+    public void Seed(User adminUser)
     {
+        //Db reset
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
 
-        var admin = SeedUsers();
-        SeedSampleMenu(admin);
+        //Seeding
+        _context.Users.Add(adminUser);
+        SeedSampleMenu(adminUser);
 
+        //Save
         _context.SaveChanges();
     }
 
-    private User SeedUsers()
-    {
-        var adminUser = new User(new UserId(26564871), @"Martin Fiala");
-        adminUser.AddRole(UserRole.Admin);
-        
-        _context.Users.Add(adminUser);
-
-        return adminUser;
-    }
 
     private void SeedSampleMenu(User admin)
     {

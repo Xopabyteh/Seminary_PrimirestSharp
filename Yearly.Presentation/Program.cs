@@ -1,5 +1,8 @@
 using Hangfire;
 using Yearly.Application;
+using Yearly.Application.Authentication;
+using Yearly.Domain.Models.UserAgg;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
@@ -18,10 +21,19 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment()) 
 {
-    //Seed data (before hangfire initializes in the db)
     using var scope = app.Services.CreateScope();
+
+    //Init admin user
+    var adminUser = new User(new UserId(26564871), @"Martin Fiala");
+    adminUser.AddRole(UserRole.Admin);
+
+    //Seed data (before hangfire initializes in the db)
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    //dataSeeder.Seed();
+    dataSeeder.Seed(adminUser);
+
+    //Add "debug" session to cache (to be more gentle to the primirest api <3)
+    var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
+    sessionCache.Add("debug", adminUser);
 }
 
 app.MapControllers();
@@ -35,5 +47,6 @@ app.UseHangfireDashboard();
         x => x.ExecuteAsync(),
         @"0 8 * * FRI"); //Every friday at 8:00 - https://crontab.guru/#0_8_*_*_FRI
 }
+
 
 app.Run();

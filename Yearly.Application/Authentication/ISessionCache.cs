@@ -22,4 +22,7 @@ public interface ISessionCache
     /// Removes the user from the cache.
     /// </summary>
     public void Remove(string sessionCookie);
+
+
+    public void InvalidateCache(User newUserData);
 }

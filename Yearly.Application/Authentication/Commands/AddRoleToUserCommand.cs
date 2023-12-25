@@ -25,11 +25,13 @@ public class AddRoleToUserCommandHandler : IRequestHandler<AddRoleToUserCommand,
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISessionCache _sessionCache;
 
-    public AddRoleToUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public AddRoleToUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ISessionCache sessionCache)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _sessionCache = sessionCache;
     }
 
     public async Task<ErrorOr<Unit>> Handle(AddRoleToUserCommand request, CancellationToken cancellationToken)
@@ -41,7 +43,7 @@ public class AddRoleToUserCommandHandler : IRequestHandler<AddRoleToUserCommand,
 
         user.AddRole(request.Role);
 
-        await _userRepository.UpdateAsync(user);
+        _sessionCache.InvalidateCache(user); //Todo: call this via domain events
         await _unitOfWork.SaveChangesAsync();
 
         return Unit.Value;

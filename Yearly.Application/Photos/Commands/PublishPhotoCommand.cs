@@ -67,7 +67,7 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
             request.FoodId,
             linkResult.Value);
 
-        await _userRepository.UpdateAsync(request.Publisher);
+        //await _userRepository.UpdateAsync(request.Publisher);
         await _photoRepository.AddAsync(photo);
         await _unitOfWork.SaveChangesAsync();
 

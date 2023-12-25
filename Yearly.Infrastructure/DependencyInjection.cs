@@ -29,7 +29,7 @@ public static class DependencyInjection
             client.BaseAddress = new Uri("https://www.mujprimirest.cz");
         });
 
-        services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+        services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
         services.AddScoped<IAuthService, PrimirestAuthService>();
         services.AddScoped<PrimirestAuthService>();
