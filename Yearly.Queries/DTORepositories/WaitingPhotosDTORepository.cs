@@ -1,32 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
 using Yearly.Contracts.Photos;
-using Yearly.Infrastructure.Persistence;
 
 namespace Yearly.Queries.DTORepositories;
 
 public class WaitingPhotosDTORepository
 {
-    private readonly PrimirestSharpDbContext _context;
+    private readonly ISqlConnectionFactory _connectionFactory;
 
-    public WaitingPhotosDTORepository(PrimirestSharpDbContext context)
+    public WaitingPhotosDTORepository(ISqlConnectionFactory connectionFactory)
     {
-        _context = context;
+        this._connectionFactory = connectionFactory;
     }
 
     public async Task<WaitingPhotosResponse> GetWaitingPhotosAsync()
     {
-        var waitingPhotos = await _context
-            .Photos
-            .Where(p => p.IsApproved == false)
-            .Select(p => new PhotoDTO(
-                _context.Users.Single(u => u.Id == p.PublisherId).Username,
-                p.PublishDate,
-                _context.Foods.Single(f => f.Id == p.FoodId).Name,
-                p.Link,
-                p.Id.Value
-            ))
-            .ToListAsync();
+        var sql = """
+                  SELECT 
+                  	P.Id AS Id,
+                  	P.Link AS Link,
+                  	P.PublishDate AS PublishDate,
+                  	F.Name AS FoodName,
+                  	U.Username AS PublisherUsername
+                  FROM Domain.Photos P
+                  JOIN Domain.Foods F ON P.FoodId_Value = F.Id
+                  JOIN Domain.Users U ON P.PublisherId_Value = U.Id
+                  WHERE P.IsApproved = 0;
+                  """;
 
-        return new WaitingPhotosResponse(waitingPhotos);
+        await using var connection = _connectionFactory.Create();
+        var waitingPhotos = await connection.QueryAsync<PhotoDTO>(sql);
+
+        return new WaitingPhotosResponse(waitingPhotos.ToList());
     }
 }

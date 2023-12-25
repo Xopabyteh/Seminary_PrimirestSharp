@@ -48,19 +48,21 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
             .HasMaxLength(64)
             .IsRequired();
 
-        builder.OwnsOne(f => f.PrimirestFoodIdentifier, pIdBuilder =>
-        {
-            pIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
+        //builder.OwnsOne(f => f.PrimirestFoodIdentifier, pIdBuilder =>
+        //{
+        //    pIdBuilder.WithOwner().HasForeignKey(nameof(FoodId));
 
-            pIdBuilder
-                .Property(i => i.DayId)
-                .HasColumnName("PrimirestDayId");
-            pIdBuilder
-                .Property(i => i.ItemId)
-                .HasColumnName("PrimirestItemId");
-            pIdBuilder
-                .Property(i => i.MenuId)
-                .HasColumnName("PrimirestMenuId");
-        });
+        //    pIdBuilder
+        //        .Property(i => i.DayId)
+        //        .HasColumnName("PrimirestDayId");
+        //    pIdBuilder
+        //        .Property(i => i.ItemId)
+        //        .HasColumnName("PrimirestItemId");
+        //    pIdBuilder
+        //        .Property(i => i.MenuId)
+        //        .HasColumnName("PrimirestMenuId");
+        //});
+
+        builder.ComplexProperty(f => f.PrimirestFoodIdentifier);
     }
 }

@@ -19,14 +19,15 @@ public class WeeklyMenuConfiguration : IEntityTypeConfiguration<WeeklyMenu>
                 id => id.Value,
                 idValue => new WeeklyMenuId(idValue))
             .ValueGeneratedNever();
+        //builder.ComplexProperty(m => m.Id);
 
-        builder.OwnsMany(m => m.DailyMenus, menuForDayBuilder =>
+        builder.OwnsMany(m => m.DailyMenus, dailyMenuBuilder =>
         {
-            menuForDayBuilder.ToTable("DailyMenus");
+            dailyMenuBuilder.ToTable("DailyMenus");
 
-            menuForDayBuilder.WithOwner().HasForeignKey(nameof(WeeklyMenuId));
+            dailyMenuBuilder.WithOwner().HasForeignKey(nameof(WeeklyMenuId));
 
-            menuForDayBuilder.OwnsMany(d => d.Foods, foodIdBuilder =>
+            dailyMenuBuilder.OwnsMany(d => d.Foods, foodIdBuilder =>
             {
                 foodIdBuilder.ToTable("MenuFoodIds");
 
@@ -40,9 +41,10 @@ public class WeeklyMenuConfiguration : IEntityTypeConfiguration<WeeklyMenu>
                         idValue => new FoodId(idValue))
                     .HasColumnName("FoodId")
                     .ValueGeneratedNever();
+
             });
 
-            menuForDayBuilder.Property(d => d.Date);
+            dailyMenuBuilder.Property(d => d.Date);
         });
     }
 }

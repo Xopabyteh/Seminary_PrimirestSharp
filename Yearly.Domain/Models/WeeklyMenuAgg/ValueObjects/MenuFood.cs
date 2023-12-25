@@ -2,6 +2,9 @@
 
 namespace Yearly.Domain.Models.MenuAgg.ValueObjects;
 
+/// <summary>
+/// Created due to EF Core. It would otherwise not be able to create a reference to this from DailyMenu
+/// </summary>
 public sealed class MenuFood : ValueObject
 {
     public FoodId FoodId { get; private set; }
@@ -21,5 +24,4 @@ public sealed class MenuFood : ValueObject
     {
 
     }
-
 }

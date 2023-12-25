@@ -1,28 +1,40 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
 using Yearly.Contracts.Foods;
-using Yearly.Infrastructure.Persistence;
 
 namespace Yearly.Queries.DTORepositories;
 
 public class FoodSimilarityTableDTORepository
 {
-    private readonly PrimirestSharpDbContext _context;
+    private readonly ISqlConnectionFactory _connectionFactory;
 
-    public FoodSimilarityTableDTORepository(PrimirestSharpDbContext context)
+    public FoodSimilarityTableDTORepository(ISqlConnectionFactory connectionFactory)
     {
-        _context = context;
+        this._connectionFactory = connectionFactory;
     }
 
     public async Task<List<FoodSimilarityRecordDTO>> GetFoodSimilarityTableAsync()
     {
-        var foodSimilarityRecords =
-            await _context.FoodSimilarityTable.Select(r => new FoodSimilarityRecordDTO(
-                _context.Foods.Where(f => f.Id == r.NewlyPersistedFoodId)
-                    .Select(f => new FoodSimilarityRecordSliceDTO(f.Name, f.Id.Value)).First(),
-                _context.Foods.Where(f => f.Id == r.PotentialAliasOriginId)
-                    .Select(f => new FoodSimilarityRecordSliceDTO(f.Name, f.Id.Value)).First(),
-                r.Similarity)).ToListAsync();
+        var sql = """
+                  SELECT 
+                  	NF.Id AS Id,
+                  	NF.Name AS Name,
+                  	PAOF.Id AS Id,
+                  	PAOF.Name AS Name,
+                  	S.Similarity
+                  FROM Domain.FoodSimilarities S
+                  JOIN Domain.Foods NF ON NF.Id = S.NewlyPersistedFoodId
+                  JOIN Domain.Foods PAOF ON PAOF.Id = S.PotentialAliasOriginId;
+                  """;
 
-        return foodSimilarityRecords;
+        await using var connection = _connectionFactory.Create();
+        var foodSimilarityRecords = await connection
+            .QueryAsync<FoodSimilarityRecordSliceDTO, FoodSimilarityRecordSliceDTO, double, FoodSimilarityRecordDTO>(
+                sql,
+                (newlyPersisted, potentialAlias, similarity) =>
+                    new FoodSimilarityRecordDTO(newlyPersisted, potentialAlias, similarity),
+                splitOn: "Id, Similarity"
+            );
+
+        return foodSimilarityRecords.ToList();
     }
 }

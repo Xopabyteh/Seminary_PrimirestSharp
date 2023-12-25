@@ -7,8 +7,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddQueries(this IServiceCollection services)
     {
-        services.AddSingleton<DapperContext>();
-        
         services.AddScoped<WaitingPhotosDTORepository>();
         services.AddScoped<FoodSimilarityTableDTORepository>();
         services.AddScoped<WeeklyMenuDTORepository>();

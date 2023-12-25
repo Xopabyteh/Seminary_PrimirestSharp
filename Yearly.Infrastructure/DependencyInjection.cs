@@ -16,6 +16,7 @@ using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Foods;
 using Yearly.Infrastructure.Services.Menus;
 using Yearly.Infrastructure.Services.Orders;
+using Yearly.Queries;
 
 namespace Yearly.Infrastructure;
 
@@ -50,6 +51,10 @@ public static class DependencyInjection
 
     private static void AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
+        services.Configure<DatabaseConnectionOptions>(
+            builder.Configuration.GetSection(DatabaseConnectionOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+
+        services.AddTransient<ISqlConnectionFactory, SqlConnectionFactory>(); //Dapper
         services.AddDbContext<PrimirestSharpDbContext>(options =>
         {
             options.UseSqlServer(

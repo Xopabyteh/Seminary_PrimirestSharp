@@ -5,9 +5,9 @@
 /// </summary>
 public class PrimirestFoodIdentifier : ValueObject
 {
-    public int MenuId { get; }
-    public int DayId  {get; }
-    public int ItemId { get; }
+    public int MenuId { get; init; }
+    public int DayId  {get; init; }
+    public int ItemId { get; init; }
 
     public PrimirestFoodIdentifier(int menuId, int dayId, int itemId)
     {

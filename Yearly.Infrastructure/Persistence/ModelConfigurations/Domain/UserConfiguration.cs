@@ -17,6 +17,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion(
                 id => id.Value,
                 idValue => new UserId(idValue));
+        //builder.ComplexProperty(u => u.Id);
 
         builder.Property(u => u.Username)
             .HasMaxLength(100)

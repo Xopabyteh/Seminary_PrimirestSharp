@@ -15,7 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
-    <ProjectReference Include="..\Yearly.Infrastructure\Yearly.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

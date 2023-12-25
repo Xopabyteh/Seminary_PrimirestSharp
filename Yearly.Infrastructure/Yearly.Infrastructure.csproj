@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Yearly.Application\Yearly.Application.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
+    <ProjectReference Include="..\Yearly.Queries\Yearly.Queries.csproj" />
   </ItemGroup>
 
   <ItemGroup>

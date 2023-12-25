@@ -7,4 +7,4 @@ public record FoodSimilarityRecordDTO(
     FoodSimilarityRecordSliceDTO PotentialAlias,
     double Similarity);
 
-public record FoodSimilarityRecordSliceDTO(string Name, Guid Id);
+public record FoodSimilarityRecordSliceDTO(Guid Id, string Name);
