@@ -56,7 +56,7 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
             return Errors.Errors.Food.FoodNotFound(request.FoodId);
 
         var photoId = new PhotoId(Guid.NewGuid());
-        var linkResult = await _photoStorage.UploadPhotoAsync(request.File, Photo.NameFrom(photoId, request.FoodId));
+        var linkResult = await _photoStorage.UploadPhotoAsync(request.File, Photo.NameFrom(photoId, food));
 
         if (linkResult.IsError)
             return linkResult.Errors;

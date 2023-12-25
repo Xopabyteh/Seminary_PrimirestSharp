@@ -25,11 +25,13 @@ public class RemoveRoleFromUserCommandHandler : IRequestHandler<RemoveRoleFromUs
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISessionCache _sessionCache;
 
-    public RemoveRoleFromUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public RemoveRoleFromUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ISessionCache sessionCache)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _sessionCache = sessionCache;
     }
 
     public async Task<ErrorOr<Unit>> Handle(RemoveRoleFromUserCommand request, CancellationToken cancellationToken)
@@ -40,8 +42,8 @@ public class RemoveRoleFromUserCommandHandler : IRequestHandler<RemoveRoleFromUs
             return Errors.Errors.User.UserNotFound;
 
         user.RemoveRole(request.Role);
+        _sessionCache.InvalidateCache(user);
 
-        await _userRepository.UpdateAsync(user);
         await _unitOfWork.SaveChangesAsync();
 
         return Unit.Value;

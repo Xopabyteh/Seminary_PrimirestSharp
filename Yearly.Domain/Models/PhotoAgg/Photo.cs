@@ -1,4 +1,5 @@
 ﻿using Yearly.Domain.Errors.Exceptions;
+using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
@@ -7,8 +8,8 @@ namespace Yearly.Domain.Models.PhotoAgg;
 
 public class Photo : AggregateRoot<PhotoId>
 {
-    public static string NameFrom(PhotoId photoId, FoodId foodId)
-        => $"{foodId.Value}-{photoId.Value}";
+    public static string NameFrom(PhotoId photoId, Food food)
+        => $"{food.Name}-{photoId.Value}";
 
     public UserId PublisherId { get; private set; }
     public DateTime PublishDate { get; private set; }
