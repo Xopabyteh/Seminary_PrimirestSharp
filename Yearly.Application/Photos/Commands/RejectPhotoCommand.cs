@@ -35,9 +35,9 @@ public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, Err
 
         request.Rejector.RejectPhoto(photo);
 
-        var photosFood = await _foodRepository.GetFoodByIdAsync(photo.FoodId); //Todo: do we really have to load whole food aggregate just for name?
-        Debug.Assert(photosFood != null, nameof(photosFood) + " != null");
-        await _photoStorage.DeletePhotoAsync(Photo.NameFrom(photo.Id, photosFood));
+        //var photosFood = await _foodRepository.GetFoodByIdAsync(photo.FoodId); //Todo: do we really have to load whole food aggregate just for name?
+        //Debug.Assert(photosFood != null, nameof(photosFood) + " != null");
+        await _photoStorage.DeletePhotoAsync(photo.Link);
         await _photoRepository.DeletePhotoAsync(photo);
         await _unitOfWork.SaveChangesAsync();
 

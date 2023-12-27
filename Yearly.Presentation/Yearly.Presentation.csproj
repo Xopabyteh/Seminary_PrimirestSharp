@@ -27,7 +27,7 @@
     <Folder Include="Http\" />
     <Folder Include="Mappings\" />
     <Folder Include="Validation\" />
-    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\photos\" />
   </ItemGroup>
 
   <ItemGroup>

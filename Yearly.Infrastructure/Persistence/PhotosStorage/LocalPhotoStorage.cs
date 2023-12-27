@@ -21,10 +21,11 @@ public class LocalPhotoStorage : IPhotoStorage
         return filePath;
     }
 
-    public Task DeletePhotoAsync(string name)
+    public Task DeletePhotoAsync(string resourceLink)
     {
-        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos", name);
+        var filePath = resourceLink;
         File.Delete(filePath);
+
         return Task.CompletedTask;
     }
 }

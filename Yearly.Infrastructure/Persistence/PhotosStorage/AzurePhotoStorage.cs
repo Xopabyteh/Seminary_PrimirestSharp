@@ -38,11 +38,12 @@ public class AzurePhotoStorage : IPhotoStorage
         return $"{container.Uri.AbsoluteUri}/{fileName}";
     }
 
-    public Task DeletePhotoAsync(string name)
+    public Task DeletePhotoAsync(string resourceLink)
     {
-        var container = _blobServiceClient.GetBlobContainerClient(k_ContainerName);
+        throw new NotImplementedException();
+        //var container = _blobServiceClient.GetBlobContainerClient(k_ContainerName);
 
-        var fileName = GetFileName(name);
-        return container.DeleteBlobAsync(fileName);
+        //var fileName = GetFileName(name);
+        //return container.DeleteBlobAsync(fileName);
     }
 }
