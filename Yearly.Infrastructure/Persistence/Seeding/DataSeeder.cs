@@ -69,7 +69,7 @@ public class DataSeeder
             new DailyMenu(foods.Skip(3).Take(3).Select(f => f.Id).ToList(), new DateTime(2023, 12, 27)),
         });
 
-        var similarityRecords = new List<FoodSimilarityRecord>() {new(foods[3].Id, foods[5].Id, 0.9)};
+        var similarityRecords = new List<FoodSimilarityRecord>() {new(foods[5].Id, foods[3].Id, 0.9)};
 
         _context.Foods.AddRange(foods);
         _context.Photos.AddRange(photos);
