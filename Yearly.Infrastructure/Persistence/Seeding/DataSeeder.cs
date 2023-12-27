@@ -70,12 +70,12 @@ public class DataSeeder
         //Seeding photos
         var resourcesBasePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "seedPhotos");
         SeedPhotos(
-            approvedPhotoResources: new Dictionary<string, Food>()
+            approvedPhotoResources: new Dictionary<string, Food>
             {
                 {Path.Combine(resourcesBasePath, "Famine.jpg"), foods[1]},
                 {Path.Combine(resourcesBasePath, "Famine2.jpg"), foods[1]}
             },
-            waitingPhotoResources: new Dictionary<string, Food>()
+            waitingPhotoResources: new Dictionary<string, Food>
             {
                 {Path.Combine(resourcesBasePath, "Conquest.jpg"), foods[0]}
             },
@@ -84,8 +84,8 @@ public class DataSeeder
         //Weekly menu
         var weeklyMenu = WeeklyMenu.Create(new(weekMenuId), new List<DailyMenu>()
         {
-            new DailyMenu(foods.Take(3).Select(f => f.Id).ToList(), new DateTime(2023, 12, 26)),
-            new DailyMenu(foods.Skip(3).Take(3).Select(f => f.Id).ToList(), new DateTime(2023, 12, 27)),
+            new(foods.Take(3).Select(f => f.Id).ToList(), new DateTime(2023, 12, 26)),
+            new(foods.Skip(3).Take(3).Select(f => f.Id).ToList(), new DateTime(2023, 12, 27)),
         });
 
         //Similarity records
@@ -118,7 +118,8 @@ public class DataSeeder
             var photoId = new PhotoId(Guid.NewGuid());
             var link = _photoStorage.UploadPhotoAsync(formFile, Photo.NameFrom(photoId, photoResource.Value)).Result.Value;
 
-            var photo = new Photo(photoId, photoApprover.Id, DateTime.UtcNow, photoResource.Value.Id, link);
+            //var photo = new Photo(photoId, photoApprover.Id, DateTime.UtcNow, photoResource.Value.Id, link);
+            var photo = photoApprover.PublishPhoto(photoId, DateTime.UtcNow, photoResource.Value.Id, link);
             uploadedPhotos.Add(photo);
         }
 

@@ -17,7 +17,7 @@ public class Photo : AggregateRoot<PhotoId>
     public string Link { get; private set; }
     public bool IsApproved { get; private set; }
 
-    public Photo(PhotoId id, UserId publisherId, DateTime publishDate, FoodId foodId, string link) 
+    internal Photo(PhotoId id, UserId publisherId, DateTime publishDate, FoodId foodId, string link) 
         : base(id)
     {
         PublisherId = publisherId;
@@ -28,7 +28,7 @@ public class Photo : AggregateRoot<PhotoId>
         IsApproved = false;
     }
 
-    public void Approve()
+    internal void Approve()
     {
         if (this.IsApproved)
             throw new IllegalStateException("Photo already approved");

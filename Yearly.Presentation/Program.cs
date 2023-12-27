@@ -19,24 +19,24 @@ builder.Services
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment()) 
-{
-    using var scope = app.Services.CreateScope();
+//if (app.Environment.IsDevelopment()) 
+//{
+//    using var scope = app.Services.CreateScope();
 
-    //Init admin user
-    var adminUser = new User(new UserId(26564871), @"Martin Fiala");
-    adminUser.AddRole(UserRole.Admin);
+//    //Init admin user
+//    var adminUser = new User(new UserId(26564871), @"Martin Fiala");
+//    adminUser.AddRole(UserRole.Admin);
 
-    //Seed data (before hangfire initializes in the db)
-    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    dataSeeder.Seed(
-        adminUser: adminUser,
-        seedMenus: false);
+//    //Seed data (before hangfire initializes in the db)
+//    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+//    dataSeeder.Seed(
+//        adminUser: adminUser,
+//        seedMenus: false);
 
-    //Add "debug" session to cache (to be more gentle to the primirest api <3)
-    var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
-    sessionCache.Add("debug", adminUser);
-}
+//    //Add "debug" session to cache (to be more gentle to the primirest api <3)
+//    var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
+//    sessionCache.Add("debug", adminUser);
+//}
 
 app.MapControllers();
 app.UseOutputCache();

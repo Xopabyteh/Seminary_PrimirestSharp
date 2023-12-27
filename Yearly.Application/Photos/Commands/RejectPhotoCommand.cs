@@ -1,9 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
-using System.Diagnostics;
-using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Repositories;
@@ -16,14 +13,12 @@ public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, Err
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IPhotoStorage _photoStorage;
-    private readonly IFoodRepository _foodRepository;
     private readonly IUnitOfWork _unitOfWork;
-    public RejectPhotoCommandHandler(IPhotoRepository photoRepository, IUnitOfWork unitOfWork, IPhotoStorage photoStorage, IFoodRepository foodRepository)
+    public RejectPhotoCommandHandler(IPhotoRepository photoRepository, IUnitOfWork unitOfWork, IPhotoStorage photoStorage)
     {
         _photoRepository = photoRepository;
         _unitOfWork = unitOfWork;
         _photoStorage = photoStorage;
-        _foodRepository = foodRepository;
     }
 
     public async Task<ErrorOr<Unit>> Handle(RejectPhotoCommand request, CancellationToken cancellationToken)
