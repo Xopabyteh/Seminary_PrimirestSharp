@@ -1,6 +1,7 @@
 ﻿@page "/photo"
 @using Yearly.MauiClient.Services
 @using Yearly.Contracts.Menu
+@using Microsoft.AspNetCore.Http
 @layout SingleFullPageFlex
 
 <GoBackButton Text='Přidat Fotku'/>
@@ -21,7 +22,7 @@
                 @foreach (var food in todayMenu!.Foods)
                 {
                     <div class='card bg-accent'>
-                        <InputRadio Value='1'/>
+                        <InputRadio Value='food.FoodId'/>
                         <p>@food.Name</p>
                     </div>
                 }
@@ -36,24 +37,43 @@
 @code {
     [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
 
-    private int selectedFoodId;
     private DailyMenuDTO? todayMenu;
     private bool isLoading = false;
 
+    //Model
+    private Guid selectedFoodId;
+
     protected override async Task OnInitializedAsync()
     {
-        //Get todays daily menu
+        //Take photo
+        var fileResult = await MediaPicker.Default.CapturePhotoAsync();
+
+        // Get todays daily menu
         // var today = DateTime.Now.Date;
         var today = new DateTime(2024, 1, 3);
         var availableMenus = await MenuAndOrderCacheService.AvailableMenusCachedAsync();
 
-        todayMenu = availableMenus
-            .SelectMany(wM => wM.DailyMenus)
-            .SingleOrDefault(d => d.Date.Date == today);
+        var todayWeek = availableMenus.FirstOrDefault(m => m.DailyMenus.Any(d => d.Date == today));
+        if (todayWeek == default)
+        {
+            //Todo:
+            return;
+        }
 
+        todayMenu = todayWeek.DailyMenus.FirstOrDefault(d => d.Date == today);
         if (todayMenu is null)
         {
             //Todo:
+            return;
+        }
+
+        // Preselect our ordered item
+        var orders = await MenuAndOrderCacheService.MyOrdersForWeekCachedAsync(todayWeek.PrimirestMenuId);
+        var todayOrder = orders.FirstOrDefault(o => todayMenu.Foods.Any(f => f.FoodId == o.SharpFoodId));
+
+        if (todayOrder is not null)
+        {
+            selectedFoodId = todayOrder.SharpFoodId;
         }
 
         StateHasChanged();

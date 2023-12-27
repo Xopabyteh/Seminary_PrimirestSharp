@@ -28,14 +28,16 @@ public class AzurePhotoStorage : IPhotoStorage
 
     public async Task<ErrorOr<string>> UploadPhotoAsync(IFormFile file, string name)
     {
-        var container = _blobServiceClient.GetBlobContainerClient(k_ContainerName);
+        throw new NotImplementedException();
 
-        var photoStream = file.OpenReadStream();
-        var fileName = GetFileName(name);
-        await container.UploadBlobAsync(fileName, photoStream);
+        //var container = _blobServiceClient.GetBlobContainerClient(k_ContainerName);
 
-        //Return link of uploaded photo
-        return $"{container.Uri.AbsoluteUri}/{fileName}";
+        //var photoStream = file.OpenReadStream();
+        //var fileName = GetFileName(name);
+        //await container.UploadBlobAsync(fileName, photoStream);
+
+        ////Return link of uploaded photo
+        //return $"{container.Uri.AbsoluteUri}/{fileName}";
     }
 
     public Task DeletePhotoAsync(string resourceLink)

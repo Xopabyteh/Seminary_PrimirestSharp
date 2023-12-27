@@ -14,11 +14,12 @@ public class LocalPhotoStorage : IPhotoStorage
         Directory.CreateDirectory(directoryPath);
 
         var filePath = Path.Combine(directoryPath, name);
+        var fileResourceLink = new Uri(filePath, UriKind.Absolute); //Usable in http requests
 
-        await using var stream = new FileStream(filePath, FileMode.Create);
+        await using var stream = new FileStream(fileResourceLink.AbsolutePath, FileMode.Create);
         await file.CopyToAsync(stream);
 
-        return filePath;
+        return fileResourceLink.AbsolutePath;
     }
 
     public Task DeletePhotoAsync(string resourceLink)

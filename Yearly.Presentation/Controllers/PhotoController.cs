@@ -21,7 +21,8 @@ public class PhotoController : ApiController
 
     [HttpPost("publish")]
     public Task<IActionResult> UploadPhoto(
-        [FromForm] PublishPhotoRequest request,
+        [FromForm] IFormFile photo,
+        [FromForm] Guid foodId,
         [FromHeader] string sessionCookie)
     {
         return PerformAuthenticatedActionAsync(sessionCookie, async user =>
@@ -30,7 +31,7 @@ public class PhotoController : ApiController
                 Unauthorized();
 
             var result = await _mediator.Send(
-                new PublishPhotoCommand(request.Photo, new FoodId(request.FoodId), user));
+                new PublishPhotoCommand(photo, new FoodId(foodId), user));
 
             return result.Match(
                 createdPhoto => Created(createdPhoto.Link, null),

@@ -16,6 +16,7 @@ namespace Yearly.Infrastructure.Persistence.Seeding;
 /// </summary>
 public class DataSeeder
 {
+
     private readonly PrimirestSharpDbContext _context;
     private readonly IPhotoStorage _photoStorage;
 
@@ -25,7 +26,12 @@ public class DataSeeder
         _photoStorage = photoStorage;
     }
 
-    public void Seed(User adminUser)
+    /// <summary>
+    /// Always performs db reset and seeds an admin user
+    /// </summary>
+    public void Seed(
+        User adminUser,
+        bool seedMenus)
     {
         //Db reset
         _context.Database.EnsureDeleted();
@@ -33,7 +39,11 @@ public class DataSeeder
 
         //Seeding
         _context.Users.Add(adminUser);
-        SeedSampleMenu(adminUser);
+
+        if (seedMenus)
+        {
+            SeedSampleMenu(adminUser);
+        }
 
         //Save
         _context.SaveChanges();

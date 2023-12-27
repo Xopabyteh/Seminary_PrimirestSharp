@@ -25,20 +25,22 @@ public class SessionCache : ISessionCache
         _userToCacheRecord = new();
     }
 
+    //Todo: this is 🤢
     public void Add(string sessionCookie, User user)
     {
         var now = _dateTimeProvider.UtcNow;
+
         if (_userToCacheRecord.TryGetValue(user.Id, out var cacheRecord))
         {
+            //Remove old session and set new one
+
             _userToCacheRecord[user.Id] = new CacheRecord(sessionCookie, now); //Rewrite to newer session cookie
             Remove(cacheRecord.SessionCookie); //Remove old one
+            _cache.Set(sessionCookie, user, ExpirationTime); //Create new one
             return;
         }
 
-        //_cache.Set(sessionCookie, user, ExpirationTime);
-        //_cache.CreateEntry(sessionCookie)
-            //.SetValue(
-            //.SetAbsoluteExpiration(now.Add(ExpirationTime));
+        //Cache new session
         _cache.Set(sessionCookie, user, ExpirationTime);
         _userToCacheRecord.Add(user.Id, new(sessionCookie, now));
     }
