@@ -67,11 +67,11 @@ public static class DependencyInjection
         services.AddScoped<IPhotoRepository, PhotoRepository>();
         //services.AddScoped<ISoupRepository, SoupRepository>();
 
-        if (builder.Environment.IsDevelopment())
-        {
-            services.AddScoped<IPhotoStorage, LocalPhotoStorage>();
-        }
-        else
+        //if (builder.Environment.IsDevelopment())
+        //{
+        //    services.AddScoped<IPhotoStorage, LocalPhotoStorage>();
+        //}
+        //else
         {
             services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
             services.AddAzureClients(c =>

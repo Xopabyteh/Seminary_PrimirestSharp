@@ -1,0 +1,36 @@
+﻿@page "/pha"
+@using Yearly.MauiClient.Services.SharpApiFacades
+@using Yearly.Contracts.Photos
+@layout NoMenuLayout
+
+<GoBackButton/>
+<h3 class='color-black fs-huge'>PhA.</h3>
+
+@if (waitingPhotos.Count == 0)
+{
+    <h2 class='color-success fs-regular'>All photos approved</h2>
+}
+else
+{
+    @foreach (var waitingPhoto in waitingPhotos)
+    {
+        <div class='color-black fs-regular'>
+            <img src='@waitingPhoto.Link' width='256' height='256'/>
+            <p class='fs-regular fw-bold'>@waitingPhoto.FoodName</p>
+            <p><span class='fs-small color-secondary'>By</span> @waitingPhoto.PublisherUsername</p>
+            <p><span class='fs-small color-secondary'>At</span> @waitingPhoto.PublishDate.ToString("d")</p>
+        </div>
+    }
+}
+
+@code {
+
+    [Inject] private PhotoFacade PhotoFacade { get; set; } = null!;
+
+    private List<PhotoDTO> waitingPhotos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        waitingPhotos = await PhotoFacade.GetWaitingPhotosAsync();
+    }
+}
