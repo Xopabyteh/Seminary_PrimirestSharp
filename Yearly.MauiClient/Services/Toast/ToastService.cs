@@ -15,4 +15,9 @@ public class ToastService
     {
         await _js.InvokeVoidAsync("toastError", message);
     }
+
+    public async Task ShowSuccessAsync(string message)
+    {
+        await _js.InvokeVoidAsync("toastSuccess", message);
+    }
 }

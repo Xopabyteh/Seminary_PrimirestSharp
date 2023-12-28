@@ -3,6 +3,8 @@
 @using Yearly.Contracts.Menu
 @using Plugin.Media
 @using Plugin.Media.Abstractions
+@using Yearly.MauiClient.Services.SharpApiFacades
+@using Yearly.MauiClient.Services.Toast
 @layout SingleFullPageFlex
 
 <GoBackButton Text='Přidat Fotku'/>
@@ -27,7 +29,6 @@
             </div>
         }
     </div>
-    @* <EditForm Model=''> *@  
     <div class='card-holder'>
         @if (todayMenu is not null)
         {
@@ -42,19 +43,20 @@
             </InputRadioGroup>
         }
     </div>
-    <button class='button bg-success'>Poslat</button>
-    @* </EditForm> *@
+    <button class='button bg-success' @onclick="TryPublishPhoto">Poslat</button>
 </div>
 
 
 @code {
     [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
+    [Inject] private PhotoFacade PhotoFacade { get; set; } = null!;
+    [Inject] private ToastService ToastService { get; set; } = null!;
 
     private DailyMenuDTO? todayMenu;
     private bool isLoading = false;
 
     //Model
-    private Guid selectedFoodId;
+    private Guid selectedFoodId = default;
 
     private MediaFile? capturedPhoto;
     private string capturedPhotoDisplayData;
@@ -98,12 +100,38 @@
     /// <returns></returns>
     private async Task CapturePhoto()
     {
+        async Task<string> DisplayDataFrom(MediaFile photo)
+        {
+            var imageBytes = await File.ReadAllBytesAsync(photo.Path);
+            return $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
+        }
+
+#if DEBUG
+        //Take a mock image from documents if on windows and in debug
+        //So we don't have to deal with camera stuff on windows
+        if (DeviceInfo.Platform == DevicePlatform.WinUI)
+        {
+            //Mock image from documents
+            var mockImagePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "mock.jpg");
+            var stream = File.OpenRead(mockImagePath);
+
+            capturedPhoto = new MediaFile(
+                mockImagePath,
+                () => stream,
+                originalFilename: "mock.jpg");
+
+            capturedPhotoDisplayData = await DisplayDataFrom(capturedPhoto);
+
+            return;
+        }
+#endif
         var newPhoto = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
         {
             AllowCropping = true,
             DefaultCamera = CameraDevice.Front,
             PhotoSize = PhotoSize.MaxWidthHeight,
-            MaxWidthHeight = 1024
+            MaxWidthHeight = 1024,
+            Name = "photo.jpg",
         });
 
         if (newPhoto is null)
@@ -111,11 +139,31 @@
 
         //Set new photo
         capturedPhoto = newPhoto;
+        capturedPhotoDisplayData = await DisplayDataFrom(capturedPhoto);
 
-        //Set display data
-        var imageBytes = await File.ReadAllBytesAsync(capturedPhoto.Path);
-        capturedPhotoDisplayData = $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
-        
         StateHasChanged();
+    }
+
+    private async void TryPublishPhoto()
+    {
+        //Validation
+        if (capturedPhoto is null)
+            return;
+
+        if(selectedFoodId == default)
+            return;
+
+
+        //Publish
+        var result = await PhotoFacade.PublishPhotoAsync(selectedFoodId, capturedPhoto);
+        if (result is null)
+        {
+            //No error
+            await ToastService.ShowSuccessAsync("Yipee!"); //Todo: replace with something more amazing
+            return;
+        }
+
+        //Error, show it
+        await ToastService.ShowErrorAsync(result.Value.Title);
     }
 }
