@@ -66,6 +66,7 @@
       <None Remove="Components\Pages\OrderPage.razor.css" />
       <None Remove="Components\Pages\Orders\FoodBlock.razor.css" />
       <None Remove="Components\Pages\Orders\OrderPage.razor.css" />
+      <None Remove="Platforms\Android\Resources\xml\file_paths.xml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -81,6 +82,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
         <PackageReference Include="OneOf" Version="3.0.263" />
+        <PackageReference Include="Xam.Plugin.Media" Version="6.0.2" />
+        <PackageReference Include="Xamarin.Essentials" Version="1.8.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -97,6 +100,7 @@
 
     <ItemGroup>
       <Folder Include="Services\Toast\" />
+      <Folder Include="wwwroot\svg\" />
     </ItemGroup>
 
 </Project>

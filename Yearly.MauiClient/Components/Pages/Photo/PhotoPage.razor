@@ -1,18 +1,31 @@
 ﻿@page "/photo"
 @using Yearly.MauiClient.Services
 @using Yearly.Contracts.Menu
-@using Microsoft.AspNetCore.Http
+@using Plugin.Media
+@using Plugin.Media.Abstractions
 @layout SingleFullPageFlex
 
 <GoBackButton Text='Přidat Fotku'/>
 
 <div class='container mt-400'>
-    <div class='photos'>
-        <img class='photo__big' src='https://picsum.photos/256/256' />
-        <div class='photo__thumbnail'>
-            <p class='color-secondary fs-small fw-regular'>Náhledovka</p>
-            <img src='https://picsum.photos/256/256' width='108' height='108' />
-        </div>
+    <div class='photo-holder'>
+        @if (capturedPhoto is not null)
+        {
+            <img class='photo' src=@capturedPhotoDisplayData/>
+            <div class='photo__overlay bg-white' @onclick="CapturePhoto">
+                <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.63636 16C1.18636 16 0.801001 15.8432 0.480274 15.5296C0.159547 15.216 -0.000544065 14.8395 1.3891e-06 14.4V4.8C1.3891e-06 4.36 0.160365 3.9832 0.481092 3.6696C0.80182 3.356 1.18691 3.19947 1.63636 3.2H4.21364L5.72727 1.6H10.6364V3.2H6.44318L4.95 4.8H1.63636V14.4H14.7273V7.2H16.3636V14.4C16.3636 14.84 16.2033 15.2168 15.8825 15.5304C15.5618 15.844 15.1767 16.0005 14.7273 16H1.63636ZM14.7273 4.8V3.2H13.0909V1.6H14.7273V0H16.3636V1.6H18V3.2H16.3636V4.8H14.7273ZM8.18182 13.2C9.20455 13.2 10.074 12.8499 10.7902 12.1496C11.5064 11.4493 11.8642 10.5995 11.8636 9.6C11.8636 8.6 11.5055 7.74987 10.7894 7.0496C10.0732 6.34933 9.204 5.99947 8.18182 6C7.15909 6 6.28964 6.35013 5.57346 7.0504C4.85727 7.75067 4.49946 8.60053 4.5 9.6C4.5 10.6 4.85809 11.4501 5.57427 12.1504C6.29046 12.8507 7.15964 13.2005 8.18182 13.2ZM8.18182 11.6C7.60909 11.6 7.125 11.4067 6.72955 11.02C6.33409 10.6333 6.13636 10.16 6.13636 9.6C6.13636 9.04 6.33409 8.56667 6.72955 8.18C7.125 7.79333 7.60909 7.6 8.18182 7.6C8.75455 7.6 9.23864 7.79333 9.63409 8.18C10.0295 8.56667 10.2273 9.04 10.2273 9.6C10.2273 10.16 10.0295 10.6333 9.63409 11.02C9.23864 11.4067 8.75455 11.6 8.18182 11.6Z" fill="#636363"/>
+                </svg>
+            </div>
+        }
+        else //No photo
+        {
+            <div class='photo__placeholder' @onclick="CapturePhoto">
+                <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.63636 16C1.18636 16 0.801001 15.8432 0.480274 15.5296C0.159547 15.216 -0.000544065 14.8395 1.3891e-06 14.4V4.8C1.3891e-06 4.36 0.160365 3.9832 0.481092 3.6696C0.80182 3.356 1.18691 3.19947 1.63636 3.2H4.21364L5.72727 1.6H10.6364V3.2H6.44318L4.95 4.8H1.63636V14.4H14.7273V7.2H16.3636V14.4C16.3636 14.84 16.2033 15.2168 15.8825 15.5304C15.5618 15.844 15.1767 16.0005 14.7273 16H1.63636ZM14.7273 4.8V3.2H13.0909V1.6H14.7273V0H16.3636V1.6H18V3.2H16.3636V4.8H14.7273ZM8.18182 13.2C9.20455 13.2 10.074 12.8499 10.7902 12.1496C11.5064 11.4493 11.8642 10.5995 11.8636 9.6C11.8636 8.6 11.5055 7.74987 10.7894 7.0496C10.0732 6.34933 9.204 5.99947 8.18182 6C7.15909 6 6.28964 6.35013 5.57346 7.0504C4.85727 7.75067 4.49946 8.60053 4.5 9.6C4.5 10.6 4.85809 11.4501 5.57427 12.1504C6.29046 12.8507 7.15964 13.2005 8.18182 13.2ZM8.18182 11.6C7.60909 11.6 7.125 11.4067 6.72955 11.02C6.33409 10.6333 6.13636 10.16 6.13636 9.6C6.13636 9.04 6.33409 8.56667 6.72955 8.18C7.125 7.79333 7.60909 7.6 8.18182 7.6C8.75455 7.6 9.23864 7.79333 9.63409 8.18C10.0295 8.56667 10.2273 9.04 10.2273 9.6C10.2273 10.16 10.0295 10.6333 9.63409 11.02C9.23864 11.4067 8.75455 11.6 8.18182 11.6Z" fill="#636363"/>
+                </svg>
+            </div>
+        }
     </div>
     @* <EditForm Model=''> *@  
     <div class='card-holder'>
@@ -43,11 +56,11 @@
     //Model
     private Guid selectedFoodId;
 
+    private MediaFile? capturedPhoto;
+    private string capturedPhotoDisplayData;
+
     protected override async Task OnInitializedAsync()
     {
-        //Take photo
-        var fileResult = await MediaPicker.Default.CapturePhotoAsync();
-
         // Get todays daily menu
         // var today = DateTime.Now.Date;
         var today = new DateTime(2024, 1, 3);
@@ -79,4 +92,30 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Set the <see cref="capturedPhoto"/> to the photo taken by the user along with <see cref="capturedPhotoDisplayData"/> and call state has changed
+    /// </summary>
+    /// <returns></returns>
+    private async Task CapturePhoto()
+    {
+        var newPhoto = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
+        {
+            AllowCropping = true,
+            DefaultCamera = CameraDevice.Front,
+            PhotoSize = PhotoSize.MaxWidthHeight,
+            MaxWidthHeight = 1024
+        });
+
+        if (newPhoto is null)
+            return;
+
+        //Set new photo
+        capturedPhoto = newPhoto;
+
+        //Set display data
+        var imageBytes = await File.ReadAllBytesAsync(capturedPhoto.Path);
+        capturedPhotoDisplayData = $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
+        
+        StateHasChanged();
+    }
 }
