@@ -31,8 +31,6 @@ public partial class IndexPage
             return;
         }
 
-
-
         NavigationManager.NavigateTo("/orders");
     }
 }

@@ -5,7 +5,7 @@
 @using Plugin.Media.Abstractions
 @using Yearly.MauiClient.Services.SharpApiFacades
 @using Yearly.MauiClient.Services.Toast
-@layout SingleFullPageFlex
+@layout SingleFullFlexLayout
 
 <GoBackButton Text='Přidat Fotku'/>
 
@@ -66,7 +66,9 @@
         // Get todays daily menu
         // var today = DateTime.Now.Date;
         var today = new DateTime(2024, 1, 3);
-        var availableMenus = await MenuAndOrderCacheService.AvailableMenusCachedAsync();
+
+
+        var availableMenus = await MenuAndOrderCacheService.CachedMenusAsync();
 
         var todayWeek = availableMenus.FirstOrDefault(m => m.DailyMenus.Any(d => d.Date == today));
         if (todayWeek == default)
@@ -83,7 +85,8 @@
         }
 
         // Preselect our ordered item
-        var orders = await MenuAndOrderCacheService.MyOrdersForWeekCachedAsync(todayWeek.PrimirestMenuId);
+        var ordersForWeeks = await MenuAndOrderCacheService.CachedOrdersForWeeksAsync();
+        var orders = ordersForWeeks[todayWeek.PrimirestMenuId];
         var todayOrder = orders.FirstOrDefault(o => todayMenu.Foods.Any(f => f.FoodId == o.SharpFoodId));
 
         if (todayOrder is not null)

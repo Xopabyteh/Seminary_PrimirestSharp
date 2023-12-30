@@ -20,8 +20,11 @@ public partial class WeeklyMenu
             return;
 
         //Get orders of this menu
-        orders = await MenuAndOrderCacheService.MyOrdersForWeekCachedAsync(WeeklyMenuDTO.PrimirestMenuId);
+        var cachedOrdersForWeeks = await MenuAndOrderCacheService.CachedOrdersForWeeksAsync();
+        orders = cachedOrdersForWeeks[WeeklyMenuDTO.PrimirestMenuId];
         ordersLoaded = true;
         StateHasChanged();
     }
+
+
 }

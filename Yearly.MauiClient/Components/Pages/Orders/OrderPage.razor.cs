@@ -16,7 +16,7 @@ public partial class OrderPage
             return;
 
         //Get weekly menus
-        weeklyMenus = await MenuAndOrderCacheService.AvailableMenusCachedAsync();
+        weeklyMenus = await MenuAndOrderCacheService.CachedMenusAsync();
         StateHasChanged();
     }
 }

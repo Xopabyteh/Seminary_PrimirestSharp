@@ -1,11 +1,11 @@
-﻿<div id='navbar' class='@(isShowing ? string.Empty : "hidden")'>
+﻿<div id='navbar'>
     <div id='finance'>    
         <div class='money-block titled'>
-            <span class='value'>1 234<sup>Kč</sup></span>
+            <span class='value @(isBalanceLoaded ? string.Empty : "placeholder-glow")'>@(isBalanceLoaded ? balance.ToString("####") : "----")<sup>Kč</sup></span>
             <span class='title'>Stav konta</span>
         </div>
         <div class='money-block titled'>
-            <span class='value'>1 234<sup>Kč</sup></span>
+            <span class='value @(isOrderedForLoaded ? string.Empty : "placeholder-glow")'>@(isOrderedForLoaded ? orderedFor.ToString("####") : "----")<sup>Kč</sup></span>
             <span class='title'>Objednáno</span>
         </div>
     </div>

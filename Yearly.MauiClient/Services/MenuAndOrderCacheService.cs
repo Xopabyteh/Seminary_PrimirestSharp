@@ -1,4 +1,4 @@
-﻿using Yearly.Contracts.Common;
+﻿using System.Collections.Concurrent;
 using Yearly.Contracts.Menu;
 using Yearly.Contracts.Order;
 using Yearly.MauiClient.Services.SharpApiFacades;
@@ -6,7 +6,6 @@ using Yearly.MauiClient.Services.SharpApiFacades;
 namespace Yearly.MauiClient.Services;
 
 /// <summary>
-/// Lazy loads menus and orders when requested, caches them.
 /// Call <see cref="NewOrderCreated"/> and <see cref="OrderCanceled"/> when an order is created or canceled
 /// to invalidate the cache
 /// </summary>
@@ -15,54 +14,102 @@ public class MenuAndOrderCacheService
     private readonly OrdersFacade _ordersFacade;
     private readonly MenusFacade _menusFacade;
 
-    private List<WeeklyMenuDTO>? cachedAvailableMenus;
+    private List<WeeklyMenuDTO> cachedAvailableMenus;
+    private readonly TaskCompletionSource<IReadOnlyList<WeeklyMenuDTO>> _menusLoadedTcs = new();
+    
     //Due to primirest pagination:
     //Key: weekId, value: Orders
-    private Dictionary<int, List<OrderDTO>> cachedOrdersForWeeks = new();
+    private ConcurrentDictionary<int, List<OrderDTO>> cachedOrdersForWeeks = new();
+    private readonly TaskCompletionSource<IReadOnlyDictionary<int, List<OrderDTO>>> _ordersLoadedTcs = new();
+
+    private decimal balance;
+    private readonly TaskCompletionSource<decimal> _balanceLoadedTcs = new();
+
+    private decimal orderedFor;
+    private readonly TaskCompletionSource<decimal> _orderedForLoadedTcs = new();
+    private event Action OnOrderedForChanged;
+
+
+    public Task<IReadOnlyList<WeeklyMenuDTO>> CachedMenusAsync() => _menusLoadedTcs.Task;
+    public Task<IReadOnlyDictionary<int, List<OrderDTO>>> CachedOrdersForWeeksAsync() => _ordersLoadedTcs.Task;
+    public Task<decimal> CachedBalanceAsync() => _balanceLoadedTcs.Task;
+    public Task<decimal> CachedOrderedForAsync() => _orderedForLoadedTcs.Task;
 
     public MenuAndOrderCacheService(OrdersFacade ordersFacade, MenusFacade menusFacade)
     {
         _ordersFacade = ordersFacade;
         _menusFacade = menusFacade;
+        //Todo: somehow LoadIntoCache on login
+        //_authService = authService;
+        //_authService.OnLogin += _authService_OnLogin;
     }
 
-    public async Task<IReadOnlyList<WeeklyMenuDTO>> AvailableMenusCachedAsync()
+    //private void _authService_OnLogin()
+    //{
+    //    //Load menus and orders into cache
+    //    Task.Run(LoadIntoCacheAsync);
+    //}
+
+    /// <summary>
+    /// Loads data into both <see cref="cachedAvailableMenus"/> and <see cref="cachedOrdersForWeeks"/>
+    /// from the data from the facade. Requires the client to be authenticated.
+    /// </summary>
+    /// <returns></returns>
+    public async Task LoadIntoCacheAsync()
     {
-        if (cachedAvailableMenus is not null)
-            return cachedAvailableMenus;
+        // AvailableMenus
+        var menuResponse = await _menusFacade.GetAvailableMenusAsync();
+        cachedAvailableMenus = menuResponse.WeeklyMenus;
+        _menusLoadedTcs.SetResult(cachedAvailableMenus.AsReadOnly());
 
-        //Cache
-        var menus = await _menusFacade.GetAvailableMenusAsync();
-        cachedAvailableMenus = menus.WeeklyMenus;
-
-        return cachedAvailableMenus;
-    }
-
-
-    public async Task<IReadOnlyList<OrderDTO>> MyOrdersForWeekCachedAsync(int weekId)
-    {
-        if (cachedOrdersForWeeks.TryGetValue(weekId, out var cachedOrders))
-            return cachedOrders;
-
-        //Cache
-        var ordersResponse = await _ordersFacade.GetMyOrdersForWeekAsync(weekId);
-        lock (cachedOrdersForWeeks) //In case of a multi-threaded request
+        //Orders
+        var fillOrdersTasks = cachedAvailableMenus.Select(m => Task.Run(async () =>
         {
-            cachedOrdersForWeeks.Add(weekId, ordersResponse.Orders);
-        }
+            var ordersForWeekResponse = await _ordersFacade.GetMyOrdersForWeekAsync(m.PrimirestMenuId);
+            cachedOrdersForWeeks.TryAdd(m.PrimirestMenuId, ordersForWeekResponse.Orders);
+        }));
 
-        return ordersResponse.Orders;
+        await Task.WhenAll(fillOrdersTasks);
+        _ordersLoadedTcs.SetResult(cachedOrdersForWeeks.AsReadOnly());
+
+        await LoadBalanceAsync();
+        ReCalculateOrderedFor();
     }
 
     public void NewOrderCreated(int forWeekId, OrderDTO newOrder)
     {
         //Add the new order
         cachedOrdersForWeeks[forWeekId].Add(newOrder);
+
+        ReCalculateOrderedFor();
     }
 
     public void OrderCanceled(int forWeekId, OrderDTO orderCanceled)
     {
+        //Remove order
         var ordersForWeek = cachedOrdersForWeeks[forWeekId];
         ordersForWeek.Remove(orderCanceled);
+
+        ReCalculateOrderedFor();
+    }
+
+    private void ReCalculateOrderedFor()
+    {
+        //Calcuate "Objednáno za" based on our orders
+        //Check PSharp Docs section `Balance calculation`
+
+        orderedFor = cachedOrdersForWeeks.Values
+            .SelectMany(orders => orders)
+            .Sum(o => o.PrimirestOrderData.PriceCzechCrowns);
+
+        _orderedForLoadedTcs.SetResult(orderedFor);
+        OnOrderedForChanged?.Invoke();
+    }
+
+    private async Task LoadBalanceAsync()
+    {
+        //Load "Stav konta"
+        balance = await _ordersFacade.GetMyBalanceWithoutOrdersAccounted();
+        _balanceLoadedTcs.SetResult(balance);
     }
 }

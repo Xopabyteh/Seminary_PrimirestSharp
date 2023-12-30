@@ -19,11 +19,13 @@ public class AuthService
 
     private readonly AuthenticationFacade _authenticationFacade;
     private readonly SharpAPIClient _sharpAPIClient;
+    private readonly MenuAndOrderCacheService _menuAndOrderCacheService;
 
-    public AuthService(AuthenticationFacade authenticationFacade, SharpAPIClient sharpAPIClient)
+    public AuthService(AuthenticationFacade authenticationFacade, SharpAPIClient sharpAPIClient, MenuAndOrderCacheService menuAndOrderCacheService)
     {
         _authenticationFacade = authenticationFacade;
         _sharpAPIClient = sharpAPIClient;
+        _menuAndOrderCacheService = menuAndOrderCacheService;
     }
 
     /// <summary>
@@ -55,6 +57,7 @@ public class AuthService
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         OnLogin?.Invoke();
+        Task.Run(_menuAndOrderCacheService.LoadIntoCacheAsync); //Todo: move to event based
 
         return true;
     }
@@ -76,6 +79,8 @@ public class AuthService
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         OnLogin?.Invoke();
+        Task.Run(_menuAndOrderCacheService.LoadIntoCacheAsync); //Todo: move to event based
+
     }
 
     public async Task LogoutAsync()

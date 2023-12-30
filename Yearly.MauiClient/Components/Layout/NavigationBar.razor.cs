@@ -1,16 +1,33 @@
+using Microsoft.AspNetCore.Components;
+using System.Collections.Concurrent;
+using Yearly.Contracts.Order;
+using Yearly.MauiClient.Services;
+using Yearly.MauiClient.Services.SharpApiFacades;
+
 namespace Yearly.MauiClient.Components.Layout;
 
 public partial class NavigationBar
 {
-    private bool isShowing = true;
+    [Inject] protected MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
+    [Inject] protected OrdersFacade OrdersFacade { get; set; } = null!;
 
-    public void Show()
-    {
-        isShowing = true;
-    }
+    private bool isBalanceLoaded = false;
+    private decimal balance = 0;
 
-    public void Hide()
+    private bool isOrderedForLoaded = false;
+    private decimal orderedFor = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        isShowing = false;
+        if (!firstRender)
+            return;
+
+        balance = await MenuAndOrderCacheService.CachedBalanceAsync();
+        isBalanceLoaded = true;
+
+        orderedFor = await MenuAndOrderCacheService.CachedOrderedForAsync();
+        isOrderedForLoaded = true;
+
+        StateHasChanged();
     }
 }

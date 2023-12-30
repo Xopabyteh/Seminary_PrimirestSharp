@@ -11,12 +11,9 @@ public partial class LoginPage
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private AuthService AuthService { get; set; } = null!;
 
+    [SupplyParameterFromForm] public string ModelUsername { get; set; } = string.Empty;
 
-    [SupplyParameterFromForm]
-    public string ModelUsername { get; set; } = string.Empty;
-
-    [SupplyParameterFromForm]
-    public string ModelPassword { get; set; } = string.Empty;
+    [SupplyParameterFromForm] public string ModelPassword { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -27,10 +24,15 @@ public partial class LoginPage
         var request = new LoginRequest(ModelUsername, ModelPassword);
 
         var loginResult = await AuthenticationFacade.LoginAsync(request);
-        if (loginResult != default)
+        if (loginResult == default)
         {
-            await AuthService.SetSessionAsync(loginResult);
-            NavigationManager.NavigateTo("/orders");
+            //Todo:
+            return;
         }
+
+        //Successful login
+        await AuthService.SetSessionAsync(loginResult);
+
+        NavigationManager.NavigateTo("/orders");
     }
 }
