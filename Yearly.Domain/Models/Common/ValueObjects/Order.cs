@@ -4,16 +4,16 @@ namespace Yearly.Domain.Models.Common.ValueObjects;
 public class Order : ValueObject
 {
     public FoodId ForFood { get; }
-    public PrimirestFoodOrderIdentifier PrimirestOrderIdentifier { get; }
+    public PrimirestOrderData PrimirestOrderData { get; }
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return ForFood;
-        yield return PrimirestOrderIdentifier;
+        yield return PrimirestOrderData;
     }
 
-    public Order(FoodId forFood, PrimirestFoodOrderIdentifier primirestOrderIdentifier)
+    public Order(FoodId forFood, PrimirestOrderData primirestOrderData)
     {
         ForFood = forFood;
-        PrimirestOrderIdentifier = primirestOrderIdentifier;
+        PrimirestOrderData = primirestOrderData;
     }
 }

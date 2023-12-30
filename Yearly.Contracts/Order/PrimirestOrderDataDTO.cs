@@ -1,4 +1,8 @@
-﻿namespace Yearly.Contracts.Common;
+﻿namespace Yearly.Contracts.Order;
+
+public record PrimirestOrderDataDTO(
+    PrimirestOrderIdentifierDTO PrimirestOrderIdentifier,
+    decimal PriceCzechCrowns);
 
 public record PrimirestOrderIdentifierDTO(
     // These three are used when canceling an order of the item

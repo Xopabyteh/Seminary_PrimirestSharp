@@ -38,7 +38,7 @@ public partial class DailyMenu
                 //We clicked on the same food we already have ordered
                 //Cancel order
 
-                var didCancel = await CancelOrder(order.PrimirestOrderIdentifier);
+                var didCancel = await CancelOrder(order.PrimirestOrderData);
                 if (!didCancel)
                     return; //Error
 
@@ -83,7 +83,7 @@ public partial class DailyMenu
     }
 
     ///<returns>The new order identifier if success, null if error</returns>
-    private async Task<PrimirestOrderIdentifierDTO?> NewOrderAsync(FoodDTO foodToOrder)
+    private async Task<PrimirestOrderDataDTO?> NewOrderAsync(FoodDTO foodToOrder)
     {
         var newOrderResult = await OrdersFacade.NewOrderAsync(foodToOrder.PrimirestFoodIdentifier);
         if (newOrderResult.IsT0)
@@ -106,7 +106,7 @@ public partial class DailyMenu
     }
 
     /// <returns>True if canceled successfully, False if error</returns>
-    private async Task<bool> CancelOrder(PrimirestOrderIdentifierDTO orderIdentifier)
+    private async Task<bool> CancelOrder(PrimirestOrderDataDTO orderIdentifier)
     {
         var response = await OrdersFacade.CancelOrderAsync(orderIdentifier);
         if (response is null)

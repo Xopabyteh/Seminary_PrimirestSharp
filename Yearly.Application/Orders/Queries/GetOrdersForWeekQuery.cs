@@ -29,17 +29,19 @@ public class GetOrdersForWeekQueryHandler : IRequestHandler<GetOrdersForWeekQuer
             return ordersResult.Errors;
 
         var orders = new List<Order>(ordersResult.Value.Count);
-        var foods = await _foodRepository.GetFoodsByPrimirestItemIdAsync(
-            ordersResult.Value.Select(o => o.FoodItemId).ToList());
 
-        foreach (var primirestOrder in ordersResult.Value)
+        // Optimization, so we don't have to go to the repository a million times
+        var foods = await _foodRepository.GetFoodsByPrimirestItemIdsAsync(
+            ordersResult.Value.Select(od => od.PrimirestFoodOrderIdentifier.FoodItemId).ToList());
+
+        foreach (var primirestOrderData in ordersResult.Value)
         {
-            if (!foods.TryGetValue(primirestOrder.FoodItemId, out var food))
+            if (!foods.TryGetValue(primirestOrderData.PrimirestFoodOrderIdentifier.FoodItemId, out var food))
             {
                 throw new IllegalStateException("There was no match for the ItemId from ordersResult in our repository. This means that the order has a different ItemId than the foods in our system.");
             }
 
-            orders.Add(new Order(food.Id, primirestOrder));
+            orders.Add(new Order(food.Id, primirestOrderData));
         }
 
         return orders;

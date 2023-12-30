@@ -24,7 +24,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         _logger = logger;
     }
 
-    public async Task<ErrorOr<PrimirestFoodOrderIdentifier>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier)
+    public async Task<ErrorOr<PrimirestOrderData>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier)
     {
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
         client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
@@ -43,15 +43,17 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         if (responseObj.Success)
         {
-            var orderIdentifierItem = responseObj.Orders[0].Items[0]; //Why the fuck does primirest store it like this wtf
+            var item = responseObj.Orders[0].Items[0]; //Why the fuck does primirest store it like this wtf
 
-            var reconstructedOrder = new PrimirestFoodOrderIdentifier(
-                OrderItemId: orderIdentifierItem.ID,
-                OrderId: orderIdentifierItem.IDOrder,
-                FoodItemId: orderIdentifierItem.IDItem,
+            var reconstructedOrderIdentifier = new PrimirestFoodOrderIdentifier(
+                OrderItemId: item.ID,
+                OrderId: item.IDOrder,
+                FoodItemId: item.IDItem,
                 MenuId: foodIdentifier.MenuId);
+            var price = item.BoarderTotalPriceVat;
 
-            return reconstructedOrder;
+            var orderData = new PrimirestOrderData(reconstructedOrderIdentifier, price);
+            return orderData;
         }
 
         if (responseObj.Message! == @"Časový limit pro objednávky již vypršel")
@@ -93,7 +95,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         return Error.Failure("Unknown");
     }
 
-    public async Task<ErrorOr<IReadOnlyList<PrimirestFoodOrderIdentifier>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id)
+    public async Task<ErrorOr<IReadOnlyList<PrimirestOrderData>>> GetOrdersForPersonForWeekAsync(string sessionCookie, WeeklyMenuId id)
     {
         // Call the same API as when getting menus
         // This time grab the orders
@@ -121,19 +123,23 @@ public class PrimirestOrderService : IPrimirestOrderService
             }) ?? throw new InvalidPrimirestContractException("Primirest changed their Menu retrieval contract");
 
         var ordersResponse = responseRoot.Menu.Orders;
-        var foodOrders = new List<PrimirestFoodOrderIdentifier>(ordersResponse.Count);
+        var foodOrders = new List<PrimirestOrderData>(ordersResponse.Count);
 
         // Reconstruct the orders from the response
         foreach (var orderResponse in ordersResponse)
         {
             var item = orderResponse.Items[0]; //Always only 1 item.
-            var reconstructedOrder = new PrimirestFoodOrderIdentifier(
+            var reconstructedOrderIdentifier = new PrimirestFoodOrderIdentifier(
                 OrderItemId: item.ID,
                 OrderId: item.IDOrder,
                 FoodItemId: item.IDItem,
                 MenuId: id.Value);
 
-            foodOrders.Add(reconstructedOrder);
+            var price = item.BoarderTotalPriceVat;
+
+            var orderData = new PrimirestOrderData(reconstructedOrderIdentifier, price);
+
+            foodOrders.Add(orderData);
         }
 
         return foodOrders;

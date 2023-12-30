@@ -41,7 +41,10 @@ internal record PrimirestMenuResponseOrder(
 internal record PrimirestMenuResponseOrderItem(
     int ID, //ID of the order item
     int IDOrder, //ID of the order
-    int IDItem //ID of the food, the naming is horrible
+    int IDItem, //ID of the food, the naming is horrible
+    decimal BoarderTotalPriceVat //Price of food in Czech crowns
+                                //(as a decimal, because sometimes they return '43.0000000000',
+                                //which can't be parsed to int straight through json parser)
 );
 
 internal record PrimirestMenuResponseRoot(

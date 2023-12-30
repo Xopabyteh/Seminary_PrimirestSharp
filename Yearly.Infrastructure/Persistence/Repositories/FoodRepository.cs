@@ -35,7 +35,7 @@ public class FoodRepository : IFoodRepository
     }
 
     //Key: PrimirestItemId, Value: Food
-    public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdAsync(List<int> itemIds)
+    public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds)
     {
         var foods = _context.Foods
             .Where(f => itemIds.Contains(f.PrimirestFoodIdentifier.ItemId))

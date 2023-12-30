@@ -19,6 +19,15 @@ public class OrderMappings : IRegister
 
         config.NewConfig<Order, OrderDTO>()
             .Map(dst => dst.SharpFoodId, src => src.ForFood.Value)
-            .Map(dst => dst.PrimirestOrderIdentifier, src => src.PrimirestOrderIdentifier);
+            .Map(dst => dst.PrimirestOrderData, src => src.PrimirestOrderData);
+
+        config.NewConfig<PrimirestOrderData, PrimirestOrderDataDTO>()
+            .Map(dst => dst.PriceCzechCrowns, src => src.PriceCzechCrowns)
+            .Map(dst => dst.PrimirestOrderIdentifier, src => src.PrimirestFoodOrderIdentifier);
+
+        config.NewConfig<PrimirestFoodOrderIdentifier, PrimirestOrderIdentifierDTO>()
+            .Map(dst => dst.MenuId, src => src.MenuId)
+            .Map(dst => dst.OrderId, src => src.OrderId)
+            .Map(dst => dst.OrderItemId, src => src.OrderItemId);
     }
 }

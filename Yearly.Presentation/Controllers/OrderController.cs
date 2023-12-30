@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Orders.Commands;
 using Yearly.Application.Orders.Queries;
-using Yearly.Contracts.Common;
 using Yearly.Contracts.Order;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 
@@ -27,7 +26,7 @@ public class OrderController : ApiController
         var result = await _mediator.Send(command);
         
         return result.Match(
-            value => Ok(_mapper.Map<PrimirestOrderIdentifierDTO>(value)),
+            value => Ok(_mapper.Map<PrimirestOrderDataDTO>(value)),
             Problem);
     }
 

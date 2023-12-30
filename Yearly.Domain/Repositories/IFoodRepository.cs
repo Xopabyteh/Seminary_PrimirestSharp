@@ -8,6 +8,6 @@ public interface IFoodRepository
     public Task AddFoodAsync(Food food);
     public Task<Food?> GetFoodByIdAsync(FoodId id);
     public Task<Food?> GetFoodByNameAsync(string foodName);
-    public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdAsync(List<int> itemIds);
+    public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds);
     public Task UpdateFoodAsync(Food food);
 }
