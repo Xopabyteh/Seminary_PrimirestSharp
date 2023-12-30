@@ -49,7 +49,7 @@ public class OrdersFacade
         return problem;
     }
 
-    public async Task<ProblemResponse?> CancelOrderAsync(PrimirestOrderDataDTO orderId)
+    public async Task<ProblemResponse?> CancelOrderAsync(PrimirestOrderIdentifierDTO orderId)
     {
         //Post to {{host}}/order/cancel-order
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync(

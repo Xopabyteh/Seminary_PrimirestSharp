@@ -106,9 +106,9 @@ public partial class DailyMenu
     }
 
     /// <returns>True if canceled successfully, False if error</returns>
-    private async Task<bool> CancelOrder(PrimirestOrderDataDTO orderIdentifier)
+    private async Task<bool> CancelOrder(PrimirestOrderDataDTO orderData)
     {
-        var response = await OrdersFacade.CancelOrderAsync(orderIdentifier);
+        var response = await OrdersFacade.CancelOrderAsync(orderData.PrimirestOrderIdentifier);
         if (response is null)
         {
             //No error
