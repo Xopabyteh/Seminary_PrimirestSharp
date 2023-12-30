@@ -1,7 +1,7 @@
 ﻿using ErrorOr;
 using MediatR;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Application.Menus;
+using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 
 namespace Yearly.Application.Orders.Commands;

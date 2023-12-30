@@ -3,11 +3,12 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Application.Menus;
+using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Http;
+using Yearly.Infrastructure.Services.Menus;
 
 namespace Yearly.Infrastructure.Services.Orders;
 

@@ -1,5 +1,4 @@
-﻿using Yearly.Application.Menus;
-using Yearly.Domain.Models.FoodAgg.ValueObjects;
+﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.Common.ValueObjects;
 public class Order : ValueObject

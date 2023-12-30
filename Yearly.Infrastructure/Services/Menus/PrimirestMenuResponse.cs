@@ -1,4 +1,6 @@
-﻿// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+﻿//This file contains necessary models for correct deserialization from the Primirest API to objects
+
+namespace Yearly.Infrastructure.Services.Menus;
 
 internal record PrimirestMenuResponseDay(
     IReadOnlyList<PrimirestMenuResponseItem> Items,
@@ -28,8 +30,8 @@ internal record PrimirestMenuResponseMenu(
     IReadOnlyList<PrimirestMenuResponseOrder> Orders,
     IReadOnlyList<PrimirestMenuResponseDay> Days
 
-    // DateTime DateFrom,
-    // DateTime DateTo,
+// DateTime DateFrom,
+// DateTime DateTo,
 );
 
 internal record PrimirestMenuResponseOrder(

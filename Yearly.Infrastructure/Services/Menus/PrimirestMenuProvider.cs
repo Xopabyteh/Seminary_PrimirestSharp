@@ -3,7 +3,6 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Application.Menus;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
@@ -11,6 +10,7 @@ using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Services.Authentication;
+using Yearly.Infrastructure.Services.Orders;
 
 namespace Yearly.Infrastructure.Services.Menus;
 

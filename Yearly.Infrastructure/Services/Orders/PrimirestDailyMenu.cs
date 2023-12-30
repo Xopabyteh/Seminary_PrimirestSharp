@@ -1,4 +1,4 @@
-﻿namespace Yearly.Application.Menus;
+﻿namespace Yearly.Infrastructure.Services.Orders;
 
 public readonly record struct PrimirestDailyMenu(
     DateTime Date,

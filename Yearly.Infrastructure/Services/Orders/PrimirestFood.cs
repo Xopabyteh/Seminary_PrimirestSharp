@@ -1,6 +1,6 @@
 ﻿using Yearly.Domain.Models.FoodAgg.ValueObjects;
 
-namespace Yearly.Application.Menus;
+namespace Yearly.Infrastructure.Services.Orders;
 
 public readonly record struct PrimirestFood(
     string Name,
