@@ -3,16 +3,16 @@
 public class PrimirestOrderData : ValueObject
 {
     public PrimirestFoodOrderIdentifier PrimirestFoodOrderIdentifier { get; }
-    public decimal PriceCzechCrowns { get;}
+    public MoneyCzechCrowns Money { get;}
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return PrimirestFoodOrderIdentifier;
-        yield return PriceCzechCrowns;
+        yield return Money;
     }
 
-    public PrimirestOrderData(PrimirestFoodOrderIdentifier primirestFoodOrderIdentifier, decimal priceCzechCrowns)
+    public PrimirestOrderData(PrimirestFoodOrderIdentifier primirestFoodOrderIdentifier, MoneyCzechCrowns money)
     {
         PrimirestFoodOrderIdentifier = primirestFoodOrderIdentifier;
-        PriceCzechCrowns = priceCzechCrowns;
+        Money = money;
     }
 }

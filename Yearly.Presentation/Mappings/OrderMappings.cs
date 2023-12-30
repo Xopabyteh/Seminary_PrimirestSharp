@@ -22,7 +22,7 @@ public class OrderMappings : IRegister
             .Map(dst => dst.PrimirestOrderData, src => src.PrimirestOrderData);
 
         config.NewConfig<PrimirestOrderData, PrimirestOrderDataDTO>()
-            .Map(dst => dst.PriceCzechCrowns, src => src.PriceCzechCrowns)
+            .Map(dst => dst.PriceCzechCrowns, src => src.Money.Value)
             .Map(dst => dst.PrimirestOrderIdentifier, src => src.PrimirestFoodOrderIdentifier);
 
         config.NewConfig<PrimirestFoodOrderIdentifier, PrimirestOrderIdentifierDTO>()

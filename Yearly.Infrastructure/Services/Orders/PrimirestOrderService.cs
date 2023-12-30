@@ -6,6 +6,7 @@ using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services.Menus;
@@ -18,10 +19,12 @@ public class PrimirestOrderService : IPrimirestOrderService
 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<PrimirestOrderService> _logger;
-    public PrimirestOrderService(IHttpClientFactory httpClientFactory, ILogger<PrimirestOrderService> logger)
+    private readonly IDateTimeProvider _dateTimeProvider;
+    public PrimirestOrderService(IHttpClientFactory httpClientFactory, ILogger<PrimirestOrderService> logger, IDateTimeProvider dateTimeProvider)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<ErrorOr<PrimirestOrderData>> OrderFoodAsync(string sessionCookie, PrimirestFoodIdentifier foodIdentifier)
@@ -32,7 +35,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/order?menuID={foodIdentifier.MenuId}&dayID={foodIdentifier.DayId}&itemID={foodIdentifier.ItemId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
 
-        //If it is "/CS/auth/login", user are not logged in
+        //If it is "/CS/auth/login", user is not logged in
         if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
@@ -52,7 +55,7 @@ public class PrimirestOrderService : IPrimirestOrderService
                 MenuId: foodIdentifier.MenuId);
             var price = item.BoarderTotalPriceVat;
 
-            var orderData = new PrimirestOrderData(reconstructedOrderIdentifier, price);
+            var orderData = new PrimirestOrderData(reconstructedOrderIdentifier, new(price));
             return orderData;
         }
 
@@ -74,7 +77,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/cancelOrderItem?orderID={foodIdentifier.OrderId}&itemID={foodIdentifier.OrderItemId}&menuID={foodIdentifier.MenuId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
 
-        //If it is "/CS/auth/login", user are not logged in
+        //If it is "/CS/auth/login", user is not logged in
         if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
@@ -137,11 +140,39 @@ public class PrimirestOrderService : IPrimirestOrderService
 
             var price = item.BoarderTotalPriceVat;
 
-            var orderData = new PrimirestOrderData(reconstructedOrderIdentifier, price);
+            var orderData = new PrimirestOrderData(reconstructedOrderIdentifier, new(price));
 
             foodOrders.Add(orderData);
         }
 
         return foodOrders;
+    }
+
+    public async Task<ErrorOr<MoneyCzechCrowns>> GetBalanceOfUserWithoutOrdersAccountedAsync(string sessionCookie, UserId userId)
+    {
+        //https://www.mujprimirest.cz/ajax/cs/account/26564871/balance?month=12&year=2023&_=1703936122412
+        
+        //Not that it really matters, but i am using CzechNow, instead of UTCNow, because Primirest also uses Czech Now
+        var monthNumber = _dateTimeProvider.CzechNow.Month;
+        var yearNumber = _dateTimeProvider.CzechNow.Year;
+
+        var requestUrl = @$"ajax/cs/account/{userId.Value}/balance?month={monthNumber}&year={yearNumber}&_=0";
+        var message = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+        message.Headers.Add("Cookie", sessionCookie);
+
+        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+
+        var response = await client.SendAsync(message);
+
+        //If it is "/CS/auth/login", user are not logged in
+        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+            return Application.Errors.Errors.Authentication.CookieNotSigned;
+        
+        var responseJson = await response.Content.ReadAsStringAsync();
+        var balanceRoot = JsonConvert.DeserializeObject<BalanceResponseRoot>(responseJson)
+            ?? throw new InvalidPrimirestContractException("Primirest changed their Balance retrieval contract");
+
+        var balanceOfUserWithoutOrdersAccounted = balanceRoot.Rows2[0].ClosingBalance;
+        return new MoneyCzechCrowns(balanceOfUserWithoutOrdersAccounted);
     }
 }

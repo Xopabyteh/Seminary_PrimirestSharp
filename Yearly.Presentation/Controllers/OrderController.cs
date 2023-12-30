@@ -59,4 +59,18 @@ public class OrderController : ApiController
         var response = new MyOrdersResponse(ordersResponse);
         return Ok(response);
     }
+
+    [HttpGet("my-balance")]
+    public Task<IActionResult> GetMyBalanceWithoutOrdersAccounted([FromHeader] string sessionCookie)
+    {
+        return PerformAuthenticatedActionAsync(sessionCookie, async (user) =>
+        {
+            var balanceResult =
+                await _mediator.Send(new GetBalanceOfUserWithoutOrdersAccountedQuery(sessionCookie, user.Id));
+
+            return balanceResult.Match(
+                value => Ok(new MyBalanceResponse(value.Value)),
+                Problem);
+        });
+    }
 }
