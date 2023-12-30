@@ -22,18 +22,20 @@ public class MenuAndOrderCacheService
     private ConcurrentDictionary<int, List<OrderDTO>> cachedOrdersForWeeks = new();
     private readonly TaskCompletionSource<IReadOnlyDictionary<int, List<OrderDTO>>> _ordersLoadedTcs = new();
 
-    private decimal balance;
-    private readonly TaskCompletionSource<decimal> _balanceLoadedTcs = new();
+    public decimal Balance { get; private set; }
+    private readonly TaskCompletionSource<bool> _balanceLoadedTcs = new();
 
-    private decimal orderedFor;
-    private readonly TaskCompletionSource<decimal> _orderedForLoadedTcs = new();
-    private event Action OnOrderedForChanged;
-
+    public decimal OrderedFor { get; private set; }
+    private readonly TaskCompletionSource<bool> _orderedForLoadedTcs = new();
+    public event Action OnOrderedForChanged;
 
     public Task<IReadOnlyList<WeeklyMenuDTO>> CachedMenusAsync() => _menusLoadedTcs.Task;
     public Task<IReadOnlyDictionary<int, List<OrderDTO>>> CachedOrdersForWeeksAsync() => _ordersLoadedTcs.Task;
-    public Task<decimal> CachedBalanceAsync() => _balanceLoadedTcs.Task;
-    public Task<decimal> CachedOrderedForAsync() => _orderedForLoadedTcs.Task;
+    //public Task<decimal> CachedBalanceAsync() => _balanceLoadedTcs.Task;
+    //public Task<decimal> CachedOrderedForAsync() => _orderedForLoadedTcs.Task;
+
+    public Task WaitUntilBalanceLoaded() => _balanceLoadedTcs.Task;
+    public Task WaitUntilOrderedForLoaded() => _orderedForLoadedTcs.Task;
 
     public MenuAndOrderCacheService(OrdersFacade ordersFacade, MenusFacade menusFacade)
     {
@@ -74,6 +76,7 @@ public class MenuAndOrderCacheService
 
         await LoadBalanceAsync();
         ReCalculateOrderedFor();
+        _orderedForLoadedTcs.SetResult(true); //Signal that orders are loaded
     }
 
     public void NewOrderCreated(int forWeekId, OrderDTO newOrder)
@@ -82,6 +85,7 @@ public class MenuAndOrderCacheService
         cachedOrdersForWeeks[forWeekId].Add(newOrder);
 
         ReCalculateOrderedFor();
+        OnOrderedForChanged?.Invoke();
     }
 
     public void OrderCanceled(int forWeekId, OrderDTO orderCanceled)
@@ -91,6 +95,7 @@ public class MenuAndOrderCacheService
         ordersForWeek.Remove(orderCanceled);
 
         ReCalculateOrderedFor();
+        OnOrderedForChanged?.Invoke();
     }
 
     private void ReCalculateOrderedFor()
@@ -98,18 +103,15 @@ public class MenuAndOrderCacheService
         //Calcuate "Objednáno za" based on our orders
         //Check PSharp Docs section `Balance calculation`
 
-        orderedFor = cachedOrdersForWeeks.Values
+        OrderedFor = cachedOrdersForWeeks.Values
             .SelectMany(orders => orders)
             .Sum(o => o.PrimirestOrderData.PriceCzechCrowns);
-
-        _orderedForLoadedTcs.SetResult(orderedFor);
-        OnOrderedForChanged?.Invoke();
     }
 
     private async Task LoadBalanceAsync()
     {
         //Load "Stav konta"
-        balance = await _ordersFacade.GetMyBalanceWithoutOrdersAccounted();
-        _balanceLoadedTcs.SetResult(balance);
+        Balance = await _ordersFacade.GetMyBalanceWithoutOrdersAccounted();
+        _balanceLoadedTcs.SetResult(true); //Signal that balance is loaded
     }
 }

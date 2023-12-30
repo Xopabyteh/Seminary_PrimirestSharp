@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Components;
-using System.Collections.Concurrent;
-using Yearly.Contracts.Order;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApiFacades;
 
 namespace Yearly.MauiClient.Components.Layout;
 
-public partial class NavigationBar
+public partial class NavigationBar : IDisposable
 {
     [Inject] protected MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
     [Inject] protected OrdersFacade OrdersFacade { get; set; } = null!;
@@ -17,17 +15,35 @@ public partial class NavigationBar
     private bool isOrderedForLoaded = false;
     private decimal orderedFor = 0;
 
+    protected override void OnInitialized()
+    {
+        MenuAndOrderCacheService.OnOrderedForChanged += ReloadOrderedFor;
+    }
+
+    private void ReloadOrderedFor()
+    {
+        orderedFor = MenuAndOrderCacheService.OrderedFor;
+        StateHasChanged();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
             return;
 
-        balance = await MenuAndOrderCacheService.CachedBalanceAsync();
+        await MenuAndOrderCacheService.WaitUntilBalanceLoaded();
+        balance = MenuAndOrderCacheService.Balance;
         isBalanceLoaded = true;
 
-        orderedFor = await MenuAndOrderCacheService.CachedOrderedForAsync();
+        await MenuAndOrderCacheService.WaitUntilOrderedForLoaded();
+        orderedFor = MenuAndOrderCacheService.OrderedFor;
         isOrderedForLoaded = true;
 
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        MenuAndOrderCacheService.OnOrderedForChanged -= ReloadOrderedFor;
     }
 }
