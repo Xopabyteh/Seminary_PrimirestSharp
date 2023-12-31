@@ -1,0 +1,41 @@
+﻿.container {
+    display: grid;
+
+    grid-template-rows: 1fr auto;
+    grid-template-columns: auto;
+
+    justify-items: center;
+    align-items: center;
+
+    flex: 1;
+    gap: 4rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 2rem;
+}
+    form button {
+        width: 164px;
+        height: 48px;
+        filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    }
+
+.input-box {
+    border-bottom: 1px solid var(--clr-secondary);
+    padding-inline: 0.75rem;
+    padding-block: 0.25rem;
+}
+    .input-box input {
+        appearance: none;
+        outline: none;
+        border: none;
+    }
+
+
+svg path {
+    stroke: var(--clr-secondary);
+}

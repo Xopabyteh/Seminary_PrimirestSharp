@@ -44,9 +44,9 @@
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFFFFF" BaseSize="128,128" />
 
-        <!-- Images -->
+		<!-- Images -->
         <MauiImage Include="Resources\Images\*" />
         <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
@@ -59,6 +59,7 @@
 
     <ItemGroup>
       <AndroidResource Remove="Platforms\Android\Resources\values\network_security_config.xml" />
+      <AndroidResource Remove="Platforms\Android\Resources\values\styles.xml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -67,6 +68,7 @@
       <None Remove="Components\Pages\Orders\FoodBlock.razor.css" />
       <None Remove="Components\Pages\Orders\OrderPage.razor.css" />
       <None Remove="Platforms\Android\Resources\xml\file_paths.xml" />
+      <None Remove="Resources\Splash\splash.svg" />
     </ItemGroup>
 
     <ItemGroup>
@@ -100,7 +102,10 @@
 
     <ItemGroup>
       <Folder Include="Services\Toast\" />
-      <Folder Include="wwwroot\svg\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiSplashScreen Include="Resources\Splash\splash.svg" />
     </ItemGroup>
 
 </Project>

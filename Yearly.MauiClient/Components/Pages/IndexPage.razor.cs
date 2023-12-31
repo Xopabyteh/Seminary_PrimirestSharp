@@ -31,6 +31,7 @@ public partial class IndexPage
             return;
         }
 
+        //We have a session, skip login
         NavigationManager.NavigateTo("/orders");
     }
 }
