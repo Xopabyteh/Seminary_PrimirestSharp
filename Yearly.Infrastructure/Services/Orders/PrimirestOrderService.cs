@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Net;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
@@ -35,6 +36,10 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/order?menuID={foodIdentifier.MenuId}&dayID={foodIdentifier.DayId}&itemID={foodIdentifier.ItemId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
+
+        //We get back 500 when we pass a wrong identifier (or primirest is down, let's hope it's not)
+        if (response.StatusCode == HttpStatusCode.InternalServerError)
+            return Application.Errors.Errors.Orders.InvalidFoodIdentifier;
 
         if(response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
@@ -76,6 +81,10 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/cancelOrderItem?orderID={foodIdentifier.OrderId}&itemID={foodIdentifier.OrderItemId}&menuID={foodIdentifier.MenuId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
+
+        //We get back 500 when we pass a wrong identifier (or primirest is down, let's hope it's not)
+        if(response.StatusCode == HttpStatusCode.InternalServerError)
+            return Application.Errors.Errors.Orders.InvalidOrderIdentifier;
 
         if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
