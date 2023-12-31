@@ -5,9 +5,6 @@ using ErrorOr;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Yearly.Application.Authentication;
-using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
-using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Authentication;
@@ -50,9 +47,7 @@ public class PrimirestAuthService : IAuthService
 
         var loginResponse = await client.SendAsync(requestMessage);
 
-        //If the loginResponse request uri absolute path is "/CS", then the login was successful
-        //If it is "/CS/auth/login", then the login was unsuccessful
-        if (loginResponse.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+        if (loginResponse.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.InvalidCredentials;
 
         return sessionCookie;
@@ -119,11 +114,14 @@ public class PrimirestAuthService : IAuthService
 
         var resultJson = await response.Content.ReadAsStringAsync();
 
-        if (resultJson.StartsWith("<!doctype html>"))
-        {
-            //We have been redirected to the login page, so the cookie is not valid
+        //if (resultJson.StartsWith("<!doctype html>"))
+        //{
+        //    //We have been redirected to the login page, so the cookie is not valid
+        //    return Application.Errors.Errors.Authentication.CookieNotSigned;
+        //}
+
+        if(response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
-        }
 
         dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
         dynamic userDetailsObj = userObj.Items[0];

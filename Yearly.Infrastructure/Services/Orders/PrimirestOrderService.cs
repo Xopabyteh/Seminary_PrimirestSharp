@@ -10,6 +10,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Services.Menus;
+using Yearly.Infrastructure.Services.Orders.ResponseModels;
 
 namespace Yearly.Infrastructure.Services.Orders;
 
@@ -35,8 +36,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/order?menuID={foodIdentifier.MenuId}&dayID={foodIdentifier.DayId}&itemID={foodIdentifier.ItemId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
 
-        //If it is "/CS/auth/login", user is not logged in
-        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+        if(response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
         var responseJson = await response.Content.ReadAsStringAsync();
@@ -77,8 +77,7 @@ public class PrimirestOrderService : IPrimirestOrderService
         var response = await client.GetAsync(
             $"https://www.mujprimirest.cz/ajax/CS/boarding/0/cancelOrderItem?orderID={foodIdentifier.OrderId}&itemID={foodIdentifier.OrderItemId}&menuID={foodIdentifier.MenuId}&purchasePlaceID={k_MensaPurchasePlaceId}&_=0"); //Only god knows what the _=xyz is
 
-        //If it is "/CS/auth/login", user is not logged in
-        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+        if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
         var responseJson = await response.Content.ReadAsStringAsync();
@@ -112,8 +111,7 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var response = await client.SendAsync(message);
 
-        //If it is "/CS/auth/login", user are not logged in
-        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+        if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
         var responseJson = await response.Content.ReadAsStringAsync();
@@ -164,8 +162,7 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var response = await client.SendAsync(message);
 
-        //If it is "/CS/auth/login", user are not logged in
-        if (response.RequestMessage?.RequestUri?.AbsolutePath == "/CS/auth/login")
+        if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
         
         var responseJson = await response.Content.ReadAsStringAsync();

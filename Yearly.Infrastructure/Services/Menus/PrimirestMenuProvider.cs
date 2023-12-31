@@ -2,6 +2,7 @@
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Security.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
@@ -10,7 +11,7 @@ using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Services.Authentication;
-using Yearly.Infrastructure.Services.Orders;
+using Yearly.Infrastructure.Services.Orders.PrimirestStructures;
 
 namespace Yearly.Infrastructure.Services.Menus;
 
@@ -131,6 +132,10 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                     @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={menuId}&menuViewType=FULL&_=0");
 
                 var response = await loggedClient.SendAsync(message);
+
+                if (response.GotRoutedToLogin())
+                    throw new InvalidCredentialException("Admin credentials are invalid (probably)");
+
                 var responseJson = await response.Content.ReadAsStringAsync();
 
                 var responseRoot = JsonConvert.DeserializeObject<PrimirestMenuResponseRoot>(

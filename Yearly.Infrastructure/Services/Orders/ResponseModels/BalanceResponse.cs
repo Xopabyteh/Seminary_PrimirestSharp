@@ -1,4 +1,4 @@
-﻿namespace Yearly.Infrastructure.Services.Orders;
+﻿namespace Yearly.Infrastructure.Services.Orders.ResponseModels;
 
 // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
 public record BalanceResponseRoot(
