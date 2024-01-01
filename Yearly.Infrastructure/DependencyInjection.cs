@@ -35,7 +35,7 @@ public static class DependencyInjection
         services.AddScoped<PrimirestAuthService>();
 
         services.AddSingleton<ISessionCache,  SessionCache>();
-        services.AddMemoryCache(); // For the session cache
+        services.AddDistributedMemoryCache(); //For session cache. Todo: replace with redis
 
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
         services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();

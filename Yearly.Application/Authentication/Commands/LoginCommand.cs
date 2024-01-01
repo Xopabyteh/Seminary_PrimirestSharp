@@ -68,7 +68,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         }
 
         //Add to cache
-        _sessionCache.Add(externalLoginResult.Value, sharpUser);
+        await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser.Id);
 
         return new LoginResult(externalLoginResult.Value, sharpUser);
     }

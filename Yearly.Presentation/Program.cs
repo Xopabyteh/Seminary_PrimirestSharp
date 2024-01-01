@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
     //Add "debug" session to cache (to be more gentle to the primirest api <3)
     var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
-    sessionCache.Add("debug", adminUser);
+    sessionCache.AddAsync("debug", adminUser.Id);
 }
 
 app.MapControllers();

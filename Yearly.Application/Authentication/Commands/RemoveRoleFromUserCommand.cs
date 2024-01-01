@@ -42,7 +42,6 @@ public class RemoveRoleFromUserCommandHandler : IRequestHandler<RemoveRoleFromUs
             return Errors.Errors.User.UserNotFound;
 
         user.RemoveRole(request.Role);
-        _sessionCache.InvalidateCache(user);
 
         await _unitOfWork.SaveChangesAsync();
 

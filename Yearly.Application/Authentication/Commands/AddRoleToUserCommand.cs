@@ -43,7 +43,6 @@ public class AddRoleToUserCommandHandler : IRequestHandler<AddRoleToUserCommand,
 
         user.AddRole(request.Role);
 
-        _sessionCache.InvalidateCache(user); //Todo: call this via domain events
         await _unitOfWork.SaveChangesAsync();
 
         return Unit.Value;
