@@ -6,8 +6,10 @@ using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Repositories;
+using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Persistence;
+using Yearly.Infrastructure.Persistence.OutboxDomainEvents;
 using Yearly.Infrastructure.Persistence.PhotosStorage;
 using Yearly.Infrastructure.Persistence.Repositories;
 using Yearly.Infrastructure.Persistence.Seeding;
@@ -45,6 +47,7 @@ public static class DependencyInjection
             builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
         services.AddPersistence(builder);
+        services.AddBackgroundJobs();
 
         return services;
     }
@@ -55,8 +58,14 @@ public static class DependencyInjection
             builder.Configuration.GetSection(DatabaseConnectionOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
         services.AddTransient<ISqlConnectionFactory, SqlConnectionFactory>(); //Dapper
-        services.AddDbContext<PrimirestSharpDbContext>(options =>
+
+        services.AddSingleton<DomainEventsToOutboxMessageDatabaseInterceptor>();
+        services.AddDbContext<PrimirestSharpDbContext>((srp, options) =>
         {
+            var eventsToOutboxInterceptor = srp.GetService<DomainEventsToOutboxMessageDatabaseInterceptor>();
+
+            options.AddInterceptors(eventsToOutboxInterceptor!);
+
             options.UseSqlServer(
                 builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
         });
@@ -84,5 +93,12 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddTransient<DataSeeder>();
+    }
+
+    private static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
+    {
+        services.AddTransient<FireOutboxDomainEventsJob>();
+
+        return services;
     }
 }

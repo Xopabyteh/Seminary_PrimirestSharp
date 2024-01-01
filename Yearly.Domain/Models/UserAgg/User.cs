@@ -3,11 +3,12 @@ using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
+using Yearly.Domain.Models.UserAgg.DomainEvents;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.UserAgg;
 
-public class User : AggregateRoot<UserId>
+public class User : AggregateRoot<UserId>, IDomainEventPublisher
 {
     public string Username { get; private set; }
 
@@ -31,11 +32,13 @@ public class User : AggregateRoot<UserId>
     public void AddRole(UserRole role)
     {
         _roles.Add(role);
+        PublishDomainEvent(new RoleAddedToUserDomainEvent(this.Id));
     }
 
     public void RemoveRole(UserRole role)
     {
         _roles.Remove(role);
+        PublishDomainEvent(new RoleRemovedFromUserDomainEvent(this.Id));
     }
 
     public void ApprovePhoto(Photo photo)
@@ -43,6 +46,7 @@ public class User : AggregateRoot<UserId>
         photo.Approve();
 
         // Publish Domain events
+
     }
 
     public void RejectPhoto(Photo photo)
@@ -72,4 +76,13 @@ public class User : AggregateRoot<UserId>
 
         return photo;
     }
+    public void ClearDomainEvents()
+        =>_publishedEvents.Clear();
+
+    public IReadOnlyList<IDomainEvent> GetDomainEvents()
+        => _publishedEvents.ToList().AsReadOnly();
+
+    private readonly List<IDomainEvent> _publishedEvents = new();
+    private void PublishDomainEvent(IDomainEvent dEvent)
+        => _publishedEvents.Add(dEvent);
 }

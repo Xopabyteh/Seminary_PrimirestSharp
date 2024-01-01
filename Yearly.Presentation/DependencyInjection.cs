@@ -3,6 +3,7 @@ using Hangfire;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Presentation.BackgroundJobs;
 using Yearly.Presentation.Errors;
 using Yearly.Presentation.OutputCaching;
@@ -19,14 +20,6 @@ public static class DependencyInjection
             .AddControllers()
             .AddNewtonsoftJson();
 
-        services.AddTransient<PersistAvailableMenusJob>();
-        services.AddHangfire(configuration => configuration
-            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-            .UseSimpleAssemblyNameTypeSerializer()
-            .UseRecommendedSerializerSettings()
-            .UseSqlServerStorage(builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
-        services.AddHangfireServer();
-
         services.AddSingleton<ProblemDetailsFactory, YearlyProblemDetailsFactory>();
 
         services.AddOutputCaching();
@@ -36,6 +29,7 @@ public static class DependencyInjection
             b.AddSimpleConsole();
         });
 
+        services.AddBackgroundJobs(builder);
         return services;
     }
 
@@ -57,5 +51,17 @@ public static class DependencyInjection
                 policy.Tag(OutputCacheTagName.GetAvailableMenusTag);
             });
         });
+    }
+
+    private static void AddBackgroundJobs(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+        services.AddTransient<PersistAvailableMenusJob>();
+
+        services.AddHangfire(configuration => configuration
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+        services.AddHangfireServer();
     }
 }

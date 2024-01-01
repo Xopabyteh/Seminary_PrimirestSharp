@@ -4,6 +4,7 @@ using Yearly.Application.Authentication;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure;
+using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
@@ -48,6 +49,11 @@ app.UseHangfireDashboard();
         "Persist available menus",
         x => x.ExecuteAsync(),
         @"0 8 * * FRI"); //Every friday at 8:00 - https://crontab.guru/#0_8_*_*_FRI
+
+    RecurringJob.AddOrUpdate<FireOutboxDomainEventsJob>(
+        nameof(FireOutboxDomainEventsJob),
+        x => x.ExecuteAsync(),
+        @"*/10 * * * * *"); //Every 10 seconds
 }
 
 
