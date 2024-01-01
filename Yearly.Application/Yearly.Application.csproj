@@ -26,6 +26,7 @@
   <ItemGroup>
     <Folder Include="Foods\Queries\" />
     <Folder Include="Menus\Queries\" />
+    <Folder Include="Users\" />
     <Folder Include="Orders\Queries\" />
   </ItemGroup>
 

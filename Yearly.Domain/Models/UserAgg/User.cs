@@ -68,7 +68,7 @@ public class User : AggregateRoot<UserId>, IDomainEventPublisher
 
         _photoIds.Add(photoId);
 
-        // Publish Domain events
+        PublishDomainEvent(new UserPublishedNewPhotoDomainEvent(this.Id, photo.Id));
 
         //Automatically approve photo if user is a photo verifier
         if(this.Roles.Contains(UserRole.PhotoApprover))
