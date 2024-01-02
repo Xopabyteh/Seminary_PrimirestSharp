@@ -32,7 +32,8 @@ if (app.Environment.IsDevelopment())
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
     dataSeeder.DbReset();
     dataSeeder.SeedAdminUser(adminUser);
-    dataSeeder.SeedMenus(adminUser);
+    dataSeeder.SeedSample1(adminUser);
+    dataSeeder.SaveSeed();
 
     //Add "debug" session to cache (to be more gentle to the primirest api <3)
     var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
