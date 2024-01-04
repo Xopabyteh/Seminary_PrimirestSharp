@@ -225,6 +225,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                 foreach (var primirestFood in primirestDailyMenu.Foods)
                 {
                     var food = Food.Create(
+                        new FoodId(Guid.NewGuid()),
                         primirestFood.Name,
                         primirestFood.Allergens,
                         primirestFood.PrimirestFoodIdentifier);

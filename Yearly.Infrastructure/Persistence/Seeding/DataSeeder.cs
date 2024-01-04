@@ -395,21 +395,17 @@ public class DataSeeder
                 {
                     var name = food["name"].Value<string>();
                     var allergens = food["allergens"].Value<string>();
-                    var foodId = Guid.Parse(food["foodId"].Value<string>());
+                    var foodIdValue = Guid.Parse(food["foodId"].Value<string>());
 
                     var primirestFoodIdentifier = food["primirestFoodIdentifier"];
                     var menuId = primirestFoodIdentifier["menuId"].Value<int>();
                     var dayId = primirestFoodIdentifier["dayId"].Value<int>();
                     var itemId = primirestFoodIdentifier["itemId"].Value<int>();
 
-                    foodIds.Add(new FoodId(foodId));
+                    var foodId = new FoodId(foodIdValue);
+                    foodIds.Add(foodId);
 
-                    var foodObj = Food.Create(name, allergens, new(menuId, dayId, itemId));
-
-                    //foodObj.Id.Value = foodId;
-                    //Override foodObj.Id.Value with reflection
-                    var propertyInfo = typeof(FoodId).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
-                    propertyInfo!.SetValue(foodObj.Id, foodId);
+                    var foodObj = Food.Create(foodId, name, allergens, new(menuId, dayId, itemId));
 
                     foods.Add(foodObj);
                 }
@@ -453,51 +449,6 @@ public class DataSeeder
     public void SaveSeed()
     {
         _context.SaveChanges();
-    }
-
-    public void SeedFromBible(User admin)
-    {
-        const int weekMenuId = 1337;
-
-        //Foods
-        var foods = new List<Food>()
-        {
-            Food.Create("Conquest", "", new(weekMenuId, 0, 0)),
-            Food.Create("Famine", "1a", new(weekMenuId, 0, 1)),
-            Food.Create("War", "2b", new(weekMenuId, 0, 2)),
-            Food.Create("Death", "3", new(weekMenuId, 1, 3)),
-            Food.Create("Famine2ConfirmedAlias", "5", new(weekMenuId, 1, 4)),
-            Food.Create("Death2ConsiderableAlias", "6", new(weekMenuId, 1, 5)),
-        };
-        foods[4].SetAliasForFood(foods[1]); //Set Famine2 as alias to Famine
-
-        //Seeding photos
-        var resourcesBasePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "seedPhotos");
-        SeedPhotos(
-            approvedPhotoResources: new Dictionary<string, Food>
-            {
-                {Path.Combine(resourcesBasePath, "Famine.jpg"), foods[1]},
-                {Path.Combine(resourcesBasePath, "Famine2.jpg"), foods[1]}
-            },
-            waitingPhotoResources: new Dictionary<string, Food>
-            {
-                {Path.Combine(resourcesBasePath, "Conquest.jpg"), foods[0]}
-            },
-            photoApprover: admin);
-
-        //Weekly menu
-        var weeklyMenu = WeeklyMenu.Create(new(weekMenuId), new List<DailyMenu>()
-        {
-            new(foods.Take(3).Select(f => f.Id).ToList(), new DateTime(2023, 12, 26)),
-            new(foods.Skip(3).Take(3).Select(f => f.Id).ToList(), new DateTime(2023, 12, 27)),
-        });
-
-        //Similarity records
-        var similarityRecords = new List<FoodSimilarityRecord>() {new(foods[5].Id, foods[3].Id, 0.9)};
-
-        _context.Foods.AddRange(foods);
-        _context.WeeklyMenus.Add(weeklyMenu);
-        _context.FoodSimilarityTable.AddRange(similarityRecords);
     }
 
     /// <param name="approvedPhotoResources">Key: path to resource, Value: Food for photo</param>

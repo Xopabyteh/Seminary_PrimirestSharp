@@ -33,12 +33,13 @@ public sealed class Food : AggregateRoot<FoodId>
     }
 
     public static Food Create(
+        FoodId id,
         string name,
         string allergens,
         PrimirestFoodIdentifier primirestFoodIdentifier)
     { 
         return new Food(
-            new FoodId(Guid.NewGuid()),
+            id,
             new List<PhotoId>(),
             null,
             name,
