@@ -4,12 +4,29 @@
 <GoBackButton Text='Nastavení'/>
 
 <section>
-    <h2 class='fw-semi-bold fs-regular color-secondary'>@AuthService.UserDetailsLazy.Username</h2>
+    <h2 class='fw-semi-bold fs-regular color-secondary'>
+        @AuthService.UserDetailsLazy.Username <span class='fw-regular fs-small'>@string.Join(", ", AuthService.UserDetailsLazy.Roles.Select(r => $"{r.RoleCode}."))</span>
+    </h2>
     <div id='user-details' class='mh-100'>
-        <div class='fw-regular fs-small'>
+        <div class='fw-regular fs-regular'>
             <div>
-                <div>@string.Join(", ", AuthService.UserDetails.Value.Roles.Select(r => $"{r.RoleCode}."))</div>
-                <a class='color-primary' href='#'>??? Fotek</a>
+                @if (myPhotosLoaded)
+                {
+                    @if (myPhotos.TotalPhotoCount > 0)
+                    {
+                        <a class='color-primary' href='#'>
+                            @PhotosTextWithGrammar()
+                        </a>
+                    }
+                    else //0 Photos
+                    {
+                        <p class='color-secondary'>0 sdílených fotek</p>
+                    }
+                }
+                else
+                {
+                    <p class='placeholder-glow'>---</p>
+                }
             </div>
             <div class='mt-200 @(isMoneyLoaded ? string.Empty : "placeholder-glow")'>
                 <div>Stav konta: @balance.ToString("####")<sup class='fs-tiny fw-semi-bold'>Kč</sup></div>
@@ -33,26 +50,26 @@
 <section class='mt-400'>
     <h2 class='fw-semi-bold fs-regular color-secondary'>Notifikace</h2>
     <div class='notification-toggles mh-100'>
-        <div class='toggle-with-label mt-200'>
+        <div class='toggle-with-label'>
             <label class="fs-regular fw-regular color-secondary">Když mi dochází peníze</label>
             <ToggleSwitch/>
         </div>
-        <div class='toggle-with-label mt-200'>
+        <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když nemám objednáno</label>
             <ToggleSwitch/>
         </div>
-        <div class='toggle-with-label mt-200'>
+        <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když mi schválí fotku</label>
             <ToggleSwitch/>
         </div>
         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
-            <div class='toggle-with-label mt-200'>
+            <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Pha. Nová čekající fotka</label>
                 <ToggleSwitch/>
             </div>
         </Authorized>
         <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
-            <div class='toggle-with-label mt-200'>
+            <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Adm. Nový similarity record</label>
                 <ToggleSwitch/>
             </div>

@@ -47,4 +47,13 @@ public class PhotoFacade
         var waitingPhotos = await response.Content.ReadFromJsonAsync<WaitingPhotosResponse>();
         return waitingPhotos?.Photos ?? new();
     }
+
+    public async Task<MyPhotosResponse> GetMyPhotosAsync()
+    {
+        var response = await _sharpAPIClient.HttpClient.GetAsync("/photo/my-photos");
+        response.EnsureSuccessStatusCode();
+
+        var myPhotos = await response.Content.ReadFromJsonAsync<MyPhotosResponse>();
+        return myPhotos;
+    }
 }
