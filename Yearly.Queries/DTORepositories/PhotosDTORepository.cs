@@ -3,11 +3,11 @@ using Yearly.Contracts.Photos;
 
 namespace Yearly.Queries.DTORepositories;
 
-public class WaitingPhotosDTORepository
+public class PhotosDTORepository
 {
     private readonly ISqlConnectionFactory _connectionFactory;
 
-    public WaitingPhotosDTORepository(ISqlConnectionFactory connectionFactory)
+    public PhotosDTORepository(ISqlConnectionFactory connectionFactory)
     {
         this._connectionFactory = connectionFactory;
     }
@@ -15,7 +15,7 @@ public class WaitingPhotosDTORepository
     public async Task<WaitingPhotosResponse> GetWaitingPhotosAsync()
     {
         var sql = """
-                  SELECT 
+                  SELECT TOP 20
                   	P.Id AS Id,
                   	P.Link AS Link,
                   	P.PublishDate AS PublishDate,
@@ -31,5 +31,28 @@ public class WaitingPhotosDTORepository
         var waitingPhotos = await connection.QueryAsync<PhotoDTO>(sql);
 
         return new WaitingPhotosResponse(waitingPhotos.ToList());
+    }
+
+    public async Task<MyPhotosResponse> GetUsersPhotos(int userId)
+    {
+        var sql = """
+                  SELECT TOP 20 Link
+                  FROM [PrimirestSharp].[Domain].[Photos]
+                  WHERE PublisherId_Value = @UserId;
+                  
+                  SELECT COUNT(*)
+                  FROM [PrimirestSharp].[Domain].[Photos]
+                  WHERE PublisherId_Value = @UserId;
+                  """;
+
+        await using var connection = _connectionFactory.Create();
+        var gridReader = await connection.QueryMultipleAsync(
+            sql,
+            param: new {UserId = userId});
+
+        var photoLinks = await gridReader.ReadAsync<string>();
+        var totalPhotoCount = await gridReader.ReadSingleAsync<int>();
+
+        return new MyPhotosResponse(photoLinks.ToList(), totalPhotoCount);
     }
 }

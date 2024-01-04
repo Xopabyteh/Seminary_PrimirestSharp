@@ -30,10 +30,10 @@ if (app.Environment.IsDevelopment())
 
     //Seed data (before hangfire initializes in the db)
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    dataSeeder.DbReset();
-    dataSeeder.SeedAdminUser(adminUser);
-    dataSeeder.SeedSample1(adminUser);
-    dataSeeder.SaveSeed();
+    //dataSeeder.DbReset();
+    //dataSeeder.SeedAdminUser(adminUser);
+    //dataSeeder.SeedSample1(adminUser);
+    //dataSeeder.SaveSeed();
 
     //Add "debug" session to cache (to be more gentle to the primirest api <3)
     var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();

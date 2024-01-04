@@ -7,8 +7,30 @@ public class AuthService
 { 
     private const string k_SessionCookieKey = "SessionCookie";
 
+    /// <summary>
+    /// Is null when the user is not logged in
+    /// </summary>
     public string? SessionCookie { get; private set; } = null;
-    public UserDetailsResponse? UserDetails { get; private set; } = null;
+
+    /// <summary>
+    /// Is null when the user is not logged in
+    /// </summary>
+    private UserDetailsResponse? userDetailsField = null;
+    public UserDetailsResponse? UserDetails
+    {
+        get => userDetailsField;
+        private set
+        {
+            userDetailsField = value;
+            UserDetailsLazy = value ?? default;
+        }
+    }
+
+    /// <summary>
+    /// Same as UserDetails, but instead of null, no value means default(UserDetailsResponse)
+    /// Use this when you expect the field to be populated and don't want to go through null checks or the .Value disgust
+    /// </summary>
+    public UserDetailsResponse UserDetailsLazy { get; private set; } = default;
 
     /// <summary>
     /// Returns true if a session cookie is set.

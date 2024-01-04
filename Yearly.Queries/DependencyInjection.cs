@@ -7,7 +7,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddQueries(this IServiceCollection services)
     {
-        services.AddScoped<WaitingPhotosDTORepository>();
+        services.AddScoped<PhotosDTORepository>();
         services.AddScoped<FoodSimilarityTableDTORepository>();
         services.AddScoped<WeeklyMenuDTORepository>();
 

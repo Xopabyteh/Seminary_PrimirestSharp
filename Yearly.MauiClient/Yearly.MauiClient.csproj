@@ -64,17 +64,21 @@
 
     <ItemGroup>
       <None Remove="Components\Common\GoBackButton.razor.css" />
+      <None Remove="Components\Common\ToggleSwitch.razor.css" />
       <None Remove="Components\Pages\OrderPage.razor.css" />
       <None Remove="Components\Pages\Orders\FoodBlock.razor.css" />
       <None Remove="Components\Pages\Orders\OrderPage.razor.css" />
+      <None Remove="Components\Pages\Settings\SettingsPage.razor.css" />
       <None Remove="Platforms\Android\Resources\xml\file_paths.xml" />
       <None Remove="Resources\Splash\splash.svg" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="Components\Common\GoBackButton.razor.css" />
+      <Content Include="Components\Common\ToggleSwitch.razor.css" />
       <Content Include="Components\Pages\Orders\FoodBlock.razor.css" />
       <Content Include="Components\Pages\Orders\OrderPage.razor.css" />
+      <Content Include="Components\Pages\Settings\SettingsPage.razor.css" />
     </ItemGroup>
 
     <ItemGroup>

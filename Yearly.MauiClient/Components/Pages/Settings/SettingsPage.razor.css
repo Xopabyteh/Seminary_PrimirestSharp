@@ -1,0 +1,13 @@
+﻿.notification-toggles {
+    
+
+}
+.toggle-with-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#logout {
+    padding: 0;
+}

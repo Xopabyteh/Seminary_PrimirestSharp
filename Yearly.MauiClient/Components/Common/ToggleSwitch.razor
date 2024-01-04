@@ -1,0 +1,18 @@
+﻿<div class='toggle' data-checked='@Checked' @onclick="ChangeChecked">
+    <div class='fill'></div>
+    <div class='knob'></div>
+</div>
+
+@code {
+
+    [Parameter] public bool Checked { get; set; } = false;
+    [Parameter] public EventCallback<bool> CheckedChanged { get; set; }
+
+    private void ChangeChecked()
+    {
+        Checked = !Checked;
+        CheckedChanged.InvokeAsync(Checked);
+        StateHasChanged();
+    }
+
+}
