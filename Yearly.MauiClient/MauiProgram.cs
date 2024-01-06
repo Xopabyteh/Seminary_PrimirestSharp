@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using Plugin.LocalNotification;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApiFacades;
 using Yearly.MauiClient.Services.Toast;
@@ -13,6 +14,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseLocalNotification()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -27,6 +29,7 @@ public static class MauiProgram
             c.AddDebug();
         });
 #endif
+
 
         builder.Services.AddTransient<ToastService>();
 
