@@ -119,6 +119,10 @@
         content: "An error has occurred."
     }
 
+.status-bar-safe-area {
+    display: none;
+}
+
 #splash-screen {
     width: 100%;
     height: 100%;

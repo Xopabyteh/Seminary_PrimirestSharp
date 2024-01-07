@@ -19,6 +19,17 @@ public partial class LoginPage
 
     private bool isLoggingIn;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var hasSession = await AuthService.TryLoadStoredSessionAsync();
+
+        if (!hasSession)
+            return;
+
+        //We already have a session, skip login
+        NavigationManager.NavigateTo("/orders");
+    }
+
     private async void TrySubmitLogin()
     {
         isLoggingIn = true;

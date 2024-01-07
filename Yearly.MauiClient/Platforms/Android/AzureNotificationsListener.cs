@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Microsoft.Maui.Controls.PlatformConfiguration;
 using Plugin.LocalNotification;
 using WindowsAzure.Messaging.NotificationHubs;
 
@@ -17,11 +16,13 @@ internal class AzureNotificationsListener : Java.Lang.Object, INotificationListe
         if (data == null)
             return;
 
+        //Log data
         foreach (var entity in data)
         {
             Android.Util.Log.Debug("AZURE-NOTIFICATION-HUBS", "Key: {0}, Value: {1}", entity.Key, entity.Value);
         }
 
+        //Get notifications permissions
         if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
         {
             await MainThread.InvokeOnMainThreadAsync(async () =>
@@ -29,13 +30,13 @@ internal class AzureNotificationsListener : Java.Lang.Object, INotificationListe
                 await LocalNotificationCenter.Current.RequestNotificationPermission();
             });
         }
-
+        
+        //Show notification
         var notification = new NotificationRequest
         {
-            NotificationId = 100,
-            Title = "Test",
-            Description = "Test Description",
-            ReturningData = "Dummy data", // Returning data when tapped on notification.
+            NotificationId = 1337,
+            Title = message.Title,
+            Description = message.Body,
             Schedule =
             {
                 NotifyTime = DateTime.Now.AddSeconds(5) // Used for Scheduling local notification, if not specified notification will show immediately.

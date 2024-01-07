@@ -7,9 +7,9 @@ namespace Yearly.MauiClient.Components.Pages.Orders;
 
 public partial class WeeklyMenu
 {
-    [Parameter] public WeeklyMenuDTO WeeklyMenuDTO { get; set; }
+    [Parameter] public required WeeklyMenuDTO WeeklyMenuDTO { get; set; }
 
-    [Inject] public MenuAndOrderCacheService MenuAndOrderCacheService { get; set; }
+    [Inject] public MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
 
     private IReadOnlyList<OrderDTO> orders = Array.Empty<OrderDTO>();
     private bool ordersLoaded;

@@ -26,6 +26,9 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+        
+        <!-- Required for C# Hot Reload -->
+        <UseInterpreter Condition="'$(Configuration)' == 'Debug'">True</UseInterpreter>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
@@ -72,14 +75,12 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-
-        <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFFFFF" BaseSize="128,128" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.75" Color="#007FFF" />
+		
+		<!-- Splash Screen -->
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#007FFF" Resize="false" />
 
 		<!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
@@ -90,7 +91,6 @@
 
     <ItemGroup>
       <AndroidResource Remove="Platforms\Android\Resources\values\network_security_config.xml" />
-      <AndroidResource Remove="Platforms\Android\Resources\values\styles.xml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -106,6 +106,8 @@
       <None Remove="Components\Pages\Settings\SettingsPage.razor.css" />
       <None Remove="Platforms\Android\Resources\xml\file_paths.xml" />
       <None Remove="Resources\Splash\splash.svg" />
+      <!--<None Remove="Resources\AppIcon\logo_bubble_nobg.svg" />
+      <None Remove="Resources\Splash\logoWide.svg" />-->
     </ItemGroup>
 
     <ItemGroup>
@@ -148,10 +150,6 @@
       <GoogleServicesJson Include="Platforms\Android\google-services.json" />
     </ItemGroup>
 
-    <ItemGroup>
-      <MauiSplashScreen Include="Resources\Splash\splash.svg" />
-    </ItemGroup>
-
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
       <PackageReference Include="Xamarin.AndroidX.Activity">
         <Version>1.8.1.1</Version>
@@ -169,5 +167,4 @@
         <Version>123.3.1.1</Version>
       </PackageReference>
     </ItemGroup>
-
 </Project>

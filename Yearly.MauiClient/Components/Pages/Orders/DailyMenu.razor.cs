@@ -22,7 +22,7 @@ public partial class DailyMenu
 
     private OrderDTO? order;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         order = WeekOrders.FirstOrDefault(o => DailyMenuDTO.Foods.Any(f => f.FoodId == o.SharpFoodId));
     }

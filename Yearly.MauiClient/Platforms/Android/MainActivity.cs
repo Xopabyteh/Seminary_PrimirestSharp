@@ -2,14 +2,12 @@
 using Android.Content.PM;
 using Android.OS;
 using Firebase;
-using Microsoft.Maui.Controls.PlatformConfiguration;
 using WindowsAzure.Messaging.NotificationHubs;
 
 namespace Yearly.MauiClient
 {
     [Activity(
-        //Theme = "@style/Maui.SplashTheme",
-        Theme = "@style/MainTheme",
+        Theme = "@style/Maui.SplashTheme",
         MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     public class MainActivity : MauiAppCompatActivity

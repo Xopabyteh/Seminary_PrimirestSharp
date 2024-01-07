@@ -18,13 +18,13 @@ public class MenusFacade
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<AvailableMenusResponse>();
-            return result;
+            return result!;
         }
         else
         {
             //Todo: :(
         }
 
-        return default;
+        return new(new());
     }
 }

@@ -53,13 +53,13 @@
     [Inject] private ToastService ToastService { get; set; } = null!;
 
     private DailyMenuDTO? todayMenu;
-    private bool isLoading = false;
+    // private bool isLoading = false;
 
     //Model
     private Guid selectedFoodId = default;
 
     private MediaFile? capturedPhoto;
-    private string capturedPhotoDisplayData;
+    private string capturedPhotoDisplayData = "";
 
     protected override async Task OnInitializedAsync()
     {

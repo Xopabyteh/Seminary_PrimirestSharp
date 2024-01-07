@@ -14,7 +14,7 @@ public class MenuAndOrderCacheService
     private readonly OrdersFacade _ordersFacade;
     private readonly MenusFacade _menusFacade;
 
-    private List<WeeklyMenuDTO> cachedAvailableMenus;
+    private List<WeeklyMenuDTO> cachedAvailableMenus = new();
     private readonly TaskCompletionSource<IReadOnlyList<WeeklyMenuDTO>> _menusLoadedTcs = new();
     
     //Due to primirest pagination:
@@ -27,7 +27,7 @@ public class MenuAndOrderCacheService
 
     public decimal OrderedFor { get; private set; }
     private readonly TaskCompletionSource<bool> _orderedForLoadedTcs = new();
-    public event Action OnOrderedForChanged;
+    public event Action? OnOrderedForChanged;
 
     public Task<IReadOnlyList<WeeklyMenuDTO>> CachedMenusAsync() => _menusLoadedTcs.Task;
     public Task<IReadOnlyDictionary<int, List<OrderDTO>>> CachedOrdersForWeeksAsync() => _ordersLoadedTcs.Task;
