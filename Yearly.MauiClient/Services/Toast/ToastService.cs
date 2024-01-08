@@ -20,4 +20,15 @@ public class ToastService
     {
         await _js.InvokeVoidAsync("toastSuccess", message);
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="durationMillis">In milliseconds, -1 for infinite</param>
+    /// <returns></returns>
+    public async Task ShowInformationAsync(string message, int durationMillis = 3000)
+    {
+        await _js.InvokeVoidAsync("toastInformation", message, durationMillis);
+    }
 }

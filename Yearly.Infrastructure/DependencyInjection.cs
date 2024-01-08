@@ -53,11 +53,12 @@ public static class DependencyInjection
     private static void AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
         services.AddSingleton<ISessionCache, SessionCache>();
-        services.AddStackExchangeRedisCache(c =>
-        {
-            c.Configuration = builder.Configuration.GetSection("Persistence").GetSection("RedisConnectionString").Value; // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
-            c.InstanceName = "primirest-sharp";
-        });
+        services.AddDistributedMemoryCache();
+        //services.AddStackExchangeRedisCache(c =>
+        //{
+        //    c.Configuration = builder.Configuration.GetSection("Persistence").GetSection("RedisConnectionString").Value; // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+        //    c.InstanceName = "primirest-sharp";
+        //});
 
         services.Configure<DatabaseConnectionOptions>(
             builder.Configuration.GetSection(DatabaseConnectionOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...

@@ -1,4 +1,6 @@
-﻿using Yearly.Contracts.Authentication;
+﻿using Microsoft.VisualBasic;
+using System.Collections;
+using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services.SharpApiFacades;
 
 namespace Yearly.MauiClient.Services;
@@ -22,7 +24,7 @@ public class AuthService
         private set
         {
             userDetailsField = value;
-            UserDetailsLazy = value ?? default;
+            UserDetailsLazy = value ?? new(string.Empty, new(0));
         }
     }
 
@@ -37,7 +39,19 @@ public class AuthService
     /// </summary>
     public bool IsLoggedIn => SessionCookie is not null;
 
-    public event Action OnLogin = null!; 
+    public event Action OnLogin = null!;
+
+
+    /// <summary>
+    /// Loads when <see cref="EnsureAutoLoginStateLoaded"/> is called.
+    /// If you want to use this, make sure to call the method.
+    /// </summary>
+    public LoginRequest? AutoLoginStoredCredentials { get; private set; }
+    /// <summary>
+    /// Loads when <see cref="EnsureAutoLoginStateLoaded"/> is called.
+    /// If you want to use this, make sure to call the method.
+    /// </summary>
+    public bool IsAutoLoginSetup => AutoLoginStoredCredentials is not null;
 
     private readonly AuthenticationFacade _authenticationFacade;
     private readonly SharpAPIClient _sharpAPIClient;
@@ -107,6 +121,29 @@ public class AuthService
         Task.Run(_menuAndOrderCacheService.LoadIntoCacheAsync); //Todo: move to event based
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
+    }
+
+    private const string k_AutoLoginUsernameKey = "autologinusername";
+    private const string k_AutoLoginPasswordKey = "autologinpassword";
+    public async Task SetupAutoLoginAsync(LoginRequest storedCredentials)
+    {
+        await SecureStorage.Default.SetAsync(k_AutoLoginUsernameKey, storedCredentials.Username);
+        await SecureStorage.Default.SetAsync(k_AutoLoginPasswordKey, storedCredentials.Password);
+        AutoLoginStoredCredentials = storedCredentials;
+    }
+
+    public async Task EnsureAutoLoginStateLoaded()
+    {
+        if (AutoLoginStoredCredentials is not null)
+            return;
+
+        var username = await SecureStorage.Default.GetAsync(k_AutoLoginUsernameKey);
+        var password = await SecureStorage.Default.GetAsync(k_AutoLoginPasswordKey);
+
+        if (username is null || password is null)
+            return;
+
+        AutoLoginStoredCredentials = new LoginRequest(username, password);
     }
 
     public async Task LogoutAsync()

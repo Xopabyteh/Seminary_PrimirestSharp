@@ -246,6 +246,14 @@ select {
     background-color: var(--clr-accent);
 }
 
+.capsule {
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+    .capsule svg {
+        margin-left: 4px;
+    }
+
 body {
     font-family: 'Kufam', sans-serif;
     font-size: var(--fs--regular);

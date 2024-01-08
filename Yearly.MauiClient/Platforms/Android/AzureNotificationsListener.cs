@@ -16,6 +16,8 @@ internal class AzureNotificationsListener : Java.Lang.Object, INotificationListe
         if (data == null)
             return;
 
+        
+
         //Log data
         foreach (var entity in data)
         {

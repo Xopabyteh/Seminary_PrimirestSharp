@@ -23,7 +23,7 @@ public partial class SettingsPage
     {
         await AuthService.LogoutAsync();
         
-        NavigationManager.NavigateTo("/login");
+        NavigationManager.NavigateTo("/loginFromLogout");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -53,4 +53,5 @@ public partial class SettingsPage
             _ => $"{myPhotos.TotalPhotoCount} Sdílených fotek"
         };
     }
+
 }

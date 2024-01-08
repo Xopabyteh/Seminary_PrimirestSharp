@@ -17,17 +17,73 @@ public partial class LoginPage
 
     [SupplyParameterFromForm] public string ModelPassword { get; set; } = string.Empty;
 
-    private bool isLoggingIn;
+    private bool isLoggingIn = false;
+    private bool isSettingUpAutoLogin = false;
 
+    /// <summary>
+    /// Check client docs to better see what's happening here :)
+    /// </summary>
+    /// <returns></returns>
     protected override async Task OnInitializedAsync()
     {
+        //Make sure auto login is loaded
+        //(don't care if active, but loaded, so we know the state of it)
+        await AuthService.EnsureAutoLoginStateLoaded();
+
+        //Are we setting up autologin?
+        var pageUri = NavigationManager.Uri;
+        isSettingUpAutoLogin = pageUri.Contains("setupAutoLogin");
+
+        if (isSettingUpAutoLogin)
+        {
+            await ToastService.ShowInformationAsync("Pøihlaš se znovu pro nastavení Auto Loginu",  durationMillis: -1);
+            return; //We don't want to load a session and continue,
+                    // but wait for login, so we can setup Auto Login
+        }
+
+        //1. Try get session
         var hasSession = await AuthService.TryLoadStoredSessionAsync();
-
-        if (!hasSession)
+        if (hasSession)
+        {
+            //We already have a session, skip login
+            NavigationManager.NavigateTo("/orders");
             return;
+        }
 
-        //We already have a session, skip login
-        NavigationManager.NavigateTo("/orders");
+        //2. Try get stored credentials
+        // Did we come from logging out?
+        // If we just logged out, don't auto login back in,
+        // but rather prefill the form
+        var didComeFromLogout = pageUri.Contains("loginFromLogout");
+        if (AuthService.AutoLoginStoredCredentials is not null)
+        {
+            if (didComeFromLogout)
+            {
+                //Prefill form
+                ModelUsername = AuthService.AutoLoginStoredCredentials.Username;
+                ModelPassword = AuthService.AutoLoginStoredCredentials.Password;
+                StateHasChanged();
+                return; //If we just logged out, don't auto login back in
+            }
+
+            //Try to Auto Login
+            var loginResult = await AuthenticationFacade.LoginAsync(AuthService.AutoLoginStoredCredentials);
+            if (loginResult.IsT1)
+            {
+                //Problem
+                isLoggingIn = false;
+                StateHasChanged();
+
+                await ToastService.ShowErrorAsync("Auto login se nezdaøil, mìnil/a jste si heslo?");
+                return;
+            }
+            // -> Successful login
+
+            await AuthService.SetSessionAsync(loginResult.AsT0);
+            NavigationManager.NavigateTo("/orders");
+        }
+
+        //3. Try get credentials from user ...
     }
 
     private async void TrySubmitLogin()
@@ -55,10 +111,18 @@ public partial class LoginPage
             await ToastService.ShowErrorAsync(loginResult.AsT1.Title);
             return;
         }
+        // -> Successful login
 
-        //Successful login
+        if (isSettingUpAutoLogin)
+        {
+            //We are setting up autologin, so we don't want to login the user, but just store the credentials
+            await ToastService.ShowSuccessAsync("Auto Login nastaven!");
+            await AuthService.SetupAutoLoginAsync(request);
+            NavigationManager.NavigateTo("/orders");
+            return;
+        }
+
         await AuthService.SetSessionAsync(loginResult.AsT0);
-
         NavigationManager.NavigateTo("/orders");
 
         // No need to reset isLoggingIn anymore..
