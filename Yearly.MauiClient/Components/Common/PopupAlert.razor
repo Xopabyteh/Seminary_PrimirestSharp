@@ -1,0 +1,10 @@
+﻿<div class='alert'>
+
+</div>
+
+@code {
+
+    [Parameter] string Title { get; set; } = string.Empty;
+    [Parameter] EventCallback OnCancelClick { get; set; }
+    [Parameter] EventCallback OnConfirmClick { get; set; }
+}

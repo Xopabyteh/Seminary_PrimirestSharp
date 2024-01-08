@@ -39,3 +39,9 @@ form {
 svg path {
     stroke: var(--clr-secondary);
 }
+
+
+.login-submit {
+    display: flex;
+    flex-direction: column;
+}

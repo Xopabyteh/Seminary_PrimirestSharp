@@ -19,6 +19,7 @@ public partial class LoginPage
 
     private bool isLoggingIn = false;
     private bool isSettingUpAutoLogin = false;
+    private bool autoLoginChecked = false;
 
     /// <summary>
     /// Check client docs to better see what's happening here :)
@@ -28,7 +29,7 @@ public partial class LoginPage
     {
         //Make sure auto login is loaded
         //(don't care if active, but loaded, so we know the state of it)
-        await AuthService.EnsureAutoLoginStateLoaded();
+        await AuthService.EnsureAutoLoginStateLoadedAsync();
 
         //Are we setting up autologin?
         var pageUri = NavigationManager.Uri;
@@ -51,21 +52,8 @@ public partial class LoginPage
         }
 
         //2. Try get stored credentials
-        // Did we come from logging out?
-        // If we just logged out, don't auto login back in,
-        // but rather prefill the form
-        var didComeFromLogout = pageUri.Contains("loginFromLogout");
         if (AuthService.AutoLoginStoredCredentials is not null)
         {
-            if (didComeFromLogout)
-            {
-                //Prefill form
-                ModelUsername = AuthService.AutoLoginStoredCredentials.Username;
-                ModelPassword = AuthService.AutoLoginStoredCredentials.Password;
-                StateHasChanged();
-                return; //If we just logged out, don't auto login back in
-            }
-
             //Try to Auto Login
             var loginResult = await AuthenticationFacade.LoginAsync(AuthService.AutoLoginStoredCredentials);
             if (loginResult.IsT1)
@@ -120,6 +108,12 @@ public partial class LoginPage
             await AuthService.SetupAutoLoginAsync(request);
             NavigationManager.NavigateTo("/orders");
             return;
+        }
+
+        if (autoLoginChecked)
+        {
+            //We want to setup auto login with these credentials
+            await AuthService.SetupAutoLoginAsync(request);
         }
 
         await AuthService.SetSessionAsync(loginResult.AsT0);

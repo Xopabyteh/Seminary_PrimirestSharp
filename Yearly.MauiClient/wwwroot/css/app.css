@@ -246,6 +246,58 @@ select {
     background-color: var(--clr-accent);
 }
 
+.input__checkbox {
+    appearance: none;
+    
+    width: 24px;
+    height: 24px;
+
+    border: 1px solid var(--clr-secondary);
+    border-radius: 25%;
+
+    cursor: pointer;
+    position: relative;
+}
+
+.input__checkbox:checked {
+    border-color: var(--clr-primary);
+}
+
+    .input__checkbox::after {
+        content: "";
+        
+        position: absolute;
+        display: block;
+
+        width: 0;
+        height: 0;
+
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        background-color: var(--clr-primary);
+
+        border-radius: 25%;
+
+        transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
+    }
+
+    .input__checkbox:checked::after {
+        width: 50%;
+        height: 50%;
+    }
+
+.input__checkbox__holder-with-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+    .input__checkbox__holder-with-label:has(input:checked) > label {
+        color: var(--clr-primary);
+    }
+
 .capsule {
     border-radius: 8px;
     padding: 0.5rem;

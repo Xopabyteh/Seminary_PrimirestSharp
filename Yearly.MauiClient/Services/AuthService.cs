@@ -43,12 +43,12 @@ public class AuthService
 
 
     /// <summary>
-    /// Loads when <see cref="EnsureAutoLoginStateLoaded"/> is called.
+    /// Loads when <see cref="EnsureAutoLoginStateLoadedAsync"/> is called.
     /// If you want to use this, make sure to call the method.
     /// </summary>
     public LoginRequest? AutoLoginStoredCredentials { get; private set; }
     /// <summary>
-    /// Loads when <see cref="EnsureAutoLoginStateLoaded"/> is called.
+    /// Loads when <see cref="EnsureAutoLoginStateLoadedAsync"/> is called.
     /// If you want to use this, make sure to call the method.
     /// </summary>
     public bool IsAutoLoginSetup => AutoLoginStoredCredentials is not null;
@@ -132,7 +132,7 @@ public class AuthService
         AutoLoginStoredCredentials = storedCredentials;
     }
 
-    public async Task EnsureAutoLoginStateLoaded()
+    public async Task EnsureAutoLoginStateLoadedAsync()
     {
         if (AutoLoginStoredCredentials is not null)
             return;
@@ -146,8 +146,16 @@ public class AuthService
         AutoLoginStoredCredentials = new LoginRequest(username, password);
     }
 
+    public void RemoveAutoLogin()
+    {
+        SecureStorage.Default.Remove(k_AutoLoginUsernameKey);
+        SecureStorage.Default.Remove(k_AutoLoginPasswordKey);
+        AutoLoginStoredCredentials = null;
+    }
+
     public async Task LogoutAsync()
     {
+        RemoveAutoLogin(); //When logging out, it makes no sense to keep login details about the user that just logged out
         await _authenticationFacade.LogoutAsync();
 
         SessionCookie = null;

@@ -99,6 +99,7 @@
 
     <ItemGroup>
       <None Remove="Components\Common\GoBackButton.razor.css" />
+      <None Remove="Components\Common\PopupAlert.razor.css" />
       <None Remove="Components\Common\ToggleSwitch.razor.css" />
       <None Remove="Components\Pages\OrderPage.razor.css" />
       <None Remove="Components\Pages\Orders\FoodBlock.razor.css" />
@@ -112,6 +113,7 @@
 
     <ItemGroup>
       <Content Include="Components\Common\GoBackButton.razor.css" />
+      <Content Include="Components\Common\PopupAlert.razor.css" />
       <Content Include="Components\Common\ToggleSwitch.razor.css" />
       <Content Include="Components\Pages\Orders\FoodBlock.razor.css" />
       <Content Include="Components\Pages\Orders\OrderPage.razor.css" />
@@ -119,6 +121,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />

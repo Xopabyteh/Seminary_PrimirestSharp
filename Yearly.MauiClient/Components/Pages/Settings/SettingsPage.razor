@@ -102,8 +102,8 @@
             <ToggleSwitch />
         </div>
         <div class='toggle-with-label mt-300'>
-            <label class="fs-regular fw-regular color-secondary">Automatické přihlášení</label>
-            <ToggleSwitch />
+            <label class="fs-regular fw-regular color-secondary">Auto Login</label>
+            <ToggleSwitch Checked='@AuthService.IsAutoLoginSetup' CheckedChanged='RemoveAutoLogin'/>
         </div>
     </div>
 </section>

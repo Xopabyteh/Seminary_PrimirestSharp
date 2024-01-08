@@ -1,4 +1,6 @@
+using CommunityToolkit.Maui.Core;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Maui.Platform;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApiFacades;
@@ -23,7 +25,19 @@ public partial class SettingsPage
     {
         await AuthService.LogoutAsync();
         
-        NavigationManager.NavigateTo("/loginFromLogout");
+        NavigationManager.NavigateTo("/login");
+    }
+
+    private async Task RemoveAutoLogin()
+    {
+        //Display alert
+        //Todo:
+
+        //Remove
+        AuthService.RemoveAutoLogin();
+
+        //Refresh page
+        NavigationManager.Refresh(true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
