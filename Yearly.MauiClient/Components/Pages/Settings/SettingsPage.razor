@@ -87,7 +87,7 @@
     </h2>
     @if (!AuthService.IsAutoLoginSetup)
     {
-        <div class='mv-200'>
+        <div class='mv-200 mh-100'>
             <a href='/setupAutoLogin'>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5.49994 10H9.99989M9.99989 10H14.4998M9.99989 10V14.5M9.99989 10V5.5M1 15.4002V4.60023C1 3.3401 1 2.70957 1.24524 2.22828C1.46094 1.8049 1.80489 1.46095 2.22826 1.24524C2.70955 1 3.34007 1 4.60018 1H15.4C16.6601 1 17.2899 1 17.7712 1.24524C18.1945 1.46095 18.5391 1.8049 18.7548 2.22828C19 2.70957 19 3.33963 19 4.59975V15.3998C19 16.6599 19 17.29 18.7548 17.7713C18.5391 18.1946 18.1945 18.5393 17.7712 18.755C17.2904 19 16.6615 19 15.4039 19H4.59648C3.33883 19 2.70908 19 2.22826 18.755C1.80489 18.5393 1.46094 18.1947 1.24524 17.7714C1 17.2901 1 16.6603 1 15.4002Z" stroke="#007FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -96,7 +96,7 @@
             </a>
         </div>
     }
-    <div class='notification-toggles mh-100'>
+    <div class='notification-toggles mh-100' style='@(AuthService.IsAutoLoginSetup ? "" : "filter: opacity(0.45)")'>
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když nemám objednáno</label>
             <ToggleSwitch />

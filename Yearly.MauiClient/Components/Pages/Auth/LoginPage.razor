@@ -20,7 +20,7 @@
         </div>
         <div class='login-submit'>
             <div class='input__checkbox__holder-with-label '>
-                <input class='input__checkbox' type='checkbox' value='false' @bind="autoLoginChecked"/>
+                <input class='input__checkbox' type='checkbox' value='false' @bind="autoLoginChecked" disabled='@isSettingUpAutoLogin'/>
                 <label class='fs-regular color-secondary'>Auto Login</label>
             </div>
             <button type='submit' class='button bg-primary mt-200' disabled='@isLoggingIn'>LOGIN</button>

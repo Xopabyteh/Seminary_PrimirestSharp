@@ -37,6 +37,7 @@ public partial class LoginPage
 
         if (isSettingUpAutoLogin)
         {
+            autoLoginChecked = true; //Check the auto login box
             await ToastService.ShowInformationAsync("Pøihlaš se znovu pro nastavení Auto Loginu",  durationMillis: -1);
             return; //We don't want to load a session and continue,
                     // but wait for login, so we can setup Auto Login
