@@ -4,7 +4,7 @@
 
 @code {
 
-    [Parameter] string Title { get; set; } = string.Empty;
-    [Parameter] EventCallback OnCancelClick { get; set; }
-    [Parameter] EventCallback OnConfirmClick { get; set; }
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnCancelClick { get; set; }
+    [Parameter] public EventCallback OnConfirmClick { get; set; }
 }

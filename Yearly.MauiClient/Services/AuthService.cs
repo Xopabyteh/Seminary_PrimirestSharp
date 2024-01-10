@@ -153,9 +153,24 @@ public class AuthService
         AutoLoginStoredCredentials = null;
     }
 
+    /// <summary>
+    /// Removes the session using <see cref="AuthenticationFacade"/>, but also removes auto login.
+    /// Is used when the user want's to login to another account.
+    /// If you only wish to remove the session, use <see cref="RemoveSessionAsync"/>.
+    /// </summary>
+    /// <returns></returns>
     public async Task LogoutAsync()
     {
         RemoveAutoLogin(); //When logging out, it makes no sense to keep login details about the user that just logged out
+        await RemoveSessionAsync();
+    }
+
+    /// <summary>
+    /// Removes session using <see cref="AuthenticationFacade"/> and removes stored details about this session from service cache.
+    /// </summary>
+    /// <returns></returns>
+    public async Task RemoveSessionAsync()
+    {
         await _authenticationFacade.LogoutAsync();
 
         SessionCookie = null;

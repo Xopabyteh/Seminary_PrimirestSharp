@@ -1,0 +1,16 @@
+﻿@page "/dev"
+@layout NoMenuLayout
+
+<GoBackButton Text='Dev'/>
+<section>
+    <h2>Auth</h2>
+    <button class='button bg-danger color-white' @onclick="RemoveSession">Remove session</button>
+</section>
+<section>
+    <h2>Order checker BckService</h2>
+    <p class='capsule bg-primary color-white'>State: @orderCheckerFSState</p>
+    <button class='button bg-success color-white' @onclick="StartOrderCheckerFS">Start BckService</button>
+    <button class='button bg-danger color-white' @onclick="StopOrderCheckerFS">Stop BckService</button>
+</section>
+
+
