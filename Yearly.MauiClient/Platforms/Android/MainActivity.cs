@@ -1,11 +1,15 @@
 ﻿using Android;
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
+using Android.Icu.Util;
 using Android.OS;
 using AndroidX.Core.App;
-using Firebase;
+using AndroidX.Work;
 using WindowsAzure.Messaging.NotificationHubs;
+using Calendar = Android.Icu.Util.Calendar;
+using Locale = Java.Util.Locale;
+using TimeUnit = Java.Util.Concurrent.TimeUnit;
+using TimeZone = Android.Icu.Util.TimeZone;
 
 namespace Yearly.MauiClient;
 
@@ -50,24 +54,44 @@ public class MainActivity : MauiAppCompatActivity
         base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    public void StartOrderCheckerBackgroundService()
+    public void StartOrderCheckerBackgroundWorker()
     {
-        if (OrderCheckerBackgroundService.IsRunning)
-            return;
+        var workManager = WorkManager.GetInstance(this)!;
+        var czechLocale = new Locale("cs", "CZ");
+        var czechTimezone = TimeZone.GetTimeZone("Europe/Prague");
+        var currentDate = Calendar.GetInstance(czechTimezone, czechLocale)!;
 
-        //If version is < 26.0, return
-        if (Build.VERSION.SdkInt < BuildVersionCodes.O)
-            return;
+        //OrderChecker Background Worker (Every day at 10:00 AM czech time)
+        var ocDate = Calendar.GetInstance(czechTimezone, czechLocale)!;
+        ocDate.Set(CalendarField.HourOfDay, 11); //Todo: change
+        ocDate.Set(CalendarField.Minute, 30);
+        ocDate.Set(CalendarField.Second, 0);
+        if (ocDate.Before(currentDate)) //Move next execution for tomorrow, if it's too late for today
+        {
+            ocDate.Add(CalendarField.HourOfDay, 24);
+        }
+        var initialOffsetMillis = ocDate.TimeInMillis - currentDate.TimeInMillis;
 
-        var intent = new Intent(this, typeof(OrderCheckerBackgroundService));
-        intent.SetAction(OrderCheckerBackgroundService.IntentActionStart);
-        StartService(intent);
+        var ocConstraints = new Constraints.Builder()
+            .SetRequiredNetworkType(NetworkType.Connected!)
+            .Build();
+
+        var ocBuilder = new PeriodicWorkRequest.Builder
+                (typeof(OrderCheckerBackgroundWorker), TimeSpan.FromMinutes(15))
+            .SetConstraints(ocConstraints);
+            //.SetInitialDelay(initialOffsetMillis, TimeUnit.Milliseconds!)!;
+
+        var ocRequest = (PeriodicWorkRequest)ocBuilder.Build();
+
+        workManager.EnqueueUniquePeriodicWork(
+            OrderCheckerBackgroundWorker.UniqueWorkerName,
+            ExistingPeriodicWorkPolicy.Keep!,
+            ocRequest);
     }
 
-    public void StopOrderCheckerBackgroundService()
+    public void StopOrderCheckerBackgroundWorker()
     {
-        var intent = new Intent(this, typeof(OrderCheckerBackgroundService));
-        intent.SetAction(OrderCheckerBackgroundService.IntentActionStop);
-        StartService(intent);
+        var workManager = WorkManager.GetInstance(this)!;
+        workManager.CancelUniqueWork(OrderCheckerBackgroundWorker.UniqueWorkerName);
     }
 }

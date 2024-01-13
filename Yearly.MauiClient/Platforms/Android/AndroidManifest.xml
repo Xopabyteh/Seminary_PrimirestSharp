@@ -7,8 +7,6 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 	<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 	<application android:networkSecurityConfig="@xml/network_security_config"
 	             android:allowBackup="true"
@@ -19,15 +17,6 @@
 		<provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.fileprovider" android:exported="false" android:grantUriPermissions="true">
 			<meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"></meta-data>
 		</provider>
-		<receiver android:name=".BootReceiver"
-		          android:directBootAware="true"
-		          android:enabled="true"
-		          android:exported="true">
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
-				<category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
-		</receiver>
 	</application>
 	<uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
 </manifest>

@@ -9,7 +9,6 @@ public partial class DevPage
 
     protected override void OnInitialized()
     {
-        UpdateOrderCheckerFSState();
     }
 
     #region Auth
@@ -25,30 +24,19 @@ public partial class DevPage
 
     #region OrderChecker
 
-    private string orderCheckerFSState = "";
-
     private void StartOrderCheckerFS()
     {
 #if ANDROID
-        MainActivity.Instance.StartOrderCheckerBackgroundService();
-        UpdateOrderCheckerFSState();
+        MainActivity.Instance.StartOrderCheckerBackgroundWorker();
 #endif
     }
     private void StopOrderCheckerFS()
     {
 #if ANDROID
-        MainActivity.Instance.StopOrderCheckerBackgroundService();
-        UpdateOrderCheckerFSState();
+        MainActivity.Instance.StopOrderCheckerBackgroundWorker();
 #endif
     }
 
-#if ANDROID
-    private void UpdateOrderCheckerFSState()
-    {
-        orderCheckerFSState = OrderCheckerBackgroundService.IsRunning ? "Running" : "Stopped";
-        StateHasChanged();
-    }
-#endif
 
     #endregion
 
