@@ -102,7 +102,7 @@
     <div class='notification-toggles mh-100' style='@(AuthService.IsAutoLoginSetup ? "" : "filter: opacity(0.45)")'>
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když nemám objednáno</label>
-            <ToggleSwitch />
+            <ToggleSwitch Checked='isOrderCheckerEnabled' CheckedChanged='OnOrderCheckerToggle'/>
         </div>
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Auto Login</label>

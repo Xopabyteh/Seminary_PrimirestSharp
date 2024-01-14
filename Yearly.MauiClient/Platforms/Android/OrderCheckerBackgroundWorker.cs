@@ -11,6 +11,8 @@ namespace Yearly.MauiClient;
 public class OrderCheckerBackgroundWorker : Worker
 {
     public const string UniqueWorkerName = $"psharp-{nameof(OrderCheckerBackgroundWorker)}";
+    private const string k_UniqueRescheduledWorkerName = $"psharp-{nameof(OrderCheckerBackgroundWorker)}-rescheduled";
+    public const string WorkNameTag = $"psharp-{nameof(OrderCheckerBackgroundWorker)}-tag";
     public OrderCheckerBackgroundWorker(Context context, WorkerParameters workerParams) 
         : base(context, workerParams)
     {
@@ -32,12 +34,16 @@ public class OrderCheckerBackgroundWorker : Worker
 
             //Reschedule self in 15 minutes
             var workManager = WorkManager.GetInstance(ApplicationContext)!;
-            var workRequest = OneTimeWorkRequest.Builder.From<OrderCheckerBackgroundWorker>()
-                .SetInitialDelay(15, TimeUnit.Minutes)!
+            var workRequest = (OneTimeWorkRequest) OneTimeWorkRequest.Builder
+                .From<OrderCheckerBackgroundWorker>()
+                //.SetInitialDelay(15, TimeUnit.Minutes)!
+                .SetInitialDelay(1, TimeUnit.Minutes)! //Todo: change back to 15
+                .AddTag(WorkNameTag)
                 .Build();
 
-            workManager.Enqueue(workRequest);
-            Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), "Rescheduled self");
+            //workManager.Enqueue(workRequest);
+            workManager.EnqueueUniqueWork(k_UniqueRescheduledWorkerName, ExistingWorkPolicy.Replace!, workRequest);
+            Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), "We are logged in, rescheduling self (15min)");
 
             return Result.InvokeSuccess();
         }

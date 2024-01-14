@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System.Collections;
-using Yearly.Contracts.Authentication;
+﻿using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services.SharpApiFacades;
 
 namespace Yearly.MauiClient.Services;

@@ -8,9 +8,12 @@
 </section>
 <section>
     <h2>Order checker</h2>
-    <p class='capsule bg-primary color-white'>See state in logcat</p>
-    <button class='button bg-success color-white' @onclick="StartOrderCheckerFS">Start</button>
-    <button class='button bg-danger color-white' @onclick="StopOrderCheckerFS">Stop</button>
+    <p class='capsule bg-primary color-white'>@orderCheckerStatus</p>
+    <button class='button bg-success color-white' @onclick="StartOrderChecker">Start</button>
+    <input id='ordercheckerdelay' type='number' name='Delay millis' placeholder='20000' @bind="orderCheckerStartDelayMillis" />
+    <label for='ordercheckerdelay'>Delay millis</label>
+    <button class='button bg-danger color-white' @onclick="StopOrderChecker">Stop</button>
+    <button class='button bg-danger color-white' @onclick="UpdateStatusOrderChecker">Get status</button>
 </section>
 
 

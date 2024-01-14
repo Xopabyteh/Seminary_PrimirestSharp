@@ -5,8 +5,6 @@ namespace Yearly.MauiClient.Components.Pages.Dev;
 
 public partial class DevPage
 {
-    
-
     protected override void OnInitialized()
     {
     }
@@ -24,19 +22,30 @@ public partial class DevPage
 
     #region OrderChecker
 
-    private void StartOrderCheckerFS()
+    private string orderCheckerStatus = "No status loaded";
+    private long orderCheckerStartDelayMillis = 0;
+    private void StartOrderChecker()
     {
 #if ANDROID
-        MainActivity.Instance.StartOrderCheckerBackgroundWorker();
+        MainActivity.Instance.TryStartOrderCheckerAsync(orderCheckerStartDelayMillis);
 #endif
     }
-    private void StopOrderCheckerFS()
+    private void StopOrderChecker()
     {
 #if ANDROID
-        MainActivity.Instance.StopOrderCheckerBackgroundWorker();
+        MainActivity.Instance.StopOrderChecker();
 #endif
     }
 
+    private async Task UpdateStatusOrderChecker()
+    {
+#if ANDROID
+        var status = MainActivity.Instance.GetIsOrderCheckerBackgroundWorkerScheduled();
+        orderCheckerStatus = status ? "Scheduled/Running" : "Not scheduled";
+        await Task.CompletedTask;
+#endif
+        StateHasChanged();
+    }
 
     #endregion
 

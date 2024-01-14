@@ -1,6 +1,4 @@
-using CommunityToolkit.Maui.Core;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Maui.Platform;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApiFacades;
@@ -21,6 +19,47 @@ public partial class SettingsPage
     private MyPhotosResponse myPhotos;
     private bool myPhotosLoaded = false;
 
+
+    private bool isOrderCheckerEnabled;
+    private const string k_OrderCheckerPrefKey = "ordercheckerenabled";
+
+    protected override Task OnInitializedAsync()
+    {
+        isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerPrefKey, false);
+        return Task.CompletedTask;
+    }
+
+    private async Task OnOrderCheckerToggle(bool isChecked)
+    {
+#if ANDROID
+        if (isChecked)
+        {
+            //Try Enable
+            var didStart = await MainActivity.Instance.TryStartOrderCheckerAsync();
+            if (didStart)
+            {
+                isOrderCheckerEnabled = isChecked;
+            }
+            else
+            {
+                //Todo: Show alert
+
+                isOrderCheckerEnabled = false;
+            }
+        }
+        else
+        {
+            //Disable
+            MainActivity.Instance.StopOrderChecker();
+            isOrderCheckerEnabled = isChecked;
+        }
+#endif
+        Preferences.Set(k_OrderCheckerPrefKey, isOrderCheckerEnabled);
+
+        StateHasChanged();
+    }
+
+
     private async Task Logout()
     {
         await AuthService.LogoutAsync();
@@ -28,7 +67,7 @@ public partial class SettingsPage
         NavigationManager.NavigateTo("/login");
     }
 
-    private async Task RemoveAutoLogin()
+    private Task RemoveAutoLogin()
     {
         //Display alert
         //Todo:
@@ -38,6 +77,8 @@ public partial class SettingsPage
 
         //Refresh page
         NavigationManager.Refresh(true);
+
+        return Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -67,5 +108,4 @@ public partial class SettingsPage
             _ => $"{myPhotos.TotalPhotoCount} Sdílených fotek"
         };
     }
-
 }
