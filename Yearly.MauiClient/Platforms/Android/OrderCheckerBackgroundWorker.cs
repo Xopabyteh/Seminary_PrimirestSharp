@@ -36,8 +36,7 @@ public class OrderCheckerBackgroundWorker : Worker
             var workManager = WorkManager.GetInstance(ApplicationContext)!;
             var workRequest = (OneTimeWorkRequest) OneTimeWorkRequest.Builder
                 .From<OrderCheckerBackgroundWorker>()
-                //.SetInitialDelay(15, TimeUnit.Minutes)!
-                .SetInitialDelay(1, TimeUnit.Minutes)! //Todo: change back to 15
+                .SetInitialDelay(15, TimeUnit.Minutes)!
                 .AddTag(WorkNameTag)
                 .Build();
 
@@ -100,7 +99,10 @@ public class OrderCheckerBackgroundWorker : Worker
                 Description = $"Nemáte objednáno na {day.Date:dddd dd.MMMM}",
                 Android = new AndroidOptions()
                 {
-                    IconSmallName = new AndroidIcon("appicon")
+                    IconSmallName =
+                    {
+                        ResourceName = "notificationicon"
+                    }
                 }
             };
 

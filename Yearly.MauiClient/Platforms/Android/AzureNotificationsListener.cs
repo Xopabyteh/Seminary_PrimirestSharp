@@ -39,9 +39,9 @@ internal class AzureNotificationsListener : Java.Lang.Object, INotificationListe
             NotificationId = 1337,
             Title = message.Title,
             Description = message.Body,
-            Schedule =
+            IconSmallName =
             {
-                NotifyTime = DateTime.Now.AddSeconds(5) // Used for Scheduling local notification, if not specified notification will show immediately.
+                ResourceName = "notificationicon"
             }
         };
         await LocalNotificationCenter.Current.Show(notification);
