@@ -39,9 +39,12 @@ internal class AzureNotificationsListener : Java.Lang.Object, INotificationListe
             NotificationId = 1337,
             Title = message.Title,
             Description = message.Body,
-            IconSmallName =
+            Android =
             {
-                ResourceName = "notificationicon"
+                IconSmallName =
+                {
+                    ResourceName = "notificationicon"
+                }
             }
         };
         await LocalNotificationCenter.Current.Show(notification);
