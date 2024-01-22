@@ -1,3 +1,5 @@
-﻿namespace Yearly.Contracts.Photos;
+﻿using Yearly.Contracts.Common;
 
-public readonly record struct MyPhotosResponse(List<string> FewLinks, int TotalPhotoCount);
+namespace Yearly.Contracts.Photos;
+
+public readonly record struct MyPhotosResponse(List<PhotoLinkDTO> Links, int TotalPhotoCount);

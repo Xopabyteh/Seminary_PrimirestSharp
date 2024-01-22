@@ -2,12 +2,13 @@
 using FluentValidation;
 using MediatR;
 using Yearly.Application.Common.Interfaces;
+using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Authentication.Commands;
 
-public record AddRoleToUserCommand(UserId UserId, UserRole Role) : IRequest<ErrorOr<Unit>>;
+public record AddRoleToUserCommand(User Issuer,UserId UserId, UserRole Role) : IRequest<ErrorOr<Unit>>;
 
 public class AddRoleToUserCommandValidator : AbstractValidator<AddRoleToUserCommand>
 {
@@ -25,13 +26,11 @@ public class AddRoleToUserCommandHandler : IRequestHandler<AddRoleToUserCommand,
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ISessionCache _sessionCache;
 
-    public AddRoleToUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ISessionCache sessionCache)
+    public AddRoleToUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
-        _sessionCache = sessionCache;
     }
 
     public async Task<ErrorOr<Unit>> Handle(AddRoleToUserCommand request, CancellationToken cancellationToken)
@@ -41,7 +40,9 @@ public class AddRoleToUserCommandHandler : IRequestHandler<AddRoleToUserCommand,
         if (user is null)
             return Errors.Errors.User.UserNotFound;
 
-        user.AddRole(request.Role);
+        //user.AddRole(request.Role);
+        var admin = Admin.FromUser(request.Issuer);
+        admin.AddRole(request.Role, user);
 
         await _unitOfWork.SaveChangesAsync();
 

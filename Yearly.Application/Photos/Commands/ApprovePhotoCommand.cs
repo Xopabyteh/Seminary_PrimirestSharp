@@ -7,7 +7,7 @@ using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Photos.Commands;
 
-public record ApprovePhotoCommand(PhotoId PhotoId, User Approver) : IRequest<ErrorOr<Unit>>;
+public record ApprovePhotoCommand(PhotoId PhotoId, User Issuer) : IRequest<ErrorOr<Unit>>;
 
 public class ApprovePhotoCommandHandler : IRequestHandler<ApprovePhotoCommand, ErrorOr<Unit>>
 {
@@ -25,7 +25,8 @@ public class ApprovePhotoCommandHandler : IRequestHandler<ApprovePhotoCommand, E
         if (photo is null)
             return Errors.Errors.Photo.PhotoNotFound;
 
-        request.Approver.ApprovePhoto(photo);
+        var photoApprover = PhotoApprover.FromUser(request.Issuer);
+        photoApprover.ApprovePhoto(photo);
 
         await _photoRepository.UpdatePhotoAsync(photo);
         await _unitOfWork.SaveChangesAsync();

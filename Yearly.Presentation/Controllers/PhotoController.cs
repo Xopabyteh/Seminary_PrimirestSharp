@@ -45,9 +45,9 @@ public class PhotoController : ApiController
     {
         return PerformAuthorizedActionAsync(
             sessionCookie,
-            async user =>
+            async issuer =>
         {
-            var result = await _mediator.Send(new ApprovePhotoCommand(new PhotoId(photoId), user));
+            var result = await _mediator.Send(new ApprovePhotoCommand(new PhotoId(photoId), issuer));
             return result.Match(
                 _ => Ok(),
                 Problem);
@@ -62,9 +62,9 @@ public class PhotoController : ApiController
     {
         return PerformAuthorizedActionAsync(
             sessionCookie,
-            async user =>
+            async issuer =>
         {
-            var result = await _mediator.Send(new RejectPhotoCommand(new PhotoId(photoId), user));
+            var result = await _mediator.Send(new RejectPhotoCommand(new PhotoId(photoId), issuer));
             return result.Match(
                 _ => Ok(),
                 Problem);

@@ -23,7 +23,7 @@ public class DomainEventsToOutboxMessageDatabaseInterceptor : SaveChangesInterce
         if (dbContext is null)
             return base.SavingChangesAsync(eventData, result, cancellationToken);
 
-        var eventPublishers = dbContext.ChangeTracker.Entries<IDomainEventPublisher>();
+        var eventPublishers = dbContext.ChangeTracker.Entries<IAggregateRoot>();
         
         //Convert events to outbox messages
         //Clear domain events

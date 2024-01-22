@@ -7,7 +7,7 @@ using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Photos.Commands;
 
-public record RejectPhotoCommand(PhotoId PhotoId, User Rejector) : IRequest<ErrorOr<Unit>>;
+public record RejectPhotoCommand(PhotoId PhotoId, User Issuer) : IRequest<ErrorOr<Unit>>;
 
 public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, ErrorOr<Unit>>
 {
@@ -28,10 +28,9 @@ public class RejectPhotoCommandHandler : IRequestHandler<RejectPhotoCommand, Err
         if (photo is null)
             return Errors.Errors.Photo.PhotoNotFound;
 
-        request.Rejector.RejectPhoto(photo);
+        var photoApprover = PhotoApprover.FromUser(request.Issuer);
+        photoApprover.RejectPhoto(photo);
 
-        //var photosFood = await _foodRepository.GetFoodByIdAsync(photo.FoodId); //Todo: do we really have to load whole food aggregate just for name?
-        //Debug.Assert(photosFood != null, nameof(photosFood) + " != null");
         await _photoStorage.DeletePhotoAsync(photo.ResourceLink);
         await _photoRepository.DeletePhotoAsync(photo);
         await _unitOfWork.SaveChangesAsync();

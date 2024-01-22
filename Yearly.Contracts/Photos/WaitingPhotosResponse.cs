@@ -4,7 +4,8 @@ public record WaitingPhotosResponse(List<PhotoDTO> Photos);
 
 public record PhotoDTO(
     Guid Id,
-    string Link,
+    string ResourceLink,
+    string ThumbnailResourceLink,
     DateTime PublishDate,
     string FoodName,
     string PublisherUsername);

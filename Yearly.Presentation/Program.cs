@@ -26,7 +26,8 @@ if (app.Environment.IsDevelopment())
 
     //Init admin user
     var adminUser = new User(new UserId(26564871), @"Martin Fiala");
-    adminUser.AddRole(UserRole.Admin);
+    var admin = Admin.FromUser(adminUser);
+    admin.AddRole(UserRole.Admin, adminUser);
 
     //Seed data (before hangfire initializes in the db)
     var seedProfile = builder.Configuration.GetValue<string?>("seedProfile");

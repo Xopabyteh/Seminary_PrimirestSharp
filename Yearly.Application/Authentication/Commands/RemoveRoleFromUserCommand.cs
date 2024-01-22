@@ -2,12 +2,13 @@
 using FluentValidation;
 using MediatR;
 using Yearly.Application.Common.Interfaces;
+using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Authentication.Commands;
 
-public record RemoveRoleFromUserCommand(UserId UserId, UserRole Role) : IRequest<ErrorOr<Unit>>;
+public record RemoveRoleFromUserCommand(User Issuer, UserId UserId, UserRole Role) : IRequest<ErrorOr<Unit>>;
 
 public class RemoveRoleFromUserCommandValidator : AbstractValidator<AddRoleToUserCommand>
 {
@@ -25,13 +26,11 @@ public class RemoveRoleFromUserCommandHandler : IRequestHandler<RemoveRoleFromUs
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ISessionCache _sessionCache;
 
-    public RemoveRoleFromUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ISessionCache sessionCache)
+    public RemoveRoleFromUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
-        _sessionCache = sessionCache;
     }
 
     public async Task<ErrorOr<Unit>> Handle(RemoveRoleFromUserCommand request, CancellationToken cancellationToken)
@@ -41,7 +40,8 @@ public class RemoveRoleFromUserCommandHandler : IRequestHandler<RemoveRoleFromUs
         if (user is null)
             return Errors.Errors.User.UserNotFound;
 
-        user.RemoveRole(request.Role);
+        var admin = Admin.FromUser(request.Issuer);
+        admin.RemoveRole(request.Role, user);
 
         await _unitOfWork.SaveChangesAsync();
 

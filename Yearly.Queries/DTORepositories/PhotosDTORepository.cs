@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Yearly.Contracts.Common;
 using Yearly.Contracts.Photos;
 
 namespace Yearly.Queries.DTORepositories;
@@ -17,7 +18,8 @@ public class PhotosDTORepository
         var sql = """
                   SELECT TOP 20
                   	P.Id AS Id,
-                  	P.Link AS Link,
+                  	P.ResourceLink AS ResourceLink,
+                  	P.ThumbnailResourceLink AS ThumbnailResourceLink,
                   	P.PublishDate AS PublishDate,
                   	F.Name AS FoodName,
                   	U.Username AS PublisherUsername
@@ -36,7 +38,9 @@ public class PhotosDTORepository
     public async Task<MyPhotosResponse> GetUsersPhotos(int userId)
     {
         var sql = """
-                  SELECT TOP 20 Link
+                  SELECT
+                  ResourceLink,
+                  ThumbnailResourceLink
                   FROM [PrimirestSharp].[Domain].[Photos]
                   WHERE PublisherId_Value = @UserId;
                   
@@ -50,7 +54,7 @@ public class PhotosDTORepository
             sql,
             param: new {UserId = userId});
 
-        var photoLinks = await gridReader.ReadAsync<string>();
+        var photoLinks = await gridReader.ReadAsync<PhotoLinkDTO>();
         var totalPhotoCount = await gridReader.ReadSingleAsync<int>();
 
         return new MyPhotosResponse(photoLinks.ToList(), totalPhotoCount);

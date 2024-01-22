@@ -8,7 +8,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.UserAgg;
 
-public class User : AggregateRoot<UserId>, IDomainEventPublisher
+public class User : AggregateRoot<UserId>
 {
     public string Username { get; private set; }
 
@@ -29,19 +29,26 @@ public class User : AggregateRoot<UserId>, IDomainEventPublisher
         _photoIds = new List<PhotoId>();
     }
 
-    public void AddRole(UserRole role)
+    private void AddRole(UserRole role)
     {
         _roles.Add(role);
-        PublishDomainEvent(new RoleAddedToUserDomainEvent(this.Id));
     }
 
-    public void RemoveRole(UserRole role)
+    private void RemoveRole(UserRole role)
     {
         _roles.Remove(role);
-        PublishDomainEvent(new RoleRemovedFromUserDomainEvent(this.Id));
     }
 
-    public void ApprovePhoto(Photo photo)
+    internal void AddRole(UserRole role, User toUser)
+    {
+        toUser.AddRole(role);
+    }
+    internal void RemoveRole(UserRole role, User fromUser)
+    {
+        fromUser.RemoveRole(role);
+    }
+
+    internal void ApprovePhoto(Photo photo)
     {
         photo.Approve();
 
@@ -49,7 +56,7 @@ public class User : AggregateRoot<UserId>, IDomainEventPublisher
 
     }
 
-    public void RejectPhoto(Photo photo)
+    internal void RejectPhoto(Photo photo)
     {
         if(photo.IsApproved)
             throw new IllegalStateException("Cannot reject an approved photo");
@@ -84,13 +91,55 @@ public class User : AggregateRoot<UserId>, IDomainEventPublisher
 
         return photo;
     }
-    public void ClearDomainEvents()
-        =>_publishedEvents.Clear();
 
-    public IReadOnlyList<IDomainEvent> GetDomainEvents()
-        => _publishedEvents.ToList().AsReadOnly();
+}
 
-    private readonly List<IDomainEvent> _publishedEvents = new();
-    private void PublishDomainEvent(IDomainEvent dEvent)
-        => _publishedEvents.Add(dEvent);
+public class PhotoApprover
+{
+    private readonly User user;
+
+    public PhotoApprover(User user)
+    {
+        this.user = user;
+    }
+
+    public static PhotoApprover FromUser(User user)
+    {
+        return new PhotoApprover(user);
+    }
+
+    public void ApprovePhoto(Photo photo)
+    {
+        user.ApprovePhoto(photo);
+    }
+
+    public void RejectPhoto(Photo photo)
+    {
+        user.RejectPhoto(photo);
+    }
+}
+
+public class Admin
+{
+    private readonly User user;
+
+    public Admin(User user)
+    {
+        this.user = user;
+    }
+
+    public static Admin FromUser(User user)
+    {
+        return new Admin(user);
+    }
+
+    public void AddRole(UserRole role, User toUser)
+    {
+        user.AddRole(role, toUser);
+    }
+
+    public void RemoveRole(UserRole role, User fromUser)
+    {
+        user.RemoveRole(role, fromUser);
+    }
 }

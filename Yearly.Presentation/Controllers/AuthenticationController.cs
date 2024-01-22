@@ -60,9 +60,9 @@ public class AuthenticationController : ApiController
     {
         return PerformAuthorizedActionAsync(
             sessionCookie,
-            async _ =>
+            async issuer =>
             {
-                var command = new AddRoleToUserCommand(new UserId(request.UserId), new UserRole(request.RoleCode));
+                var command = new AddRoleToUserCommand(issuer, new UserId(request.UserId), new UserRole(request.RoleCode));
                 var result = await _mediator.Send(command);
                 return result.Match(
                     _ => Ok(),
@@ -79,9 +79,9 @@ public class AuthenticationController : ApiController
     {
         return PerformAuthorizedActionAsync(
             sessionCookie,
-            async _ =>
+            async issuer =>
             {
-                var command = new RemoveRoleFromUserCommand(new UserId(request.UserId), new UserRole(request.RoleCode));
+                var command = new RemoveRoleFromUserCommand(issuer, new UserId(request.UserId), new UserRole(request.RoleCode));
                 var result = await _mediator.Send(command);
                 return result.Match(
                     _ => Ok(),
