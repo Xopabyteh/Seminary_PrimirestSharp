@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Repositories;
@@ -82,19 +81,17 @@ public static class DependencyInjection
         services.AddScoped<IPhotoRepository, PhotoRepository>();
         //services.AddScoped<ISoupRepository, SoupRepository>();
 
-        //if (builder.Environment.IsDevelopment())
+        services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
+        //services.AddAzureClients(c =>
         //{
-        //    services.AddScoped<IPhotoStorage, LocalPhotoStorage>();
-        //}
-        //else
+        //    c.AddBlobServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:blob"]);
+        //});
+        builder.Services.AddAzureClients(clientBuilder =>
         {
-            services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
-            services.AddAzureClients(c =>
-            {
-                c.AddBlobServiceClient(
-                    builder.Configuration.GetSection("Persistence").GetSection("AzureStorageConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
-            });
-        }
+            clientBuilder.AddBlobServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:blob"]!, preferMsi: true);
+            clientBuilder.AddQueueServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:queue"]!, preferMsi: true);
+        });
+
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
