@@ -57,22 +57,30 @@ public class User : AggregateRoot<UserId>, IDomainEventPublisher
         // Publish Domain events
     }
 
-    public Photo PublishPhoto(PhotoId photoId, DateTime publishDate, FoodId forFoodId, string photoLink)
+    public Photo PublishPhoto(
+        PhotoId photoId,
+        DateTime publishDate,
+        FoodId forFoodId,
+        string photoResourceLink,
+        string photoThumbnailResourceLink)
     {
         var photo = new Photo(
             photoId,
             this.Id,
             publishDate,
             forFoodId,
-            photoLink);
+            photoResourceLink,
+            photoThumbnailResourceLink);
 
         _photoIds.Add(photoId);
 
-        PublishDomainEvent(new UserPublishedNewPhotoDomainEvent(this.Id, photo.Id));
-
         //Automatically approve photo if user is a photo verifier
-        if(this.Roles.Contains(UserRole.PhotoApprover))
+        if (this.Roles.Contains(UserRole.PhotoApprover))
+        {
             photo.Approve();
+        }
+
+        PublishDomainEvent(new UserPublishedNewPhotoDomainEvent(this.Id, photo.Id));
 
         return photo;
     }

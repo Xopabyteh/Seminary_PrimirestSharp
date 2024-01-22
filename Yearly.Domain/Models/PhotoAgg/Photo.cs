@@ -10,20 +10,29 @@ public class Photo : AggregateRoot<PhotoId>
 {
     public static string NameFrom(PhotoId photoId, Food food)
         => $"{food.Name}-{photoId.Value}";
-
+    public static string ThumbnailNameFrom(PhotoId photoId, Food food)
+        => $"{food.Name}-{photoId.Value}-t";
     public UserId PublisherId { get; private set; }
     public DateTime PublishDate { get; private set; }
     public FoodId FoodId { get; private set; }
-    public string Link { get; private set; }
+    public string ResourceLink { get; private set; }
+    public string ThumbnailResourceLink { get; private set; }
     public bool IsApproved { get; private set; }
 
-    internal Photo(PhotoId id, UserId publisherId, DateTime publishDate, FoodId foodId, string link) 
+    internal Photo(
+        PhotoId id,
+        UserId publisherId,
+        DateTime publishDate,
+        FoodId foodId,
+        string resourceLink,
+        string thumbnailResourceLink) 
         : base(id)
     {
         PublisherId = publisherId;
         PublishDate = publishDate;
         FoodId = foodId;
-        Link = link;
+        ResourceLink = resourceLink;
+        ThumbnailResourceLink = thumbnailResourceLink;
 
         IsApproved = false;
     }
@@ -37,10 +46,10 @@ public class Photo : AggregateRoot<PhotoId>
     }
 
 #pragma warning disable CS8618 //For EF Core
-    private Photo()
+    private Photo(string thumbnailResourceLink)
         : base(null!)
 #pragma warning restore CS8618
     {
-
+        ThumbnailResourceLink = thumbnailResourceLink;
     }
 }

@@ -22,6 +22,6 @@
             }
         </button>
     </div>
-    <img width='108px' height='108px' class='card-image' src='@Food.PhotoLinks.FirstOrDefault()' alt='@Food.Name' />
+    <img width='108px' height='108px' class='card-image' src='@Food.PhotoLinks.FirstOrDefault()?.ThumbnailResourceLink' />
 </div>
 

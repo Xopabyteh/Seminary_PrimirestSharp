@@ -392,7 +392,6 @@ public class DataSeeder
     /// Seeds 2 real weekly menus and foods from primirest
     /// Creates a random (always the same) similarity record (not yet approved or anything)
     /// One of the foods is an alias for another food
-    /// Adds 3 photos from wwwroot/seedPhotos/
     /// </summary>
     /// <param name="admin"></param>
     private void SeedSample(User admin)
@@ -446,19 +445,19 @@ public class DataSeeder
             weeklyMenus.Add(weeklyMenuObject);
         }
 
-        //Photos
-        var resourcesBasePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "seedPhotos");
-        SeedPhotos(
-            approvedPhotoResources: new Dictionary<string, Food>
-            {
-                {Path.Combine(resourcesBasePath, "Famine.jpg"), foods[1]},
-                {Path.Combine(resourcesBasePath, "Famine2.jpg"), foods[1]}
-            },
-            waitingPhotoResources: new Dictionary<string, Food>
-            {
-                {Path.Combine(resourcesBasePath, "Conquest.jpg"), foods[0]}
-            },
-            photoApprover: admin);
+        ////Photos
+        //var resourcesBasePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "seedPhotos");
+        //SeedPhotos(
+        //    approvedPhotoResources: new Dictionary<string, Food>
+        //    {
+        //        {Path.Combine(resourcesBasePath, "Famine.jpg"), foods[1]},
+        //        {Path.Combine(resourcesBasePath, "Famine2.jpg"), foods[1]}
+        //    },
+        //    waitingPhotoResources: new Dictionary<string, Food>
+        //    {
+        //        {Path.Combine(resourcesBasePath, "Conquest.jpg"), foods[0]}
+        //    },
+        //    photoApprover: admin);
 
         //Similarity records (random lol)
         var similarityRecords = new List<FoodSimilarityRecord>()
@@ -479,38 +478,38 @@ public class DataSeeder
         _context.SaveChanges();
     }
 
-    /// <param name="approvedPhotoResources">Key: path to resource, Value: Food for photo</param>
-    /// <param name="waitingPhotoResources">Key: path to resource, Value: Food for photo</param>
-    /// <param name="photoApprover">User that publishes and approves the photos</param>
-    private void SeedPhotos(
-        IDictionary<string, Food> approvedPhotoResources,
-        IDictionary<string, Food> waitingPhotoResources,
-        User photoApprover)
-    {
-        var uploadedPhotos = new List<Photo>();
+    ///// <param name="approvedPhotoResources">Key: path to resource, Value: Food for photo</param>
+    ///// <param name="waitingPhotoResources">Key: path to resource, Value: Food for photo</param>
+    ///// <param name="photoApprover">User that publishes and approves the photos</param>
+    //private void SeedPhotos(
+    //    IDictionary<string, Food> approvedPhotoResources,
+    //    IDictionary<string, Food> waitingPhotoResources,
+    //    User photoApprover)
+    //{
+    //    var uploadedPhotos = new List<Photo>();
 
-        foreach (var photoResource in approvedPhotoResources.Concat(waitingPhotoResources))
-        {
-            //Load file from path
-            //Convert to IFormFile
-            //Upload
+    //    foreach (var photoResource in approvedPhotoResources.Concat(waitingPhotoResources))
+    //    {
+    //        //Load file from path
+    //        //Convert to IFormFile
+    //        //Upload
 
-            var file = File.OpenRead(photoResource.Key);
-            var formFile = new FormFile(file, 0, file.Length, file.Name, file.Name);
+    //        var file = File.OpenRead(photoResource.Key);
+    //        var formFile = new FormFile(file, 0, file.Length, file.Name, file.Name);
 
-            var photoId = new PhotoId(Guid.NewGuid());
-            var link = _photoStorage.UploadPhotoAsync(formFile, Photo.NameFrom(photoId, photoResource.Value)).Result.Value;
+    //        var photoId = new PhotoId(Guid.NewGuid());
+    //        var link = _photoStorage.UploadPhotoAsync(formFile, Photo.NameFrom(photoId, photoResource.Value)).Result.Value;
 
-            //var photo = new Photo(photoId, photoApprover.Id, DateTime.UtcNow, photoResource.Value.Id, link);
-            var photo = photoApprover.PublishPhoto(photoId, DateTime.UtcNow, photoResource.Value.Id, link);
-            uploadedPhotos.Add(photo);
-        }
+    //        //var photo = new Photo(photoId, photoApprover.Id, DateTime.UtcNow, photoResource.Value.Id, link);
+    //        var photo = photoApprover.PublishPhoto(photoId, DateTime.UtcNow, photoResource.Value.Id, link);
+    //        uploadedPhotos.Add(photo);
+    //    }
 
-        foreach (var approvedPhoto in uploadedPhotos.Where(up => approvedPhotoResources.Values.Any(af => af.Id == up.FoodId)))
-        {
-            photoApprover.ApprovePhoto(approvedPhoto);
-        }
+    //    foreach (var approvedPhoto in uploadedPhotos.Where(up => approvedPhotoResources.Values.Any(af => af.Id == up.FoodId)))
+    //    {
+    //        photoApprover.ApprovePhoto(approvedPhoto);
+    //    }
 
-        _context.Photos.AddRange(uploadedPhotos);
-    }
+    //    _context.Photos.AddRange(uploadedPhotos);
+    //}
 }

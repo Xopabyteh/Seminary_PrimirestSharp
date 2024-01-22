@@ -26,7 +26,8 @@ public class WeeklyMenuDTORepository
                     F.PrimirestFoodIdentifier_DayId AS PrimirestDayId,
                     F.PrimirestFoodIdentifier_ItemId AS PrimirestItemId,
                     F.PrimirestFoodIdentifier_MenuId AS PrimirestMenuId,
-                    P.Link AS Link
+                    P.ResourceLink AS ResourceLink,
+                    P.ThumbnailResourceLink AS ThumbnailResourceLink
                   FROM
                     Domain.WeeklyMenus WM
                   JOIN
@@ -71,25 +72,26 @@ public class WeeklyMenuDTORepository
 
                 if (photo is not null)
                 {
-                    foodEntry.PhotoLinks.Add(photo.Link);
+                    foodEntry.PhotoLinks.Add(new PhotoLinkDTO(photo.ResourceLink, photo.ThumbnailResourceLink));
                 }
 
-                return weeklyMenu; //We don't care about this anyway lol
-            }, splitOn: "PrimirestMenuId,DailyMenuId,FoodId,Link");
+                return weeklyMenu; //We don't care about this anyway lol, we just want to write to the weeklyMenuVms
+            }, splitOn: "PrimirestMenuId,DailyMenuId,FoodId,ResourceLink");
 
         //Map to List<WeeklyMenuDTO>
-        var weeklyMenus = weeklyMenuVms
-            .Values
-            .Select(vm => new WeeklyMenuDTO(vm.DailyMenus.Select(dVm => new DailyMenuDTO(dVm.Date, dVm.Foods.Select(fVm => new FoodDTO(
-                fVm.FoodName,
-                fVm.FoodAllergens,
-                fVm.PhotoLinks,
-                fVm.FoodId,
-                new(
-                    fVm.PrimirestMenuId,
-                    fVm.PrimirestDayId,
-                    fVm.PrimirestItemId)
-                )).ToList())).ToList(), vm.PrimirestMenuId)).ToList();
+        var weeklyMenus = weeklyMenuVms.Values
+            .Select(vm => new WeeklyMenuDTO(
+                vm.DailyMenus.Select(dVm => new DailyMenuDTO(dVm.Date, dVm.Foods
+                    .Select(fVm => new FoodDTO(
+                        fVm.FoodName,
+                        fVm.FoodAllergens,
+                        fVm.PhotoLinks,
+                        fVm.FoodId,
+                        new(
+                            fVm.PrimirestMenuId,
+                            fVm.PrimirestDayId,
+                            fVm.PrimirestItemId)
+                        )).ToList())).ToList(), vm.PrimirestMenuId)).ToList();
 
         return new AvailableMenusResponse(weeklyMenus);
     }
@@ -103,10 +105,12 @@ public class WeeklyMenuDTORepository
         int PrimirestItemId,
         int PrimirestMenuId)
     {
-        public List<string> PhotoLinks { get; set; }
+        public List<PhotoLinkDTO> PhotoLinks { get; set; }
     }
 
-    private record PhotoVm(string Link);
+    private record PhotoVm(
+        string ResourceLink,
+        string ThumbnailResourceLink);
 
     private record DailyMenuVm(int DailyMenuId, DateTime Date)
     {

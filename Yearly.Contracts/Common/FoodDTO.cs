@@ -3,7 +3,11 @@
 public record FoodDTO(
     string Name,
     string Allergens,
-    List<string> PhotoLinks,
+    List<PhotoLinkDTO> PhotoLinks,
     Guid FoodId, //The id of the food in our system, not the primirest id
     PrimirestFoodIdentifierDTO PrimirestFoodIdentifier
 );
+
+public record PhotoLinkDTO(
+    string ResourceLink, 
+    string ThumbnailResourceLink);

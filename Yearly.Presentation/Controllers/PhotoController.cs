@@ -33,7 +33,7 @@ public class PhotoController : ApiController
                 new PublishPhotoCommand(photo, new FoodId(foodId), user));
 
             return result.Match(
-                createdPhoto => Created(createdPhoto.Link, null),
+                createdPhoto => Created(createdPhoto.ResourceLink, null),
                 Problem);
         });
     }
