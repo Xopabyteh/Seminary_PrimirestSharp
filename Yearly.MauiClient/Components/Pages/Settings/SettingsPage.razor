@@ -40,10 +40,14 @@
     <h2 class='fw-semi-bold fs-regular color-secondary'>Super husté věci</h2>
     <div class='mh-100'>
         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
-            <a class='fs-regular color-primary' href='/pha'>PhA. Photo Approving</a>
+            <div>
+                <a class='fs-regular color-primary' href='/pha'>PhA. Photo Approving</a>
+            </div>
         </Authorized>
         <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
-            <a class='fs-regular color-primary' href='#'>Adm. Similarity table</a>
+            <div>
+                <a class='fs-regular color-primary' href='#'>Adm. Similarity table</a>
+            </div>
         </Authorized>
         <div>
             <a class='fs-regular color-primary' href='/dev'>Dev.</a>

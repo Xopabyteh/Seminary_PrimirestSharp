@@ -1,0 +1,18 @@
+﻿.photo {
+    position: relative;
+}
+
+    .photo > img {
+        border-radius: 1rem;
+    }
+
+    .photo > p {
+        position: absolute;
+        left: 4px;
+        bottom: 4px;
+
+        padding: 0.5rem;
+        
+        background: var(--clr-white);
+        border-radius: 1rem;
+    }

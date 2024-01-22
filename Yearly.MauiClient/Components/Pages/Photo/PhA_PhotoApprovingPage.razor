@@ -1,6 +1,7 @@
 ﻿@page "/pha"
 @using Yearly.MauiClient.Services.SharpApiFacades
 @using Yearly.Contracts.Photos
+@using Yearly.MauiClient.Services.Toast
 @layout NoMenuLayout
 
 <GoBackButton/>
@@ -8,29 +9,115 @@
 
 @if (waitingPhotos.Count == 0)
 {
-    <h2 class='color-success fs-regular'>All photos approved</h2>
+    <section>
+        <h2 class='color-success fs-regular'>All photos approved</h2>
+        <p class='fs-small fw-regular color-secondary'>(No waiting photos)</p>
+    </section>
 }
-else
+else //There are waiting photos
 {
-    @foreach (var waitingPhoto in waitingPhotos)
-    {
-        <div class='color-black fs-regular'>
-            <img src='@waitingPhoto.Link' width='256' height='256'/>
-            <p class='fs-regular fw-bold'>@waitingPhoto.FoodName</p>
-            <p><span class='fs-small color-secondary'>By</span> @waitingPhoto.PublisherUsername</p>
-            <p><span class='fs-small color-secondary'>At</span> @waitingPhoto.PublishDate.ToString("d")</p>
-        </div>
-    }
+    <section>
+        <h2 class='color-primary fs-regular fw-semi-bold'> Waiting photos</h2>
+        @foreach (var waitingPhoto in waitingPhotos)
+        {
+            @if (photoResolveStates[waitingPhoto] == PhotoResolveState.Unresolved)
+            {
+                <div class='color-black fs-regular'>
+                    <div class='photo'>
+                        <img src='@waitingPhoto.Link' width='256' height='256'/>
+                        <p class='fs-regular fw-bold color-black'>Waiting</p>
+                    </div>
+                    <p class='fs-regular fw-bold'>@waitingPhoto.FoodName</p>
+                    <p><span class='fs-small color-secondary'>By</span> @waitingPhoto.PublisherUsername</p>
+                    <p><span class='fs-small color-secondary'>At</span> @waitingPhoto.PublishDate.ToString("d")</p>
+                    <div>
+                        <button class='button bg-danger' @onclick="() => RejectPhoto(waitingPhoto)">Reject</button>
+                        <button class='button bg-success' @onclick="() => ApprovePhoto(waitingPhoto)">Approve</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                //Resolved
+                <div class='color-black fs-regular'>
+                    <div class='photo'>
+                        <img src='@waitingPhoto.Link' width='256' height='256' style='filter: grayscale(60%); opacity: 0.5;'/>
+                        @if (photoResolveStates[waitingPhoto] == PhotoResolveState.Approved)
+                        {
+                            <p class='fs-regular fw-bold color-success'>Approved</p>
+                        }
+                        else
+                        {
+                            <p class='fs-regular fw-bold color-danger'>Rejected</p>
+                        }
+                    </div>
+
+                    <p class='fs-regular fw-bold'>@waitingPhoto.FoodName</p>
+                    <p><span class='fs-small color-secondary'>By</span> @waitingPhoto.PublisherUsername</p>
+                    <p><span class='fs-small color-secondary'>At</span> @waitingPhoto.PublishDate.ToString("d")</p>
+                    <div>
+                        <button disabled class='button bg-danger'>Reject</button>
+                        <button disabled class='button bg-success'>Approve</button>
+                    </div>
+                </div>
+            }
+
+            <br/>
+        }
+    </section>
 }
 
 @code {
 
     [Inject] private PhotoFacade PhotoFacade { get; set; } = null!;
+    [Inject] private ToastService ToastService { get; set; } = null!;
 
     private List<PhotoDTO> waitingPhotos = new();
+    private Dictionary<PhotoDTO, PhotoResolveState> photoResolveStates = new();
 
     protected override async Task OnInitializedAsync()
     {
         waitingPhotos = await PhotoFacade.GetWaitingPhotosAsync();
+        foreach (var photo in waitingPhotos)
+        {
+            photoResolveStates.Add(photo, PhotoResolveState.Unresolved);
+        }
+    }
+
+    private async Task ApprovePhoto(PhotoDTO photo)
+    {
+        var response = await PhotoFacade.ApprovePhotoAsync(photo.Id);
+        if (response is not null)
+        {
+            //Error
+            await ToastService.ShowErrorAsync(response.Value.Title);
+            return;
+        }
+
+        //Success
+        photoResolveStates[photo] = PhotoResolveState.Approved;
+        StateHasChanged();
+    }
+
+    private async Task RejectPhoto(PhotoDTO photo)
+    {
+        var response = await PhotoFacade.RejectPhotoAsync(photo.Id);
+        if (response is not null)
+        {
+            //Error
+            await ToastService.ShowErrorAsync(response.Value.Title);
+            return;
+        }
+
+        //Success
+        photoResolveStates[photo] = PhotoResolveState.Rejected;
+        StateHasChanged();
+    }
+
+    private enum PhotoResolveState
+    {
+        Unresolved,
+        Rejected,
+        Approved
     }
 }

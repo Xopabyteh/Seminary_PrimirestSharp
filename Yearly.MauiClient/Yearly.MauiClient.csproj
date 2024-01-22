@@ -62,6 +62,7 @@
       <None Remove="Components\Pages\OrderPage.razor.css" />
       <None Remove="Components\Pages\Orders\FoodBlock.razor.css" />
       <None Remove="Components\Pages\Orders\OrderPage.razor.css" />
+      <None Remove="Components\Pages\Photo\PhA_PhotoApprovingPage.razor.css" />
       <None Remove="Components\Pages\Settings\SettingsPage.razor.css" />
       <None Remove="Platforms\Android\Resources\xml\file_paths.xml" />
       <None Remove="Resources\Images\notificationicon.png" />
@@ -74,6 +75,7 @@
       <Content Include="Components\Common\ToggleSwitch.razor.css" />
       <Content Include="Components\Pages\Orders\FoodBlock.razor.css" />
       <Content Include="Components\Pages\Orders\OrderPage.razor.css" />
+      <Content Include="Components\Pages\Photo\PhA_PhotoApprovingPage.razor.css" />
       <Content Include="Components\Pages\Settings\SettingsPage.razor.css" />
     </ItemGroup>
 

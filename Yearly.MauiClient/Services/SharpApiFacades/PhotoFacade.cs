@@ -48,6 +48,57 @@ public class PhotoFacade
         return waitingPhotos?.Photos ?? new();
     }
 
+    /// <summary>
+    /// Can return "Photo.PhotoNotFound"
+    /// </summary>
+    /// <param name="photoId"></param>
+    /// <returns>Null if success or problem response</returns>
+    public async Task<ProblemResponse?> ApprovePhotoAsync(Guid photoId)
+    {
+        //Post to {{host}}/photo/approve
+        //With form data: photoId = photoId
+
+        var content = new MultipartFormDataContent
+        {
+            {new StringContent(photoId.ToString()), "photoId"}
+        };
+
+        var response = await _sharpAPIClient.HttpClient.PostAsync("/photo/approve", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
+        return problem;
+    }
+
+    /// <summary>
+    /// Can return "Photo.PhotoNotFound"
+    /// </summary>
+    /// <returns>Null if success or problem response</returns>
+    public async Task<ProblemResponse?> RejectPhotoAsync(Guid photoId)
+    {
+        //Post to {{host}}/photo/reject
+        //With form data: photoId = photoId
+
+        var content = new MultipartFormDataContent
+        {
+            {new StringContent(photoId.ToString()), "photoId"}
+        };
+
+        var response = await _sharpAPIClient.HttpClient.PostAsync("/photo/reject", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
+        return problem;
+    }
+
     public async Task<MyPhotosResponse> GetMyPhotosAsync()
     {
         var response = await _sharpAPIClient.HttpClient.GetAsync("/photo/my-photos");
