@@ -22,4 +22,15 @@ Most of the docs are made with figma available at the links below. Some docs can
 * [Process modeling](https://www.figma.com/file/iXr6mEJRbgFyzvCq5Mynn4/Primirest-sharp-Flow?type=design&node-id=39-52344&mode=design&t=98IKJbIVTUfWHq9b-0)
 > Process modeling, domain events storming
 
-###### *Note - i leaked my password in a request that you might find in one of the commits, but that's changed pal*
+### Starting the Backend
+Without seeding:
+```bash
+$ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https
+```
+With admin user seeding:
+```bash
+$ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https seedProfile=adminuser
+```
+#### Arguments
+* seedProfile - the profile to seed the database with, if not provided, the database will not be seeded
+	* There are various profiles, the profiles and the way they work can be found in the `Yearly.Infrastructure` project in `Persistence\Seeding\DataSeeder.cs`

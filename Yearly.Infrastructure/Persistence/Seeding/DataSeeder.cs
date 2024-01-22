@@ -18,7 +18,7 @@ namespace Yearly.Infrastructure.Persistence.Seeding;
 /// </summary>
 public class DataSeeder
 {
-    private const string menuSeedJson = """
+    private const string k_MenuSeedJson = """
                                     {
                                         "weeklyMenus": [
                                             {
@@ -348,13 +348,41 @@ public class DataSeeder
         _photoStorage = photoStorage;
     }
 
-    public void DbReset()
+    public void Seed(string? seedProfile, User adminUser)
+    {
+        if (string.IsNullOrWhiteSpace(seedProfile))
+            return;
+
+        switch (seedProfile)
+        {
+            case "none":
+                return;
+
+            case "dbreset":
+                DbReset();
+                break;
+
+            case "adminuser":
+                DbReset();
+                SeedAdminUser(adminUser);
+                break;
+
+            case "sample":
+                DbReset();
+                SeedSample(adminUser);
+                break;
+        }
+
+        SaveSeed();
+    }
+
+    private void DbReset()
     {
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
     }
     
-    public void SeedAdminUser(User admin)
+    private void SeedAdminUser(User admin)
     {
         //Seeding
         _context.Users.Add(admin);
@@ -367,7 +395,7 @@ public class DataSeeder
     /// Adds 3 photos from wwwroot/seedPhotos/
     /// </summary>
     /// <param name="admin"></param>
-    public void SeedSample1(User admin)
+    private void SeedSample(User admin)
     {
         // Impl (mostly) of menus by ChatGPT (lol)
 
@@ -376,7 +404,7 @@ public class DataSeeder
 
         // Parse the JSON data
         //Menus
-        var jsonObject = JObject.Parse(menuSeedJson);
+        var jsonObject = JObject.Parse(k_MenuSeedJson);
         var weeklyMenusArray = jsonObject["weeklyMenus"];
 
         foreach (var weeklyMenu in weeklyMenusArray)
@@ -446,7 +474,7 @@ public class DataSeeder
         _context.FoodSimilarityTable.AddRange(similarityRecords);
     }
 
-    public void SaveSeed()
+    private void SaveSeed()
     {
         _context.SaveChanges();
     }
