@@ -10,16 +10,10 @@ public class AggregateRoot<TId> : Entity<TId>, IAggregateRoot
     {
     }
 
+    // ReSharper disable once UnusedMember.Local
     private AggregateRoot() //For EF Core
     {
     }
-
-    /// <summary>
-    /// Publishes a domain event to the internal list of published events.
-    /// </summary>
-    /// <param name="dEvent"></param>
-    protected void PublishDomainEvent(IDomainEvent dEvent)
-        => _publishedEvents.Add(dEvent);
 
     /// <summary>
     /// A method that returns domain events published by the Entity, ValueObject or AggregateRoot.
@@ -35,4 +29,11 @@ public class AggregateRoot<TId> : Entity<TId>, IAggregateRoot
     /// </summary>
     public void ClearDomainEvents()
         => _publishedEvents.Clear();
+
+    /// <summary>
+    /// Publishes a domain event to the internal list of published events.
+    /// </summary>
+    /// <param name="dEvent"></param>
+    protected void PublishDomainEvent(IDomainEvent dEvent)
+        => _publishedEvents.Add(dEvent);
 }

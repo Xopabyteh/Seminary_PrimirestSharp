@@ -24,7 +24,7 @@ else //There are waiting photos
             {
                 <div class='color-black fs-regular'>
                     <div class='photo'>
-                        <img src='@waitingPhoto.Link' width='256' height='256'/>
+                        <img src='@waitingPhoto.ThumbnailResourceLink' width='256' height='256'/>
                         <p class='fs-regular fw-bold color-black'>Waiting</p>
                     </div>
                     <p class='fs-regular fw-bold'>@waitingPhoto.FoodName</p>
@@ -41,7 +41,7 @@ else //There are waiting photos
                 //Resolved
                 <div class='color-black fs-regular'>
                     <div class='photo'>
-                        <img src='@waitingPhoto.Link' width='256' height='256' style='filter: grayscale(60%); opacity: 0.5;'/>
+                        <img src='@waitingPhoto.ThumbnailResourceLink' width='256' height='256' style='filter: grayscale(60%); opacity: 0.5;'/>
                         @if (photoResolveStates[waitingPhoto] == PhotoResolveState.Approved)
                         {
                             <p class='fs-regular fw-bold color-success'>Approved</p>

@@ -49,7 +49,7 @@ public sealed class Food : AggregateRoot<FoodId>
     public void SetAliasForFood(Food forFood)
     {
         if (forFood.AliasForFoodId is not null)
-            throw new IllegalStateException("Cannot set an alias to a food that is already an alias of another food, set the alias to the root food instead..");
+            throw new SetAliasToFoodWithAliasException(this, forFood);
         
         AliasForFoodId = forFood.Id;
     }

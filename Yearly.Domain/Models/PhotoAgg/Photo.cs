@@ -1,9 +1,7 @@
 ﻿using ErrorOr;
-using MediatR;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using System.Threading;
 using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
@@ -54,6 +52,7 @@ public class Photo : AggregateRoot<PhotoId>
     }
 
 #pragma warning disable CS8618 //For EF Core
+    // ReSharper disable once UnusedMember.Local
     private Photo(string thumbnailResourceLink)
         : base(null!)
 #pragma warning restore CS8618
@@ -69,7 +68,7 @@ public class Photo : AggregateRoot<PhotoId>
     /// <param name="fileData"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task<ErrorOr<(MemoryStream RegularPhotoData, MemoryStream ThumbnailPhotoData)>> CreatePhotosFromFileAsync(
+    public static async Task<ErrorOr<(MemoryStream RegularPhotoData, MemoryStream ThumbnailPhotoData)>> CreateImageDataFromFileAsync(
         Stream fileData,
         CancellationToken cancellationToken)
     {

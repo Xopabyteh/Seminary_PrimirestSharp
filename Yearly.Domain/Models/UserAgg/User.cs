@@ -1,5 +1,4 @@
-﻿
-using Yearly.Domain.Errors.Exceptions;
+﻿using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
@@ -28,42 +27,6 @@ public class User : AggregateRoot<UserId>
         _roles = new List<UserRole>();
         _photoIds = new List<PhotoId>();
     }
-
-    private void AddRole(UserRole role)
-    {
-        _roles.Add(role);
-    }
-
-    private void RemoveRole(UserRole role)
-    {
-        _roles.Remove(role);
-    }
-
-    internal void AddRole(UserRole role, User toUser)
-    {
-        toUser.AddRole(role);
-    }
-    internal void RemoveRole(UserRole role, User fromUser)
-    {
-        fromUser.RemoveRole(role);
-    }
-
-    internal void ApprovePhoto(Photo photo)
-    {
-        photo.Approve();
-
-        // Publish Domain events
-
-    }
-
-    internal void RejectPhoto(Photo photo)
-    {
-        if(photo.IsApproved)
-            throw new IllegalStateException("Cannot reject an approved photo");
-
-        // Publish Domain events
-    }
-
     public Photo PublishPhoto(
         PhotoId photoId,
         DateTime publishDate,
@@ -92,6 +55,39 @@ public class User : AggregateRoot<UserId>
         return photo;
     }
 
+    internal void ApprovePhoto(Photo photo)
+    {
+        photo.Approve();
+
+        // Publish Domain events
+
+    }
+
+    internal void RejectPhoto(Photo photo)
+    {
+        if (photo.IsApproved)
+            throw new RejectingApprovedPhotoException(this, photo);
+
+        // Publish Domain events
+    }
+    internal void AddRole(UserRole role, User toUser)
+    {
+        toUser.AddRole(role);
+    }
+    internal void RemoveRole(UserRole role, User fromUser)
+    {
+        fromUser.RemoveRole(role);
+    }
+
+    private void AddRole(UserRole role)
+    {
+        _roles.Add(role);
+    }
+
+    private void RemoveRole(UserRole role)
+    {
+        _roles.Remove(role);
+    }
 }
 
 public class PhotoApprover

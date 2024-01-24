@@ -30,6 +30,7 @@ if (app.Environment.IsDevelopment())
     admin.AddRole(UserRole.Admin, adminUser);
 
     //Seed data (before hangfire initializes in the db)
+    //Use seed profile from args
     var seedProfile = builder.Configuration.GetValue<string?>("seedProfile");
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
     dataSeeder.Seed(seedProfile, adminUser);

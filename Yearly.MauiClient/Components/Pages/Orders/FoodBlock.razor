@@ -1,5 +1,4 @@
-﻿
-<div class='card @(IsOrdered ? "ordered" : string.Empty)'>
+﻿<div class='card @(IsOrdered ? "ordered" : string.Empty)'>
     <div class='card-body'>
         <p class='fs-regular fw-regular'>@Food.Name</p>
         <div class='food-details fs-small color-secondary'>
@@ -22,6 +21,23 @@
             }
         </button>
     </div>
-    <img width='108px' height='108px' class='card-image' src='@Food.PhotoLinks.FirstOrDefault()?.ThumbnailResourceLink' />
+    <div class='image-slider'>
+        <div class='images'>
+            @foreach (var photoLink in Food.PhotoLinks)
+            {
+                <img src='@photoLink.ThumbnailResourceLink' />
+            }
+        </div>
+        <div class='controls'>
+            @for (int i = 0; i < Math.Min(Food.PhotoLinks.Count, 3); i++)
+            {
+                @* Todo *@
+                <div class='index-shower'></div>
+            }
+        </div>
+    </div>
+    <script>
+
+    </script>
 </div>
 

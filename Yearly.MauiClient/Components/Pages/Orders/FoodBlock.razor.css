@@ -5,12 +5,6 @@
     padding: 1rem;
 }
 
-.card-image {
-    border-radius: 0.25rem;
-    width: 100%;
-    height: 100%;
-}
-
 .card-body {
     display: flex;
     flex-direction: column;
@@ -30,3 +24,59 @@
 .ordered {
     border-inline: 0.25rem dashed var(--clr-success);
 }
+
+.image-slider {
+    position: relative;
+
+    width: 108px;
+    height: 108px;
+    
+    border-radius: 1rem;
+    
+    overflow: hidden;
+}
+
+    .image-slider .images {
+        display: flex;
+        
+        overflow-x: scroll;
+
+        scroll-snap-type: x mandatory;
+    }
+
+    /*Hide scrollbar*/
+    .image-slider .images::-webkit-scrollbar {
+        display: none;
+    }
+
+    .image-slider .images img {
+        flex: 1 0 100%; /*All images are same size, but just to be sure*/
+
+        scroll-snap-align: start;
+    }
+
+    .image-slider .controls {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 5px;
+        z-index: 1;
+
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+
+        filter: drop-shadow(1px 2px 4px rgba(0, 0, 0, 0.25));
+    }
+
+    .image-slider .controls .index-shower {
+        width: 5px;
+        height: 5px;
+
+        border-radius: 50%;
+
+        background-color: var(--clr-white);
+        
+        opacity: 0.4;
+    }
+

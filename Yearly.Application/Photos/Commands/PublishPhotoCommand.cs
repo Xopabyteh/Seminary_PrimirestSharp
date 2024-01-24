@@ -64,7 +64,7 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
         if (food is null)
             return Errors.Errors.Food.FoodNotFound(request.FoodId);
 
-        var photoData = await Photo.CreatePhotosFromFileAsync(
+        var photoData = await Photo.CreateImageDataFromFileAsync(
             request.File.OpenReadStream(),
             cancellationToken);
 
