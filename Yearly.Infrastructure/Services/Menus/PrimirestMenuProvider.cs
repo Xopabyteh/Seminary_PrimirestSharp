@@ -201,6 +201,10 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
         _logger.LogInformation("Deleted {count} old menus before the date {date}", deletedCount, today);
     }
 
+    /// <summary>
+    /// Persists foods from primirest to sharp repositories
+    /// and returns the newly persisted foods (which are essentially remapped primirest foods)
+    /// </summary>
     /// <returns>Returns newly persisted foods</returns>
     private async Task<List<Food>> PersistNewMenusAsync(List<PrimirestWeeklyMenu> primirestWeeklyMenusToPersist)
     {

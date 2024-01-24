@@ -1,4 +1,5 @@
-﻿<div class='card @(IsOrdered ? "ordered" : string.Empty)'>
+﻿
+<div class='card @(IsOrdered ? "ordered" : string.Empty)'>
     <div class='card-body'>
         <p class='fs-regular fw-regular'>@Food.Name</p>
         <div class='food-details fs-small color-secondary'>
@@ -21,23 +22,20 @@
             }
         </button>
     </div>
+    
+    @* Index shower functionality is in FoodBlock.razor.js *@
     <div class='image-slider'>
-        <div class='images'>
+        <div class='images' @ref="imagesReference">
             @foreach (var photoLink in Food.PhotoLinks)
             {
-                <img src='@photoLink.ThumbnailResourceLink' />
+                <img src='@photoLink.ThumbnailResourceLink'/>
             }
         </div>
-        <div class='controls'>
-            @for (int i = 0; i < Math.Min(Food.PhotoLinks.Count, 3); i++)
+        <div class='controls' @ref="imagesControlsReference">
+            @for (int i = 0; i < Food.PhotoLinks.Count; i++)
             {
-                @* Todo *@
                 <div class='index-shower'></div>
             }
         </div>
     </div>
-    <script>
-
-    </script>
 </div>
-

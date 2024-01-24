@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Yearly.Contracts.Common;
 
 namespace Yearly.MauiClient.Components.Pages.Orders;
 
 public partial class FoodBlock
 {
+    [Inject] private IJSRuntime JS { get; set; } = null!;
+
     [Parameter] public FoodDTO Food { get; set; } = null!;
     [Parameter] public bool IsOrdered { get; set; }
     /// <summary>
@@ -14,8 +17,21 @@ public partial class FoodBlock
 
     [Parameter] public EventCallback<FoodBlock> OnOrderClicked { get; set; }
 
+    //<div class="images">
+    private ElementReference imagesReference;
+    //<div class="controls">
+    private ElementReference imagesControlsReference;
     private async void RaiseOnOrderClickedEvent()
     {
         await OnOrderClicked.InvokeAsync(this);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Food.PhotoLinks.Count < 2)
+            return;
+
+        var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Orders/FoodBlock.razor.js");
+        await module.InvokeVoidAsync("initializeImagesSlider", imagesReference, imagesControlsReference);
     }
 }

@@ -78,5 +78,12 @@
         background-color: var(--clr-white);
         
         opacity: 0.4;
+
+        transition: all 0.2s ease-in-out;
+    }
+
+    .image-slider .controls .index-shower.selected {
+        opacity: 1;
+        transform: scale(1.5);
     }
 
