@@ -3,11 +3,9 @@ FoodBlock.initializeImagesSlider = function(
     imagesRef = new Element(),
     imageControlsRef = new Element())
 {
-    console.log(imagesRef);
-    console.log(imageControlsRef);
     const scrollWidth = imagesRef.scrollWidth;
     const indexShowers = imageControlsRef.querySelectorAll('.index-shower');
-    const ammOfImages = imagesRef.children.length;
+    //const ammOfImages = imagesRef.children.length;
 
     let selectedIndexShower = indexShowers[0];
     selectedIndexShower.classList.add('selected');
@@ -15,8 +13,8 @@ FoodBlock.initializeImagesSlider = function(
     //On scroll:
     imagesRef.addEventListener('scroll', () => {
         const scrollAmm = imagesRef.scrollLeft;
-        const viewedImageIndex = Math.floor(scrollAmm / scrollWidth * ammOfImages);
-      
+        const viewedImageIndex = Math.round(scrollAmm / scrollWidth);
+
         //Check if we've changed view
         const currentlyViewedIndexShower = indexShowers[viewedImageIndex];
         if (currentlyViewedIndexShower === selectedIndexShower)
@@ -26,7 +24,7 @@ FoodBlock.initializeImagesSlider = function(
         selectedIndexShower.classList.remove('selected');
 
         //Select
-        selectedIndexShower = indexShowers[viewedImageIndex];
+        selectedIndexShower = currentlyViewedIndexShower;
         selectedIndexShower.classList.add('selected');
     });
 }
