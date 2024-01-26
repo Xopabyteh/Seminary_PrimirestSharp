@@ -1,7 +1,10 @@
 ﻿.date-picker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 50%;
 }
-
-
 
 .container {
     display: flex;

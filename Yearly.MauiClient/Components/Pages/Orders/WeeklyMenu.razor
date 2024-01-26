@@ -1,8 +1,9 @@
-﻿@foreach (var dailyMenu in WeeklyMenuDTO.DailyMenus)
- {
-     <DailyMenu 
-         Parent='this'
-         DailyMenuDTO='dailyMenu'
-         WeekOrders='orders'
-         WeekOrdersLoaded='ordersLoaded'/>
- }
+﻿@for (var i = 0; i < WeeklyMenuDTO.DailyMenus.Count; i++)
+{
+    var dailyMenu = WeeklyMenuDTO.DailyMenus[i];
+    <DailyMenu 
+        Parent='@this' 
+        DailyMenuDTO='@dailyMenu' 
+        WeekOrders='@orders' 
+        WeekOrdersLoaded='@ordersLoaded'/>
+}

@@ -21,9 +21,9 @@
     justify-content: space-between;
 }
 
-.ordered {
+/*.ordered {
     border-inline: 0.25rem dashed var(--clr-success);
-}
+}*/
 
 .image-slider {
     position: relative;
