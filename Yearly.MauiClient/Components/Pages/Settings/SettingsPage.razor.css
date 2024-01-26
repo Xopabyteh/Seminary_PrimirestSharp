@@ -1,7 +1,21 @@
-﻿.notification-toggles {
+﻿#super-cool-links > * {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    margin-bottom: 0.25rem;
+}
+
+#super-cool-links > *:last-child {
+    margin-bottom: 0;
+}
+
+.notification-toggles {
     padding-right: 1rem;
 
 }
+
 .toggle-with-label {
     display: flex;
     flex-direction: row;

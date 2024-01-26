@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.SharpApiFacades;
 
 namespace Yearly.MauiClient.Components.Pages.Settings;
 
@@ -10,7 +9,8 @@ public partial class SettingsPage
     [Inject] private AuthService AuthService { get; set; } = null!;
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
-    [Inject] private PhotoFacade PhotoFacade { get; set; } = null!;
+    //[Inject] private PhotoFacade PhotoFacade { get; set; } = null!;
+    [Inject] private MyPhotosCacheService MyPhotosCacheService { get; set; } = null!;
 
     private decimal balance = 0;
     private decimal orderedFor = 0;
@@ -18,7 +18,6 @@ public partial class SettingsPage
 
     private MyPhotosResponse myPhotos;
     private bool myPhotosLoaded = false;
-
 
     private bool isOrderCheckerEnabled;
     private const string k_OrderCheckerPrefKey = "ordercheckerenabled";
@@ -94,7 +93,7 @@ public partial class SettingsPage
         isMoneyLoaded = true;
         StateHasChanged();
 
-        myPhotos = await PhotoFacade.GetMyPhotosAsync();
+        myPhotos = await MyPhotosCacheService.GetMyPhotosCachedAsync();
         myPhotosLoaded = true;
         StateHasChanged();
     }

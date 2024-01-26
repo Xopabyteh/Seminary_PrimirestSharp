@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.MauiClient", "Yearly
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{5741FC12-B8AE-4C7D-9874-908EA0B3CDBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Domain.Tests", "Yearly.Domain.Tests\Yearly.Domain.Tests.csproj", "{7E3AE2F5-8141-4116-A131-D163846B10E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Domain.Tests", "Yearly.Domain.Tests\Yearly.Domain.Tests.csproj", "{7E3AE2F5-8141-4116-A131-D163846B10E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,54 @@
+﻿@page "/my-photos"
+@layout SingleFullFlexLayout
+@using Yearly.MauiClient.Services
+@using Yearly.Contracts.Photos
+
+<GoBackButton Text='Moje fotky'/>
+
+@if (isMyPhotosLoaded)
+{
+    <section class='wrapper'>
+        <h1 class='fs-large'><span class='rainbow'>@myPhotos.TotalPhotoCount</span> @PhotosTextOnlyGrammar()</h1>
+        <UsernameWithTitles/>
+        <br/>
+        <div class='photos-grid' style='--photos-count: @myPhotos.TotalPhotoCount'>
+            @foreach (var photo in myPhotos.Links)
+            {
+                <img src='@photo.ThumbnailResourceLink'/>
+            }
+        </div>
+    </section>
+}
+else
+{
+    //Loading something
+}
+
+@code {
+
+    [Inject] public MyPhotosCacheService MyPhotosCacheService { get; set; } = null!;
+
+    private MyPhotosResponse myPhotos;
+    private bool isMyPhotosLoaded = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        myPhotos = await MyPhotosCacheService.GetMyPhotosCachedAsync();
+        isMyPhotosLoaded = true;
+
+        StateHasChanged();
+    }
+
+    private string PhotosTextOnlyGrammar()
+    {
+        return myPhotos.TotalPhotoCount switch
+        {
+            1 => "Fotka",
+            < 5 => "Fotky",
+            _ => "Fotek"
+            };
+    }
+}

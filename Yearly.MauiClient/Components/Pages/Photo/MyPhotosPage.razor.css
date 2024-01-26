@@ -1,0 +1,37 @@
+﻿.wrapper {
+    align-self: center;
+    text-align: center;
+
+    width: 100%;
+}
+
+.photos-grid {
+    display: grid;
+    grid-template-columns: repeat(
+                                 min(var(--photos-count), 3),
+                                 auto);
+    gap: 0.5rem;
+    justify-content: center;
+}
+    .photos-grid > img {
+        border-radius: 1rem;
+    }
+
+.rainbow {
+    background: linear-gradient(to right, violet, indigo, lightblue, lightgreen, yellow, orange, red);
+    background-size: 1400% 100%;
+    animation: rainbowAnimation 5s linear infinite;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+@keyframes rainbowAnimation {
+    0% {
+        background-position: 0%;
+    }
+
+    100% {
+        background-position: 100%;
+    }
+}

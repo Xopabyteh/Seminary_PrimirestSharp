@@ -4,8 +4,8 @@
 <GoBackButton Text='Nastavení'/>
 
 <section>
-    <h2 class='fw-semi-bold fs-regular color-secondary'>
-        @AuthService.UserDetailsLazy.Username <span class='fw-regular fs-small'>@string.Join(", ", AuthService.UserDetailsLazy.Roles.Select(r => $"{r.RoleCode}."))</span>
+    <h2>
+        <UsernameWithTitles/>
     </h2>
     <div id='user-details' class='mh-100'>
         <div class='fw-regular fs-regular'>
@@ -14,7 +14,7 @@
                 {
                     @if (myPhotos.TotalPhotoCount > 0)
                     {
-                        <a class='color-primary' href='#'>
+                        <a class='color-primary' href='/my-photos'>
                             @PhotosTextWithGrammar()
                         </a>
                     }
@@ -38,20 +38,14 @@
 <br/>
 <section>
     <h2 class='fw-semi-bold fs-regular color-secondary'>Super husté věci</h2>
-    <div class='mh-100'>
+    <div id='super-cool-links' class='mh-100'>
         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
-            <div>
-                <a class='fs-regular color-primary' href='/pha'>PhA. Photo Approving</a>
-            </div>
+            <a class='fs-regular color-primary' href='/pha'>PhA. Photo Approving</a>
         </Authorized>
         <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
-            <div>
-                <a class='fs-regular color-primary' href='#'>Adm. Similarity table</a>
-            </div>
+            <a class='fs-regular color-primary' href='#'>Adm. Similarity table</a>
         </Authorized>
-        <div>
             <a class='fs-regular color-primary' href='/dev'>Dev.</a>
-        </div>
     </div>
 </section>
 <section class='mt-400'>

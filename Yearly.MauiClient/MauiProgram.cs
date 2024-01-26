@@ -41,7 +41,8 @@ public static class MauiProgram
         builder.Services.AddTransient<OrderCheckerService>();
 
         builder.Services.AddSingleton<MenuAndOrderCacheService>();
-        
+        builder.Services.AddSingleton<MyPhotosCacheService>();
+
         //Sharp API
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SharpAPIClient>();
