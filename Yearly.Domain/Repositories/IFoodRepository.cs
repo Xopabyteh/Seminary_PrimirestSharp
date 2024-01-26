@@ -5,9 +5,12 @@ namespace Yearly.Domain.Repositories;
 
 public interface IFoodRepository
 {
-    public Task AddFoodAsync(Food food);
     public Task<Food?> GetFoodByIdAsync(FoodId id);
-    public Task<Food?> GetFoodByNameAsync(string foodName);
+    /// <summary>
+    /// Key: PrimirestItemId, Value: Food
+    /// </summary>
+    /// <param name="itemIds"></param>
+    /// <returns></returns>
     public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds);
     public Task UpdateFoodAsync(Food food);
 }

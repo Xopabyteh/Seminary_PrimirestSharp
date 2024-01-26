@@ -25,6 +25,4 @@ public partial class WeeklyMenu
         ordersLoaded = true;
         StateHasChanged();
     }
-
-
 }

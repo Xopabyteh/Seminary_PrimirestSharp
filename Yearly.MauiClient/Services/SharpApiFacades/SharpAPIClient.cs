@@ -5,16 +5,34 @@ public class SharpAPIClient
     private readonly HttpClient _httpClient;
     public HttpClient HttpClient => _httpClient;
 
-    private const string k_BaseAddressUWP = "https://localhost:7217";
-    private const string k_BaseAddressAndroid = "http://10.0.2.2:5281";
-    private const string k_BaseAddressExternalDevice = "http://192.168.1.113:1337";
+    private const string k_BaseAddress = "https://localhost:7217"; //Todo: change to cloud address
 
     public SharpAPIClient()
     {
+#if DEBUG
+    //Debug:
+#if ANDROID
+        const string androidProxyIp = "10.0.2.2";
+        var androidDevHandler = new AndroidDevHttpClientHandler(androidProxyIp, new string[]{ "localhost", "127.0.0.1" });
+        _httpClient = new(androidDevHandler);
+
+        const string baseAddressAndroidProxy = "http://10.0.2.2:5281";
+        _httpClient.BaseAddress = new Uri(baseAddressAndroidProxy);
+#endif
+#if WINDOWS
         _httpClient = new();
-        _httpClient.BaseAddress = new Uri(
-            DeviceInfo.Platform == DevicePlatform.Android ? k_BaseAddressAndroid : k_BaseAddressUWP); //Todo: set link to cloud hosted
-        //HttpClient.BaseAddress = new Uri(k_BaseAddressExternalDevice);
+
+        const string baseAddressLocalHost = "https://localhost:7217";
+        _httpClient.BaseAddress = new Uri(baseAddressLocalHost);
+#endif
+#if IOS
+
+#endif
+#else
+        //Release:
+        _httpClient = new();
+        _httpClient.BaseAddress = new Uri(k_BaseAddress);
+#endif
     }
 
     /// <summary>
@@ -27,3 +45,47 @@ public class SharpAPIClient
         _httpClient.DefaultRequestHeaders.Add("SessionCookie", sessionCookie);
     }
 }
+
+#if ANDROID && DEBUG
+/// <summary>
+/// Changes ips from json string responses to android proxy ip,
+/// so resources in responses which are hosted in a local environment
+/// can be proxied to via the emulator using the given proxy.
+///
+/// Basically just replaces localhost (the given ips) to 10.0.2.2 (the given proxy)
+/// </summary>
+file class AndroidDevHttpClientHandler : HttpClientHandler
+{
+    private readonly string _androidProxyIp;
+    private readonly string[] _hostIpsToReplace;
+    public AndroidDevHttpClientHandler(string androidProxyIp, string[] hostIpsToReplace)
+    {
+        _androidProxyIp = androidProxyIp;
+        _hostIpsToReplace = hostIpsToReplace;
+    }
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var response = await base.SendAsync(request, cancellationToken);
+
+        if (response.Content.Headers.ContentType is null ||
+            response.Content.Headers.ContentType.MediaType != "application/json")
+            return response;
+
+        var contentStr = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (contentStr.Length == 0)
+            return response;
+
+        foreach (var ipToReplace in _hostIpsToReplace)
+        {
+            contentStr = contentStr
+                .Replace(ipToReplace, _androidProxyIp);
+        }
+
+        var contentBytes = System.Text.Encoding.UTF8.GetBytes(contentStr);
+        var contentStream = new MemoryStream(contentBytes);
+        response.Content = new StreamContent(contentStream);
+        return response;
+    }
+}
+#endif

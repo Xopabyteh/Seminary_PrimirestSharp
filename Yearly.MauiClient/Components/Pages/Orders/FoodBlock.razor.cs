@@ -26,12 +26,17 @@ public partial class FoodBlock
         await OnOrderClicked.InvokeAsync(this);
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         if (Food.PhotoLinks.Count < 2)
             return;
 
-        var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Orders/FoodBlock.razor.js");
-        await module.InvokeVoidAsync("initializeImagesSlider", imagesReference, imagesControlsReference);
+        //var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Orders/FoodBlock.razor.js");
+        //await module.InvokeVoidAsync("initializeImagesSlider", imagesReference, imagesControlsReference);
+
+        await JS.InvokeVoidAsync("FoodBlock.initializeImagesSlider", imagesReference, imagesControlsReference);
     }
 }

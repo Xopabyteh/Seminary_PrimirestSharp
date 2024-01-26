@@ -32,9 +32,9 @@ public static class DependencyInjection
 
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
-        services.AddScoped<IAuthService, PrimirestAuthService>();
         services.AddScoped<PrimirestAuthService>();
-
+        //services.AddScoped<IAuthService, PrimirestAuthService>();
+        services.AddScoped<IAuthService>(sp => sp.GetRequiredService<PrimirestAuthService>());
 
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
         services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();
@@ -75,8 +75,12 @@ public static class DependencyInjection
                 builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
         });
 
-        services.AddScoped<IWeeklyMenuRepository, WeeklyMenuRepository>();
-        services.AddScoped<IFoodRepository, FoodRepository>();
+        services.AddScoped<WeeklyMenuRepository>();
+        services.AddScoped<IWeeklyMenuRepository>(sp => sp.GetRequiredService<WeeklyMenuRepository>());
+        services.AddScoped<FoodRepository>();
+        //services.AddScoped<IFoodRepository, FoodRepository>();
+        services.AddScoped<IFoodRepository>(sp => sp.GetRequiredService<FoodRepository>());
+
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IPhotoRepository, PhotoRepository>();
         //services.AddScoped<ISoupRepository, SoupRepository>();

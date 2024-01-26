@@ -14,11 +14,6 @@ public class FoodRepository : IFoodRepository
         _context = context;
     }
 
-    public async Task AddFoodAsync(Food food)
-    {
-        await _context.Foods.AddAsync(food);
-    }
-
     /// <summary>
     /// Returns food as tracking
     /// </summary>
@@ -29,23 +24,30 @@ public class FoodRepository : IFoodRepository
         return await _context.Foods.AsTracking().SingleOrDefaultAsync(f => f.Id == id);
     }
 
-    public Task<Food?> GetFoodByNameAsync(string foodName)
-    {
-        return _context.Foods.SingleOrDefaultAsync(f => f.Name == foodName);
-    }
-
     //Key: PrimirestItemId, Value: Food
-    public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds)
+    public async Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds)
     {
-        var foods = _context.Foods
+        var foods = await _context.Foods
             .Where(f => itemIds.Contains(f.PrimirestFoodIdentifier.ItemId))
             .ToDictionaryAsync(f => f.PrimirestFoodIdentifier.ItemId);
         return foods;
     }
 
+    //Todo: wtf
     public Task UpdateFoodAsync(Food food)
     {
         _context.Foods.Update(food);
         return Task.CompletedTask;
+    }
+
+    internal async Task<bool> DoesFoodWithPrimirestIdentifierExistAsync(PrimirestFoodIdentifier identifier)
+    {
+        var result = await _context.Foods.AnyAsync(f => f.PrimirestFoodIdentifier == identifier);
+        return result;
+    }
+
+    internal async Task AddFoodAsync(Food food)
+    {
+        await _context.Foods.AddAsync(food);
     }
 }

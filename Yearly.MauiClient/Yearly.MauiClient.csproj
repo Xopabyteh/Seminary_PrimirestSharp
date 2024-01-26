@@ -74,7 +74,6 @@
       <Content Include="Components\Common\PopupAlert.razor.css" />
       <Content Include="Components\Common\ToggleSwitch.razor.css" />
       <Content Include="Components\Pages\Orders\FoodBlock.razor.css" />
-      <Content Include="Components\Pages\Orders\FoodBlock.razor.js" />
       <Content Include="Components\Pages\Orders\OrderPage.razor.css" />
       <Content Include="Components\Pages\Photo\PhA_PhotoApprovingPage.razor.css" />
       <Content Include="Components\Pages\Settings\SettingsPage.razor.css" />
@@ -140,5 +139,9 @@
 
     <ItemGroup>
       <MauiImage Include="Resources\Images\notificationicon.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="wwwroot\js\foodBlockHelpers.js" />
     </ItemGroup>
 </Project>

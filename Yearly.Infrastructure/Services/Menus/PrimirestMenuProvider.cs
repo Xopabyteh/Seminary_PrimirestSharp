@@ -1,15 +1,15 @@
 ﻿using ErrorOr;
 using HtmlAgilityPack;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Security.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
-using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.Errors;
+using Yearly.Infrastructure.Persistence.Repositories;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Orders.PrimirestStructures;
 
@@ -18,15 +18,17 @@ namespace Yearly.Infrastructure.Services.Menus;
 public class PrimirestMenuProvider : IPrimirestMenuProvider
 {
     private readonly PrimirestAuthService _authService;
-    private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly IWeeklyMenuRepository _weeklyMenuRepository;
+    private readonly WeeklyMenuRepository _weeklyMenuRepository;
     private readonly ILogger<PrimirestMenuProvider> _logger;
-    private readonly IFoodRepository _foodRepository;
+    private readonly FoodRepository _foodRepository;
 
-    public PrimirestMenuProvider(PrimirestAuthService authService, IDateTimeProvider dateTimeProvider, IWeeklyMenuRepository weeklyMenuRepository, ILogger<PrimirestMenuProvider> logger, IFoodRepository foodRepository)
+    public PrimirestMenuProvider(
+        PrimirestAuthService authService, 
+        WeeklyMenuRepository weeklyMenuRepository,
+        ILogger<PrimirestMenuProvider> logger, 
+        FoodRepository foodRepository)
     {
         _authService = authService;
-        _dateTimeProvider = dateTimeProvider;
         _weeklyMenuRepository = weeklyMenuRepository;
         _logger = logger;
         _foodRepository = foodRepository;
@@ -34,18 +36,22 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
 
     public async Task<ErrorOr<List<Food>>> PersistAvailableMenusAsync()
     {
-        await DeleteOldMenusAsync();
+        // Delete old menus from primirest
+        var deleteMenusResult = await DeleteOldMenusAsync();
+        if(deleteMenusResult.IsError)
+            return deleteMenusResult.Errors;
 
-        //Load menu from primirest
+        // Load menus from primirest
         var primirestMenusResult = await GetMenusThisWeekAsync();
         if (primirestMenusResult.IsError)
             return primirestMenusResult.Errors;
 
-        //Check if there are any
+        // Check if there are any menus
         var primirestWeeklyMenus = primirestMenusResult.Value;
         if (primirestWeeklyMenus.Count == 0)
             return new List<Food>(); //No menus available -> nothing to persist
 
+        // If there are new menus, persist them
         var newlyPersistedFoods = await PersistNewMenusAsync(primirestWeeklyMenus);
 
         return newlyPersistedFoods;
@@ -55,7 +61,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     /// Scrape the index page of Primirest to get the menu ids
     /// </summary>
     /// <returns></returns>
-    private static async Task<string[]> GetMenuIds(HttpClient loggedClient)
+    private static async Task<int[]> GetMenuIdsAsync(HttpClient loggedClient)
     {
         //Get index page
         var indexPageHtml = await loggedClient.GetStringAsync(
@@ -69,6 +75,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
         var idOptionElements = indexPageDoc.DocumentNode.SelectNodes(xpath);
         var idsResult = idOptionElements
             .Select(e => e.GetAttributeValue("value", string.Empty))
+            .Select(int.Parse)
             .ToArray();
 
         return idsResult;
@@ -122,7 +129,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
         return await _authService.PerformAdminLoggedSessionAsync<List<PrimirestWeeklyMenu>>(async loggedClient =>
         {
             //Fetch menu ids from primirest
-            var menuIds = await GetMenuIds(loggedClient);
+            var menuIds = await GetMenuIdsAsync(loggedClient);
 
             var weeklyMenus = new List<PrimirestWeeklyMenu>(menuIds.Length);
             foreach (var menuId in menuIds)
@@ -134,7 +141,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                 var response = await loggedClient.SendAsync(message);
 
                 if (response.GotRoutedToLogin())
-                    throw new InvalidCredentialException("Admin credentials are invalid (probably)");
+                    throw new InvalidAdminCredentialsException("Admin credentials are invalid (probably)");
 
                 var responseJson = await response.Content.ReadAsStringAsync();
 
@@ -145,7 +152,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                         DateTimeZoneHandling = DateTimeZoneHandling.Utc
                     }) ?? throw new InvalidPrimirestContractException("Primirest changed their Menu retrieval contract");
 
-                var weeklyMenu = new PrimirestWeeklyMenu(new(5), int.Parse(menuId));
+                var weeklyMenu = new PrimirestWeeklyMenu(new(5), menuId);
 
                 foreach (var day in responseRoot.Menu.Days)
                 {
@@ -194,11 +201,25 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
         });
     }
 
-    private async Task DeleteOldMenusAsync()
+    /// <summary>
+    /// Delete menus from our db, that are no longer accessible through primirest
+    /// </summary>
+    /// <returns></returns>
+    private Task<ErrorOr<Unit>> DeleteOldMenusAsync()
     {
-        var today = _dateTimeProvider.CzechNow;
-        var deletedCount = await _weeklyMenuRepository.ExecuteDeleteMenusBeforeDateAsync(today);
-        _logger.LogInformation("Deleted {count} old menus before the date {date}", deletedCount, today);
+        return _authService.PerformAdminLoggedSessionAsync<Unit>(async loggedClient =>
+        {
+            var menusOnPrimirest = await GetMenuIdsAsync(loggedClient);
+            var menusInDb = await _weeklyMenuRepository.GetWeeklyMenuIdsAsync();
+
+            var menusToDelete = menusInDb
+                .Where(id => !menusOnPrimirest.Contains(id.Value))
+                .ToList();
+
+            await _weeklyMenuRepository.ExecuteDeleteMenusAsync(menusToDelete);
+
+            return Unit.Value;
+        });
     }
 
     /// <summary>
@@ -228,6 +249,16 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                 //Handle foods
                 foreach (var primirestFood in primirestDailyMenu.Foods)
                 {
+                    //Don't add foods that have the same primirest food identifier
+                    //It might happen that the delete old menus function miss behaves
+                    // and we will get duplicate primirest foods in our db. That is bad
+                    if (await _foodRepository.DoesFoodWithPrimirestIdentifierExistAsync(primirestFood
+                            .PrimirestFoodIdentifier))
+                    {
+                        _logger.LogWarning("Food with primirest identifier {identifier} already exists in our db. Skipping it.", primirestFood.PrimirestFoodIdentifier);
+                        continue;
+                    }
+
                     var food = Food.Create(
                         new FoodId(Guid.NewGuid()),
                         primirestFood.Name,

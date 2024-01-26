@@ -1,7 +1,10 @@
-export function initializeImagesSlider(
+var FoodBlock = FoodBlock || {};
+FoodBlock.initializeImagesSlider = function(
     imagesRef = new Element(),
     imageControlsRef = new Element())
 {
+    console.log(imagesRef);
+    console.log(imageControlsRef);
     const scrollWidth = imagesRef.scrollWidth;
     const indexShowers = imageControlsRef.querySelectorAll('.index-shower');
     const ammOfImages = imagesRef.children.length;

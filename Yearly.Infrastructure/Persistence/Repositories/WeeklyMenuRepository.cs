@@ -24,17 +24,20 @@ public class WeeklyMenuRepository : IWeeklyMenuRepository
         return await _context.WeeklyMenus.AnyAsync(m => m.Id == id);
     }
 
-    public async Task<List<WeeklyMenu>> GetAvailableMenusAsync()
+    internal async Task<List<WeeklyMenuId>> GetWeeklyMenuIdsAsync()
     {
-        return await _context.WeeklyMenus.ToListAsync();
+        var ids = await _context.WeeklyMenus.Select(m => m.Id).ToListAsync();
+        return ids;
     }
 
-    public async Task<int> ExecuteDeleteMenusBeforeDateAsync(DateTime exclusiveDate)
+    /// <returns>Count of deleted menus</returns>
+    internal async Task<int> ExecuteDeleteMenusAsync(List<WeeklyMenuId> menuIds)
     {
-        var deleted = await _context.WeeklyMenus
-            .Where(m => m.DailyMenus.OrderByDescending(d => d.Date).First().Date < exclusiveDate)
+        var deleteCount = await _context
+            .WeeklyMenus
+            .Where(w => menuIds.Contains(w.Id))
             .ExecuteDeleteAsync();
-        
-        return deleted;
+
+        return deleteCount;
     }
 }
