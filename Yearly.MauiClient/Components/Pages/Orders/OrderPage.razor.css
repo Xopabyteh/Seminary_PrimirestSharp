@@ -1,9 +1,66 @@
-﻿.date-picker {
+﻿header {
+    position: sticky;
+    top: 0;
+
+    background-color: var(--clr-white);
+}
+
+.date-picker {
+    width: 50%;
+    list-style: none;
+}
+
+
+.date-picker-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    width: 50%;
+    width: 100%;
+
+    margin-top: 1rem;
+    padding: 0.5rem;
+
+    background-color: var(--clr-accent);
+}
+
+    .date-picker-card[data-selected] {
+        color: var(--clr-primary);
+    }
+
+    /*Other than selected in list view (order picker open)*/
+    .date-picker-card[data-in-list]:not([data-selected]) {
+        animation: pop-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /*Selected when only selected is showing (we just picked it)*/
+    .date-picker-card[data-selected]:not([data-in-list]) {
+        animation: highlight 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+
+@keyframes pop-in {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes highlight {
+    0% {
+        margin-left: 0;
+    }
+
+    50% {
+        margin-left: 0.5rem;
+    }
+
+    100% {
+        margin-left: 0;
+    }
 }
 
 .container {

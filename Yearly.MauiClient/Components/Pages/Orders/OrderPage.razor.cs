@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Yearly.Contracts.Menu;
 using Yearly.MauiClient.Services;
 
@@ -7,6 +8,7 @@ namespace Yearly.MauiClient.Components.Pages.Orders;
 public partial class OrderPage
 {
     [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
+    [Inject] private IJSRuntime JS { get; set; } = null!;
 
     private IReadOnlyList<WeeklyMenuDTO> weeklyMenus = Array.Empty<WeeklyMenuDTO>();
     private bool weeklyMenuDTOsLoaded = false; //Not the components themselves, but the DTOs.
@@ -15,6 +17,7 @@ public partial class OrderPage
     private DailyMenuDTO selectedDailyMenu;
 
     private Dictionary<WeeklyMenuDTO, WeeklyMenuSelectableVM> weeklyMenuSelectables = new(3);
+    private bool datePickerOpen = false;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
@@ -22,11 +25,12 @@ public partial class OrderPage
 
         //Get weekly menus
         weeklyMenus = await MenuAndOrderCacheService.CachedMenusAsync();
-        foreach (var weeklyMenuDTO in weeklyMenus) //This only happens max like 5x, so it's chill on performance
+        for (int i = 0; i < weeklyMenus.Count; i++)
         {
+            WeeklyMenuDTO weeklyMenuDTO = weeklyMenus[i];
             var menuStartDate = weeklyMenuDTO.DailyMenus.Min(dm => dm.Date);
             var menuEndDate = weeklyMenuDTO.DailyMenus.Max(dm => dm.Date);
-            weeklyMenuSelectables.Add(weeklyMenuDTO, new WeeklyMenuSelectableVM(menuStartDate, menuEndDate));
+            weeklyMenuSelectables.Add(weeklyMenuDTO, new WeeklyMenuSelectableVM(menuStartDate, menuEndDate, i));
         }
 
         if (weeklyMenus.Count == 0)
@@ -40,6 +44,10 @@ public partial class OrderPage
         InitialSelectWeeklyAndDailyMenu();
 
         weeklyMenuDTOsLoaded = true;
+
+        //Scroll to top smoothly
+
+
         StateHasChanged();
     }
 
@@ -101,21 +109,34 @@ public partial class OrderPage
         }
     }
 
-    //Todo:
     private void OpenDatePicker()
     {
-
+        datePickerOpen = true;
+        StateHasChanged();
     }
 
     private void CloseDatePicker()
     {
-
+        datePickerOpen = false;
+        StateHasChanged();
     }
 
-    private void SelectMenu(WeeklyMenuDTO menu)
+    private async ValueTask SelectMenu(WeeklyMenuDTO menu)
     {
+        if (!datePickerOpen)
+            return;
 
+        if (selectedWeeklyMenu == menu)
+        {
+            CloseDatePicker();
+            return;
+        }
+
+        // Reselect menu and scroll to top
+        selectedWeeklyMenu = menu;
+        await JS.InvokeVoidAsync("window.scrollTo", 0, 0);
+        CloseDatePicker();
     }
 
-    readonly record struct WeeklyMenuSelectableVM(DateTime StartDate, DateTime EndDate);
+    readonly record struct WeeklyMenuSelectableVM(DateTime StartDate, DateTime EndDate, int OrderInListView);
 }
