@@ -1,0 +1,16 @@
+﻿.food-name {
+    /* ReSharper disable once InvalidValue */
+    text-wrap: pretty;
+}
+
+.similarity-record:not([data-resolved='Unresolved']) {
+    filter: opacity(0.5);
+}
+
+.similarity-record[data-resolved='Approved'] button {
+    border: 1px solid green;
+}
+
+.similarity-record[data-resolved='Disapproved'] button {
+    border: 1px solid red;
+}

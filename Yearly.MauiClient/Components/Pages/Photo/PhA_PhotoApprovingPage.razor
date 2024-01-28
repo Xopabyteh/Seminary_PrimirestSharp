@@ -4,8 +4,7 @@
 @using Yearly.MauiClient.Services.Toast
 @layout NoMenuLayout
 
-<GoBackButton/>
-<h3 class='color-black fs-huge'>PhA.</h3>
+<GoBackButton Text='PhA. Approving'/>
 
 @if (waitingPhotos.Count == 0)
 {
@@ -17,7 +16,7 @@
 else //There are waiting photos
 {
     <section>
-        <h2 class='color-primary fs-regular fw-semi-bold'> Waiting photos</h2>
+        <h2 class='color-primary fs-regular fw-semi-bold'>Waiting photos</h2>
         @foreach (var waitingPhoto in waitingPhotos)
         {
             @if (photoResolveStates[waitingPhoto] == PhotoResolveState.Unresolved)

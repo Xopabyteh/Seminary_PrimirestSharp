@@ -51,6 +51,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AuthenticationFacade>();
         builder.Services.AddTransient<OrdersFacade>();
         builder.Services.AddTransient<PhotoFacade>();
+        builder.Services.AddTransient<FoodFacade>();
 
         return builder.Build();
     }

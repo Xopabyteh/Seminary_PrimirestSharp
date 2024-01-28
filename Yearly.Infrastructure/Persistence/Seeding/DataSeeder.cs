@@ -369,6 +369,7 @@ public class DataSeeder
 
             case "sample":
                 DbReset();
+                SeedAdminUser(adminUser);
                 SeedSample(adminUser);
                 break;
         }

@@ -1,0 +1,89 @@
+﻿@page "/similarity-table"
+@using Yearly.MauiClient.Services.SharpApiFacades
+@using Yearly.Contracts.Foods
+@layout NoMenuLayout;
+
+<GoBackButton Text='Adm. Similarity table'/>
+
+@if (similarityRecords.Count == 0)
+{
+    <section>
+        <h2 class='color-success fs-regular'>All records resolved</h2>
+        <p class='fs-small fw-regular color-secondary'>(No waiting similarity records)</p>
+    </section>
+}
+else //There are unresolved records
+{
+    <section>
+        <h2 class='color-primary fs-regular fw-semi-bold'>Similarity records</h2>
+        @foreach (var record in similarityRecords)
+        {
+            <div class='similarity-record' data-resolved='@(similarityRecordResolveStates[record])'>
+                <h3 class='color-black fs-regular fw-bold'>@(Math.Floor(record.Similarity * 100))%:</h3>
+                <div class='mh-100 color-black fs-regular fw-regular'>
+                    <span class='fs-small'>New:</span>
+                    <p class='mh-100 food-name'>@record.NewlyPersistedFood.Name</p>
+                    <span class='fs-small'>Pot:</span>
+                    <p class='mh-100 food-name'>@record.PotentialAlias.Name</p>
+                    
+                    @if (similarityRecordResolveStates[record] == RecordResolveState.Unresolved)
+                    {
+                        <button class='button bg-success' @onclick="() => ApproveRecord(record)">Approve</button>
+                        <button class='button bg-danger' @onclick='() => DisapproveRecord(record)'>Disapprove</button>
+                    }
+                    else
+                    {
+                        <button disabled class='button bg-success'>Approve</button>
+                        <button disabled class='button bg-danger'>Disapprove</button>
+                    }
+                </div>
+            </div>
+            <br />
+        }
+    </section>
+}
+
+@code {
+    [Inject] public FoodFacade FoodFacade { get; set; } = null!;
+
+    private List<FoodSimilarityRecordDTO> similarityRecords = new();
+    private Dictionary<FoodSimilarityRecordDTO, RecordResolveState> similarityRecordResolveStates = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var similarityTable = await FoodFacade.GetSimilarityTableAsync();
+        similarityRecords = similarityTable.Records;
+
+        foreach (var record in similarityRecords)
+        {
+            similarityRecordResolveStates.Add(record, RecordResolveState.Unresolved);
+        }
+    }
+
+    private async Task ApproveRecord(FoodSimilarityRecordDTO record)
+    {
+        await FoodFacade.ApproveSimilarityAsync(
+            record.NewlyPersistedFood.Id,
+            record.PotentialAlias.Id);
+
+        similarityRecordResolveStates[record] = RecordResolveState.Approved;
+        StateHasChanged();
+    }
+
+    private async Task DisapproveRecord(FoodSimilarityRecordDTO record)
+    {
+        await FoodFacade.DisapproveSimilarityAsync(
+            record.NewlyPersistedFood.Id,
+            record.PotentialAlias.Id);
+
+        similarityRecordResolveStates[record] = RecordResolveState.Disapproved;
+        StateHasChanged();
+    }
+
+    private enum RecordResolveState
+    {
+        Unresolved,
+        Disapproved,
+        Approved
+    }
+}

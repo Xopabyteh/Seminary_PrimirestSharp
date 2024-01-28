@@ -31,7 +31,10 @@ public class FoodController : ApiController
     }
 
     [HttpPost("similarity-table/approve")]
-    public Task<IActionResult> ApproveSimilarityRecord([FromForm] Guid ofFood, [FromForm] Guid forFood, [FromHeader] string sessionCookie)
+    public Task<IActionResult> ApproveSimilarityRecord(
+        [FromForm] Guid ofFood,
+        [FromForm] Guid forFood,
+        [FromHeader] string sessionCookie)
     {
         return PerformAuthorizedActionAsync(
             sessionCookie,
@@ -48,7 +51,10 @@ public class FoodController : ApiController
     }
 
     [HttpPost("similarity-table/disapprove")]
-    public Task<IActionResult> DisapproveSimilarityRecord([FromForm] Guid ofFood, [FromForm] Guid forFood, [FromHeader] string sessionCookie)
+    public Task<IActionResult> DisapproveSimilarityRecord(
+        [FromForm] Guid ofFood,
+        [FromForm] Guid forFood,
+        [FromHeader] string sessionCookie)
     {
         return PerformAuthorizedActionAsync(
            sessionCookie,
@@ -63,7 +69,10 @@ public class FoodController : ApiController
     }
 
     [HttpPost("set-alias")]
-    public Task<IActionResult> SetFoodAlias([FromForm] Guid ofFood, [FromForm] Guid forFood, [FromHeader] string sessionCookie)
+    public Task<IActionResult> SetFoodAlias(
+        [FromForm] Guid ofFood,
+        [FromForm] Guid forFood,
+        [FromHeader] string sessionCookie)
     {
         return PerformAuthorizedActionAsync(
             sessionCookie,
