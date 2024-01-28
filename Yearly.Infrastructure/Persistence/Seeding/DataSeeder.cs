@@ -348,15 +348,21 @@ public class DataSeeder
         _photoStorage = photoStorage;
     }
 
-    public void Seed(string? seedProfile, User adminUser)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="seedProfile"></param>
+    /// <param name="adminUser"></param>
+    /// <returns>True if the seed was successful</returns>
+    public bool Seed(string? seedProfile, User adminUser)
     {
         if (string.IsNullOrWhiteSpace(seedProfile))
-            return;
+            return true;
 
         switch (seedProfile)
         {
             case "none":
-                return;
+                return true;
 
             case "dbreset":
                 DbReset();
@@ -372,9 +378,19 @@ public class DataSeeder
                 SeedAdminUser(adminUser);
                 SeedSample(adminUser);
                 break;
+
+            default:
+                Console.WriteLine("Unknown seed value - the registered ones are:");
+                Console.WriteLine("\t-none");
+                Console.WriteLine("\t-dbreset");
+                Console.WriteLine("\t-adminuser");
+                Console.WriteLine("\t-sample");
+                return false;
         }
 
         SaveSeed();
+
+        return true;
     }
 
     private void DbReset()

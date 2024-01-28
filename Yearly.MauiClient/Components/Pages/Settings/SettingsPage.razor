@@ -29,8 +29,8 @@
                 }
             </div>
             <div class='mt-200 @(isMoneyLoaded ? string.Empty : "placeholder-glow")'>
-                <div>Stav konta: @balance.ToString("####")<sup class='fs-tiny fw-semi-bold'>Kč</sup></div>
-                <div>Objednáno za: @orderedFor.ToString("####")<sup class='fs-tiny fw-semi-bold'>Kč</sup></div>
+                <div>Stav konta: @balance.ToString("F1")<sup class='fs-tiny fw-semi-bold'>Kč</sup></div>
+                <div>Objednáno za: @orderedFor.ToString("F1")<sup class='fs-tiny fw-semi-bold'>Kč</sup></div>
             </div>
         </div>
     </div>

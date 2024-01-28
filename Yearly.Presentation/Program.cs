@@ -33,7 +33,9 @@ if (app.Environment.IsDevelopment())
     //Use seed profile from args
     var seedProfile = builder.Configuration.GetValue<string?>("seedProfile");
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    dataSeeder.Seed(seedProfile, adminUser);
+    var wasSeedSuccess = dataSeeder.Seed(seedProfile, adminUser);
+    if (!wasSeedSuccess)
+        return;
 
     //Add "debug" session to cache (to be more gentle to the primirest api in development <3)
     var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
