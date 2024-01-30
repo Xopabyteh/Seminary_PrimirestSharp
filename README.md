@@ -48,6 +48,9 @@ User secrets should look like this
   "PrimirestAuthentication:AdminUsername": "Name of your primirest account"
 ```
 
+##### Azure storage
+In the Azure storage account there must be a **Blob container** called **food-photos**, into which the photos are saved.
+
 For local development i am locally hosting Azure storage and Redis images inside of docker.
 
 #### Cmd
