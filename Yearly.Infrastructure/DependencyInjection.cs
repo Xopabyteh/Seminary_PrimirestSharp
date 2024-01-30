@@ -90,7 +90,6 @@ public static class DependencyInjection
         builder.Services.AddAzureClients(clientBuilder =>
         {
             clientBuilder.AddBlobServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:blob"]!, preferMsi: true);
-            clientBuilder.AddQueueServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:queue"]!, preferMsi: true);
         });
 
 

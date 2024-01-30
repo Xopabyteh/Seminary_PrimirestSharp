@@ -1,4 +1,14 @@
-# Primirest#
+
+<p align="center">
+  <a href="https://github.com/Xopabyteh/Seminary_PrimirestSharp">
+    <img src="https://cdn.discordapp.com/attachments/826838935572840492/1201956776795459625/logo_bubble.svg?ex=65cbb47a&is=65b93f7a&hm=4670a67fe98526d2f10343e3afc9abfd52c32009f596a9516f435ab7c5e357d9&" />
+  </a>
+</p>
+
+<h3 align="center">Finally food ordering with images</h3>
+<hr>
+
+## About
 The project acts as a wrapper application around the [Primirest](https://www.mujprimirest.cz/) system + with additional features.
 The main bonus is the ability of users of this application to take photos of their ordered foods
 so that everyone else ordering it can see it.
@@ -22,7 +32,25 @@ Most of the docs are made with figma available at the links below. Some docs can
 * [Process modeling](https://www.figma.com/file/iXr6mEJRbgFyzvCq5Mynn4/Primirest-sharp-Flow?type=design&node-id=39-52344&mode=design&t=98IKJbIVTUfWHq9b-0)
 > Process modeling, domain events storming
 
-### Starting the Backend
+### Running the Backend
+#### Dependencies & User secrets
+Parameters that are used by the app are all defined in the appsettings.json where it also states which portions are set using user secrets (or Azure keyvault or whatever)
+
+User secrets should look like this
+```json
+  "Persistence:AzureStorageConnectionString": "Connection string",
+  "Persistence:AzureStorageConnectionString:blob": "Connection string",
+  "Persistence:DbConnectionString": "MS SQL Server Connection string",
+  // "Persistence:RedisConnectionString": "Connection string", //Note, curently not in use
+
+  //These refer to a Primirest account used to store foods from Primirest to P#
+  "PrimirestAuthentication:AdminPassword": "Password to your primirest account",
+  "PrimirestAuthentication:AdminUsername": "Name of your primirest account"
+```
+
+For local development i am locally hosting Azure storage and Redis images inside of docker.
+
+#### Cmd
 Without seeding:
 ```bash
 $ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https
@@ -31,6 +59,6 @@ With admin user seeding:
 ```bash
 $ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https seedProfile=adminuser
 ```
-#### Arguments
+##### Arguments
 * seedProfile - the profile to seed the database with, if not provided, the database will not be seeded
 	* There are various profiles, the profiles and the way they work can be found in the `Yearly.Infrastructure` project in `Persistence\Seeding\DataSeeder.cs`
