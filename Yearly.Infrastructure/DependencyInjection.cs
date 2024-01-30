@@ -86,10 +86,7 @@ public static class DependencyInjection
         //services.AddScoped<ISoupRepository, SoupRepository>();
 
         services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
-        //services.AddAzureClients(c =>
-        //{
-        //    c.AddBlobServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:blob"]);
-        //});
+
         builder.Services.AddAzureClients(clientBuilder =>
         {
             clientBuilder.AddBlobServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:blob"]!, preferMsi: true);
