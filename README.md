@@ -1,4 +1,3 @@
-
 <p align="center">
   <a href="https://github.com/Xopabyteh/Seminary_PrimirestSharp">
     <img src="https://cdn.discordapp.com/attachments/826838935572840492/1201956776795459625/logo_bubble.svg?ex=65cbb47a&is=65b93f7a&hm=4670a67fe98526d2f10343e3afc9abfd52c32009f596a9516f435ab7c5e357d9&" />
@@ -38,7 +37,6 @@ Parameters that are used by the app are all defined in the appsettings.json wher
 
 User secrets should look like this
 ```json
-  "Persistence:AzureStorageConnectionString": "Connection string",
   "Persistence:AzureStorageConnectionString:blob": "Connection string",
   "Persistence:DbConnectionString": "MS SQL Server Connection string",
   // "Persistence:RedisConnectionString": "Connection string", //Note, curently not in use
