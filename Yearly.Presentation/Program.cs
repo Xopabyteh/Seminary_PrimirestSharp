@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddPresentation(builder)
-    .AddQueries()
+    .AddQueries(builder.Configuration)
     .AddInfrastructure(builder)
     .AddApplication();
 

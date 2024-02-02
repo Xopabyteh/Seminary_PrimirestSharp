@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Photos;
 
@@ -7,7 +8,6 @@ namespace Yearly.Queries.DTORepositories;
 public class PhotosDTORepository
 {
     private readonly ISqlConnectionFactory _connectionFactory;
-
     public PhotosDTORepository(ISqlConnectionFactory connectionFactory)
     {
         this._connectionFactory = connectionFactory;
@@ -41,11 +41,11 @@ public class PhotosDTORepository
                   SELECT
                   ResourceLink,
                   ThumbnailResourceLink
-                  FROM [PrimirestSharp].[Domain].[Photos]
+                  FROM [Domain].[Photos]
                   WHERE PublisherId_Value = @UserId;
                   
                   SELECT COUNT(*)
-                  FROM [PrimirestSharp].[Domain].[Photos]
+                  FROM [Domain].[Photos]
                   WHERE PublisherId_Value = @UserId;
                   """;
 
