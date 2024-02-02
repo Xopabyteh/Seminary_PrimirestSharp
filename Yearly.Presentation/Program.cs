@@ -1,10 +1,10 @@
 using Hangfire;
+using MediatR;
 using Yearly.Application;
 using Yearly.Application.Authentication;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure;
-using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
@@ -39,12 +39,18 @@ if (app.Environment.IsDevelopment())
 
     //Add "debug" session to cache (to be more gentle to the primirest api in development <3)
     var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
-    await  sessionCache.AddAsync("debug", adminUser.Id);
+    await sessionCache.AddAsync("debug", adminUser.Id);
 }
 
 app.MapControllers();
 app.UseOutputCache();
-app.UseHangfireDashboard();
+app.UseHangfireDashboard(options: new DashboardOptions()
+{
+    AsyncAuthorization = new []
+    {
+        new PrimirestSharpAdminHangfireDashboardAuthorizationFilter()
+    }
+});
 
 //Add background jobs
 {
@@ -53,10 +59,11 @@ app.UseHangfireDashboard();
         x => x.ExecuteAsync(),
         @"0 8 * * FRI"); //Every friday at 8:00 - https://crontab.guru/#0_8_*_*_FRI
 
-    RecurringJob.AddOrUpdate<FireOutboxDomainEventsJob>(
-        nameof(FireOutboxDomainEventsJob),
-        x => x.ExecuteAsync(),
-        @"* * * * *"); //Every minute
+    //This is to be thought about
+    //RecurringJob.AddOrUpdate<FireOutboxDomainEventsJob>(
+    //    nameof(FireOutboxDomainEventsJob),
+    //    x => x.ExecuteAsync(),
+    //    @"* * * * *"); //Every minute
 }
 
 

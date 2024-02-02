@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Azure.Identity;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Repositories;
@@ -45,6 +48,15 @@ public static class DependencyInjection
 
         services.AddPersistence(builder);
         services.AddBackgroundJobs();
+
+        //Add Azure key vault if in production
+        if (builder.Environment.IsProduction())
+        {
+            var keyVaultUrl = builder.Configuration["KeyVaultUrl"]!; // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            builder.Configuration.AddAzureKeyVault(
+                new Uri(keyVaultUrl),
+                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeSharedTokenCacheCredential = true }));
+        }
 
         return services;
     }
@@ -97,6 +109,7 @@ public static class DependencyInjection
 
         services.AddTransient<DataSeeder>();
     }
+
 
     private static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
     {

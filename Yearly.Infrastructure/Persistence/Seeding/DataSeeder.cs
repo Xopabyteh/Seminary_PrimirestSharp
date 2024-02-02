@@ -364,17 +364,17 @@ public class DataSeeder
             case "none":
                 return true;
 
-            case "dbreset":
-                DbReset();
+            case "ensurecreated":
+                EnsureCreated();
                 break;
 
             case "adminuser":
-                DbReset();
+                EnsureCreated();
                 SeedAdminUser(adminUser);
                 break;
 
             case "sample":
-                DbReset();
+                EnsureCreated();
                 SeedAdminUser(adminUser);
                 SeedSample(adminUser);
                 break;
@@ -393,9 +393,8 @@ public class DataSeeder
         return true;
     }
 
-    private void DbReset()
+    private void EnsureCreated()
     {
-        _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
     }
     

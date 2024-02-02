@@ -5,30 +5,32 @@ public class SharpAPIClient
     private readonly HttpClient _httpClient;
     public HttpClient HttpClient => _httpClient;
 
-    private const string k_BaseAddress = "https://localhost:7217"; //Todo: change to cloud address
+    private const string k_BaseAddress = "https://primirest-sharp-webapp.azurewebsites.net";
 
     public SharpAPIClient()
     {
 #if DEBUG
     //Debug:
-#if ANDROID
-        const string androidProxyIp = "10.0.2.2";
-        var androidDevHandler = new AndroidDevHttpClientHandler(androidProxyIp, new string[]{ "localhost", "127.0.0.1" });
-        _httpClient = new(androidDevHandler);
+    #if ANDROID
+            const string androidProxyIp = "10.0.2.2";
+            var androidDevHandler = new AndroidDevHttpClientHandler(androidProxyIp, new string[]{ "localhost", "127.0.0.1" });
+            _httpClient = new(androidDevHandler);
 
-        const string baseAddressAndroidProxy = "http://10.0.2.2:5281";
-        _httpClient.BaseAddress = new Uri(baseAddressAndroidProxy);
-#endif
-#if WINDOWS
-        _httpClient = new();
+            const string baseAddressAndroidProxy = "http://10.0.2.2:5281";
+            _httpClient.BaseAddress = new Uri(baseAddressAndroidProxy);
+    #endif
+    #if WINDOWS
+            _httpClient = new();
 
-        const string baseAddressLocalHost = "https://localhost:7217";
-        _httpClient.BaseAddress = new Uri(baseAddressLocalHost);
-#endif
-#if IOS
+            const string baseAddressLocalHost = "https://localhost:7217";
+            _httpClient.BaseAddress = new Uri(baseAddressLocalHost);
+    #endif
+    #if IOS
 
+    #endif
 #endif
-#else
+
+#if RELEASE
         //Release:
         _httpClient = new();
         _httpClient.BaseAddress = new Uri(k_BaseAddress);
