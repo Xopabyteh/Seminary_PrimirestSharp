@@ -36,7 +36,7 @@ public class OrdersFacade
         //    }
         //}
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync(
-            "order/new-order",
+            "/api/order/new-order",
             new NewOrderRequest(foodId));
         
         if (response.IsSuccessStatusCode)
@@ -53,7 +53,7 @@ public class OrdersFacade
     {
         //Post to {{host}}/order/cancel-order
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync(
-            "order/cancel-order", 
+            "/api/order/cancel-order", 
             new CancelOrderRequest(orderId));
 
         if (response.IsSuccessStatusCode)
