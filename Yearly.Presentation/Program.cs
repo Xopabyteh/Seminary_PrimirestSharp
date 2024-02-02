@@ -1,5 +1,4 @@
 using Hangfire;
-using MediatR;
 using Yearly.Application;
 using Yearly.Application.Authentication;
 using Yearly.Domain.Models.UserAgg;
@@ -65,6 +64,5 @@ app.UseHangfireDashboard(options: new DashboardOptions()
     //    x => x.ExecuteAsync(),
     //    @"* * * * *"); //Every minute
 }
-
 
 app.Run();

@@ -28,6 +28,15 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, WebApplicationBuilder builder)
     {
+        //Add Azure key vault if in production
+        if (builder.Environment.IsProduction())
+        {
+            var keyVaultUrl = builder.Configuration["KeyVaultUrl"]!; // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            builder.Configuration.AddAzureKeyVault(
+                new Uri(keyVaultUrl),
+                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeSharedTokenCacheCredential = true }));
+        }
+
         services.AddHttpClient(HttpClientNames.Primirest, client =>
         {
             client.BaseAddress = new Uri("https://www.mujprimirest.cz");
@@ -48,15 +57,6 @@ public static class DependencyInjection
 
         services.AddPersistence(builder);
         services.AddBackgroundJobs();
-
-        //Add Azure key vault if in production
-        if (builder.Environment.IsProduction())
-        {
-            var keyVaultUrl = builder.Configuration["KeyVaultUrl"]!; // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
-            builder.Configuration.AddAzureKeyVault(
-                new Uri(keyVaultUrl),
-                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeSharedTokenCacheCredential = true }));
-        }
 
         return services;
     }
@@ -101,7 +101,9 @@ public static class DependencyInjection
 
         builder.Services.AddAzureClients(clientBuilder =>
         {
-            clientBuilder.AddBlobServiceClient(builder.Configuration["Persistence:AzureStorageConnectionString:blob"]!, preferMsi: true);
+            clientBuilder.AddBlobServiceClient(
+                builder.Configuration["Persistence:AzureStorageConnectionString:blob"]!,
+                preferMsi: builder.Environment.IsDevelopment());
         });
 
 
