@@ -8,7 +8,7 @@ using Yearly.Domain.Models.MenuAgg.ValueObjects;
 
 namespace Yearly.Presentation.Controllers;
 
-[Route("order")]
+[Route("api/order")]
 public class OrderController : ApiController
 {
     private readonly IMapper _mapper;

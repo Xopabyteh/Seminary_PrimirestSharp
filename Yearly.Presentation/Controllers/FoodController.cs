@@ -9,7 +9,7 @@ using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
-[Route("food")]
+[Route("api/food")]
 public class FoodController : ApiController
 {
     private readonly IMapper _mapper;

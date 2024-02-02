@@ -5,7 +5,7 @@ public class SharpAPIClient
     private readonly HttpClient _httpClient;
     public HttpClient HttpClient => _httpClient;
 
-    private const string k_BaseAddress = "https://primirest-sharp-webapp.azurewebsites.net";
+    private const string k_BaseAddress = "https://primirest-sharp-webapp.azurewebsites.net/api";
 
     public SharpAPIClient()
     {
@@ -16,13 +16,13 @@ public class SharpAPIClient
             var androidDevHandler = new AndroidDevHttpClientHandler(androidProxyIp, new string[]{ "localhost", "127.0.0.1" });
             _httpClient = new(androidDevHandler);
 
-            const string baseAddressAndroidProxy = "http://10.0.2.2:5281";
+            const string baseAddressAndroidProxy = "http://10.0.2.2:5281/api";
             _httpClient.BaseAddress = new Uri(baseAddressAndroidProxy);
     #endif
     #if WINDOWS
             _httpClient = new();
 
-            const string baseAddressLocalHost = "https://localhost:7217";
+            const string baseAddressLocalHost = "https://localhost:7217/api";
             _httpClient.BaseAddress = new Uri(baseAddressLocalHost);
     #endif
     #if IOS

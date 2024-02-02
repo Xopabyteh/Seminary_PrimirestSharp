@@ -8,7 +8,7 @@ using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Presentation.Controllers;
 
-[Route("auth")]
+[Route("api/auth")]
 public class AuthenticationController : ApiController
 {
     private readonly IMapper _mapper;

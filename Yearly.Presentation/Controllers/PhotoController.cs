@@ -8,7 +8,7 @@ using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
-[Route("photo")]
+[Route("api/photo")]
 public class PhotoController : ApiController
 {
     private readonly PhotosDTORepository _photosDTORepository;

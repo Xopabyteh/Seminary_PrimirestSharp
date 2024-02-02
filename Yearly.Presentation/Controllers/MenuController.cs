@@ -9,16 +9,14 @@ using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
-[Route("menu")]
+[Route("api/menu")]
 public class MenuController : ApiController
 {
-    private readonly IMapper _mapper;
     private readonly IOutputCacheStore _outputCacheStore;
     private readonly WeeklyMenuDTORepository _weeklyMenuDtoRepository;
-    public MenuController(IMapper mapper, ISender mediator, IOutputCacheStore outputCacheStore, WeeklyMenuDTORepository weeklyMenuDtoRepository) 
+    public MenuController(ISender mediator, IOutputCacheStore outputCacheStore, WeeklyMenuDTORepository weeklyMenuDtoRepository) 
         : base(mediator)
     {
-        _mapper = mapper;
         _outputCacheStore = outputCacheStore;
         _weeklyMenuDtoRepository = weeklyMenuDtoRepository;
     }
