@@ -21,7 +21,7 @@ public class AuthenticationFacade
     /// <returns></returns>
     public async Task<OneOf<LoginResponse, ProblemResponse>> LoginAsync(LoginRequest request)
     {
-        var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync("/auth/login", request);
+        var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync("/api/auth/login", request);
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
@@ -36,7 +36,7 @@ public class AuthenticationFacade
 
     public async Task<UserDetailsResponse?> GetMyDetailsAsync()
     {
-        var response = await _sharpAPIClient.HttpClient.GetAsync("/auth/my-details");
+        var response = await _sharpAPIClient.HttpClient.GetAsync("/api/auth/my-details");
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<UserDetailsResponse>();
@@ -48,6 +48,6 @@ public class AuthenticationFacade
 
     public async Task LogoutAsync()
     {
-        await _sharpAPIClient.HttpClient.PostAsync("/auth/logout", null);
+        await _sharpAPIClient.HttpClient.PostAsync("/api/auth/logout", null);
     }
 }

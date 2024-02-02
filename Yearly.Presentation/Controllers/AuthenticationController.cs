@@ -20,13 +20,16 @@ public class AuthenticationController : ApiController
     }
 
     [HttpGet("my-details")]
-    public async Task<IActionResult> GetMyDetails([FromHeader] string sessionCookie)
+    public Task<IActionResult> GetMyDetails()
     {
-        var userResult = await _mediator.Send(new UserBySessionQuery(sessionCookie));
+        return PerformAuthenticatedActionAsync(async issuer =>
+        {
+            var userResult = await _mediator.Send(new UserBySessionQuery(issuer.SessionCookie));
 
-        return userResult.Match(
-            value => Ok(_mapper.Map<UserDetailsResponse>(value)),
-            Problem);
+            return userResult.Match(
+                value => Ok(_mapper.Map<UserDetailsResponse>(value)),
+                Problem);
+        });
     }
 
 
@@ -39,30 +42,47 @@ public class AuthenticationController : ApiController
         if (loginResult.IsError)
             return Problem(loginResult.Errors);
 
+        //Add session cookie to cookies
+        Response.Cookies.Append("session", loginResult.Value.SessionCookie, new CookieOptions
+        {
+            //SameSite = SameSiteMode.Strict,
+            Secure = true,
+            Expires = loginResult.Value.SessionExpirationTime
+        });
 
-        return loginResult.Match(
-            value => Ok(_mapper.Map<LoginResponse>(value)),
-            Problem);
+        return Ok(_mapper.Map<LoginResponse>(loginResult.Value));
     }
 
+    //[HttpPost("logout")]
+    //public async Task<IActionResult> Logout([FromHeader] string sessionCookie)
+    //{
+    //    var logoutQuery = new LogoutCommand(sessionCookie);
+    //    await _mediator.Send(logoutQuery);
+    //    return Ok();
+    //}
+
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromHeader] string sessionCookie)
+    public Task<IActionResult> Logout()
     {
-        var logoutQuery = new LogoutCommand(sessionCookie);
-        await _mediator.Send(logoutQuery);
-        return Ok();
+        return PerformAuthenticatedActionAsync(async issuer =>
+        {
+            var logoutQuery = new LogoutCommand(issuer.SessionCookie);
+            await _mediator.Send(logoutQuery);
+
+            Response.Cookies.Delete("session");
+
+            return Ok();
+        });
     }
 
     [HttpPost("add-role")]
     public Task<IActionResult> AddRole(
-        [FromBody] RoleRequest request,
-        [FromHeader] string sessionCookie)
+        [FromBody] RoleRequest request)
     {
         return PerformAuthorizedActionAsync(
-            sessionCookie,
             async issuer =>
             {
-                var command = new AddRoleToUserCommand(issuer, new UserId(request.UserId), new UserRole(request.RoleCode));
+                var command = new AddRoleToUserCommand(issuer.User, new UserId(request.UserId), new UserRole(request.RoleCode));
                 var result = await _mediator.Send(command);
                 return result.Match(
                     _ => Ok(),
@@ -73,15 +93,13 @@ public class AuthenticationController : ApiController
 
     [HttpPost("remove-role")]
     public Task<IActionResult> RemoveRole(
-        [FromBody] RoleRequest request,
-        [FromHeader] string sessionCookie)
+        [FromBody] RoleRequest request)
 
     {
         return PerformAuthorizedActionAsync(
-            sessionCookie,
             async issuer =>
             {
-                var command = new RemoveRoleFromUserCommand(issuer, new UserId(request.UserId), new UserRole(request.RoleCode));
+                var command = new RemoveRoleFromUserCommand(issuer.User, new UserId(request.UserId), new UserRole(request.RoleCode));
                 var result = await _mediator.Send(command);
                 return result.Match(
                     _ => Ok(),

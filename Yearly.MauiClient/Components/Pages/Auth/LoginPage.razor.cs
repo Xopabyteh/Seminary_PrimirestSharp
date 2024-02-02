@@ -43,16 +43,17 @@ public partial class LoginPage
                     // but wait for login, so we can setup Auto Login
         }
 
-        //1. Try get session
-        var hasSession = await AuthService.TryLoadStoredSessionAsync();
-        if (hasSession)
-        {
-            //We already have a session, skip login
-            NavigationManager.NavigateTo("/orders");
-            return;
-        }
+        //Removed
+        ////1. Try get session
+        //var hasSession = await AuthService.TryLoadStoredSessionAsync();
+        //if (hasSession)
+        //{
+        //    //We already have a session, skip login
+        //    NavigationManager.NavigateTo("/orders");
+        //    return;
+        //}
 
-        //2. Try get stored credentials
+        //1. Try get stored credentials
         if (AuthService.AutoLoginStoredCredentials is not null)
         {
             //Try to Auto Login
@@ -72,7 +73,7 @@ public partial class LoginPage
             NavigationManager.NavigateTo("/orders");
         }
 
-        //3. Try get credentials from user ...
+        //2. Try get credentials from user ...
     }
 
     private async void TrySubmitLogin()

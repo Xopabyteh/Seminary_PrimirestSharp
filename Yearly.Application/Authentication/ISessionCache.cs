@@ -23,5 +23,8 @@ public interface ISessionCache
     /// </summary>
     public Task RemoveAsync(string sessionCookie);
 
-    //public void InvalidateCache(User newUserData);
+    /// <summary>
+    /// The time at which the session expires. Not the *delay*, but the **date**
+    /// </summary>
+    public DateTimeOffset SessionExpiration { get; }
 }

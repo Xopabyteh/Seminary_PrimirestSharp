@@ -21,16 +21,15 @@ public class PhotoController : ApiController
     [HttpPost("publish")]
     public Task<IActionResult> UploadPhoto(
         [FromForm] IFormFile photo,
-        [FromForm] Guid foodId,
-        [FromHeader] string sessionCookie)
+        [FromForm] Guid foodId)
     {
-        return PerformAuthenticatedActionAsync(sessionCookie, async user =>
+        return PerformAuthenticatedActionAsync(async issuer =>
         {
-            if (user.Roles.Contains(UserRole.BlackListedFromTakingPhotos))
+            if (issuer.User.Roles.Contains(UserRole.BlackListedFromTakingPhotos))
                 Unauthorized();
 
             var result = await _mediator.Send(
-                new PublishPhotoCommand(photo, new FoodId(foodId), user));
+                new PublishPhotoCommand(photo, new FoodId(foodId), issuer.User));
 
             return result.Match(
                 createdPhoto => Created(createdPhoto.ResourceLink, null),
@@ -39,36 +38,30 @@ public class PhotoController : ApiController
     }
 
     [HttpPost("approve")]
-    public Task<IActionResult> ApprovePhoto(
-        [FromForm] Guid photoId,
-        [FromHeader] string sessionCookie)
+    public Task<IActionResult> ApprovePhoto([FromForm] Guid photoId)
     {
         return PerformAuthorizedActionAsync(
-            sessionCookie,
             async issuer =>
-        {
-            var result = await _mediator.Send(new ApprovePhotoCommand(new PhotoId(photoId), issuer));
-            return result.Match(
-                _ => Ok(),
-                Problem);
-        },
+            {
+                var result = await _mediator.Send(new ApprovePhotoCommand(new PhotoId(photoId), issuer.User));
+                return result.Match(
+                    _ => Ok(),
+                    Problem);
+            },
             UserRole.PhotoApprover);
     }
 
     [HttpPost("reject")]
-    public Task<IActionResult> RejectPhoto(
-        [FromForm] Guid photoId,
-        [FromHeader] string sessionCookie)
+    public Task<IActionResult> RejectPhoto([FromForm] Guid photoId)
     {
         return PerformAuthorizedActionAsync(
-            sessionCookie,
             async issuer =>
-        {
-            var result = await _mediator.Send(new RejectPhotoCommand(new PhotoId(photoId), issuer));
-            return result.Match(
-                _ => Ok(),
-                Problem);
-        },
+            {
+                var result = await _mediator.Send(new RejectPhotoCommand(new PhotoId(photoId), issuer.User));
+                return result.Match(
+                    _ => Ok(),
+                    Problem);
+            },
             UserRole.PhotoApprover);
     }
 
@@ -80,14 +73,12 @@ public class PhotoController : ApiController
     }
 
     [HttpGet("my-photos")]
-    public Task<IActionResult> GetMyPhotos([FromHeader] string sessionCookie)
+    public Task<IActionResult> GetMyPhotos()
     {
-        return PerformAuthenticatedActionAsync(
-            sessionCookie,
-            async user =>
-            {
-                var userPhotos = await _photosDTORepository.GetUsersPhotos(user.Id.Value);
-                return Ok(userPhotos);
-            });
+        return PerformAuthenticatedActionAsync(async issuer => 
+        {
+            var userPhotos = await _photosDTORepository.GetUsersPhotos(issuer.User.Id.Value);
+            return Ok(userPhotos);
+        });
     }
 }

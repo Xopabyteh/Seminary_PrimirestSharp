@@ -14,7 +14,7 @@ public class MenusFacade
 
     public async Task<AvailableMenusResponse> GetAvailableMenusAsync()
     {
-        var response = await _sharpAPIClient.HttpClient.GetAsync("/menu/available");
+        var response = await _sharpAPIClient.HttpClient.GetAsync("/api/menu/available");
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<AvailableMenusResponse>();

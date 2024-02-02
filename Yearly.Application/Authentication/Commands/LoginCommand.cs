@@ -45,7 +45,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         {
             var debugUserId = await _sessionCache.GetAsync("debug");
             var debugUser = await _userRepository.GetByIdAsync(debugUserId!);
-            var result = new LoginResult("debug", debugUser!);
+            var result = new LoginResult("debug", debugUser!, _sessionCache.SessionExpiration);
             return result;
         }
 #endif
@@ -80,8 +80,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         //Add to cache
         await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser.Id);
 
-        return new LoginResult(externalLoginResult.Value, sharpUser);
+        return new LoginResult(externalLoginResult.Value, sharpUser, _sessionCache.SessionExpiration);
     }
 }
 
-public record LoginResult(string SessionCookie, User User);
+public record LoginResult(string SessionCookie, User User, DateTimeOffset SessionExpirationTime);

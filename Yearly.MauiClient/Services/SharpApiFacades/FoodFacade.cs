@@ -16,7 +16,7 @@ public class FoodFacade
     {
         //Get {{host}}/food/similarity-table
 
-        var response = await _client.HttpClient.GetAsync("/food/similarity-table");
+        var response = await _client.HttpClient.GetAsync("/api/food/similarity-table");
 
         response.EnsureSuccessStatusCode();
 
@@ -41,7 +41,7 @@ public class FoodFacade
             {new StringContent(forFoodId.ToString()), "forFood"}
         };
 
-        var response = await _client.HttpClient.PostAsync("/food/similarity-table/approve", content);
+        var response = await _client.HttpClient.PostAsync("/api/food/similarity-table/approve", content);
 
         response.EnsureSuccessStatusCode();
     }
@@ -63,7 +63,7 @@ public class FoodFacade
             {new StringContent(forFoodId.ToString()), "forFood"}
         };
 
-        var response = await _client.HttpClient.PostAsync("/food/similarity-table/disapprove", content);
+        var response = await _client.HttpClient.PostAsync("/api/food/similarity-table/disapprove", content);
 
         response.EnsureSuccessStatusCode();
     }
@@ -83,7 +83,7 @@ public class FoodFacade
             {new StringContent(forFoodId.ToString()), "forFood"}
         };
 
-        var response = await _client.HttpClient.PostAsync("/food/set-alias", content);
+        var response = await _client.HttpClient.PostAsync("/api/food/set-alias", content);
 
         response.EnsureSuccessStatusCode();
     }

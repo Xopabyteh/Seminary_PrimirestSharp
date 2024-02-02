@@ -9,15 +9,15 @@ public class PrimirestSharpAdminHangfireDashboardAuthorizationFilter : IDashboar
 { 
     public async Task<bool> AuthorizeAsync(DashboardContext context)
     {
-        //Get header "sessionCookie"
-        var sessionCookie = context.GetHttpContext().Request.Headers["sessionCookie"];
+        //Get cookie session
+        var sessionCookie = context.GetHttpContext().Request.Cookies["session"];
         if (string.IsNullOrWhiteSpace(sessionCookie))
         {
             return false;
         }
 
         //Get session from cache
-        var query = new UserBySessionQuery(sessionCookie.ToString());
+        var query = new UserBySessionQuery(sessionCookie);
 
         using var scope = context.GetHttpContext().RequestServices.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();

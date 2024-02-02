@@ -1,5 +1,4 @@
-﻿using MapsterMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Foods.Commands.FoodSimilarity;
 using Yearly.Contracts.Foods;
@@ -12,13 +11,11 @@ namespace Yearly.Presentation.Controllers;
 [Route("api/food")]
 public class FoodController : ApiController
 {
-    private readonly IMapper _mapper;
     private readonly FoodSimilarityTableDTORepository _foodSimilarityTableDtoRepository;
 
-    public FoodController(IMapper mapper, ISender mediator, FoodSimilarityTableDTORepository foodSimilarityTableDtoRepository)
+    public FoodController(ISender mediator, FoodSimilarityTableDTORepository foodSimilarityTableDtoRepository)
         : base(mediator)
     {
-        _mapper = mapper;
         _foodSimilarityTableDtoRepository = foodSimilarityTableDtoRepository;
     }
 
@@ -33,11 +30,9 @@ public class FoodController : ApiController
     [HttpPost("similarity-table/approve")]
     public Task<IActionResult> ApproveSimilarityRecord(
         [FromForm] Guid ofFood,
-        [FromForm] Guid forFood,
-        [FromHeader] string sessionCookie)
+        [FromForm] Guid forFood)
     {
         return PerformAuthorizedActionAsync(
-            sessionCookie,
             async _ =>
             {
                 var command = new ApproveSimilarityRecordCommand(new FoodId(ofFood), new FoodId(forFood));
@@ -53,11 +48,9 @@ public class FoodController : ApiController
     [HttpPost("similarity-table/disapprove")]
     public Task<IActionResult> DisapproveSimilarityRecord(
         [FromForm] Guid ofFood,
-        [FromForm] Guid forFood,
-        [FromHeader] string sessionCookie)
+        [FromForm] Guid forFood)
     {
         return PerformAuthorizedActionAsync(
-           sessionCookie,
            async _ =>
            {
                var command = new DisapproveSimilarityRecordCommand(new FoodId(ofFood), new FoodId(forFood));
@@ -71,11 +64,9 @@ public class FoodController : ApiController
     [HttpPost("set-alias")]
     public Task<IActionResult> SetFoodAlias(
         [FromForm] Guid ofFood,
-        [FromForm] Guid forFood,
-        [FromHeader] string sessionCookie)
+        [FromForm] Guid forFood)
     {
         return PerformAuthorizedActionAsync(
-            sessionCookie,
             async _ =>
             {
                 var command = new SetFoodAliasCommand(new FoodId(ofFood), new FoodId(forFood));

@@ -38,4 +38,6 @@ public class SessionCache : ISessionCache
     {
         return _userCache.RemoveAsync(sessionCookie);
     }
+
+    public DateTimeOffset SessionExpiration => DateTimeOffset.Now.Add(ExpirationTime);
 }

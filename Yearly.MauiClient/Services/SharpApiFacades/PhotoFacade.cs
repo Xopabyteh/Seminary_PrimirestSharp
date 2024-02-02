@@ -23,7 +23,7 @@ public class PhotoFacade
             {new StringContent(foodId.ToString()), "foodId"}
         };
 
-        var response = await _sharpAPIClient.HttpClient.PostAsync("/photo/publish", content);
+        var response = await _sharpAPIClient.HttpClient.PostAsync("/api/photo/publish", content);
 
         //Consider the request was validated and the response should be success
         if (!response.IsSuccessStatusCode)
@@ -41,7 +41,7 @@ public class PhotoFacade
     /// <returns>A List of photos waiting for approval, may be empty</returns>
     public async Task<List<PhotoDTO>> GetWaitingPhotosAsync()
     {
-        var response = await _sharpAPIClient.HttpClient.GetAsync("/photo/waiting");
+        var response = await _sharpAPIClient.HttpClient.GetAsync("/api/photo/waiting");
         response.EnsureSuccessStatusCode();
 
         var waitingPhotos = await response.Content.ReadFromJsonAsync<WaitingPhotosResponse>();
@@ -63,7 +63,7 @@ public class PhotoFacade
             {new StringContent(photoId.ToString()), "photoId"}
         };
 
-        var response = await _sharpAPIClient.HttpClient.PostAsync("/photo/approve", content);
+        var response = await _sharpAPIClient.HttpClient.PostAsync("/api/photo/approve", content);
 
         if (response.IsSuccessStatusCode)
         {
@@ -88,7 +88,7 @@ public class PhotoFacade
             {new StringContent(photoId.ToString()), "photoId"}
         };
 
-        var response = await _sharpAPIClient.HttpClient.PostAsync("/photo/reject", content);
+        var response = await _sharpAPIClient.HttpClient.PostAsync("/api/photo/reject", content);
 
         if (response.IsSuccessStatusCode)
         {
@@ -101,7 +101,7 @@ public class PhotoFacade
 
     public async Task<MyPhotosResponse> GetMyPhotosAsync()
     {
-        var response = await _sharpAPIClient.HttpClient.GetAsync("/photo/my-photos");
+        var response = await _sharpAPIClient.HttpClient.GetAsync("/api/photo/my-photos");
         response.EnsureSuccessStatusCode();
 
         var myPhotos = await response.Content.ReadFromJsonAsync<MyPhotosResponse>();

@@ -18,7 +18,7 @@ public class OrdersFacade
     public async Task<MyOrdersResponse> GetMyOrdersForWeekAsync(int weekId)
     {
         //Fetch for {{host}}/order/my-orders?menuForWeekId=120960615
-        var response = await _sharpAPIClient.HttpClient.GetAsync($"order/my-orders?menuForWeekId={weekId}");
+        var response = await _sharpAPIClient.HttpClient.GetAsync($"/api/order/my-orders?menuForWeekId={weekId}");
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<MyOrdersResponse>();
@@ -66,7 +66,7 @@ public class OrdersFacade
     public async Task<decimal> GetMyBalanceWithoutOrdersAccounted()
     {
         //Post to {{host}}/order/my-balance
-        var response = await _sharpAPIClient.HttpClient.GetAsync("order/my-balance");
+        var response = await _sharpAPIClient.HttpClient.GetAsync("/api/order/my-balance");
 
         response.EnsureSuccessStatusCode();
 

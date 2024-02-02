@@ -18,27 +18,30 @@ public class ApiController : ControllerBase
         _mediator = mediator;
     }
 
-    protected async Task<IActionResult> PerformAuthenticatedActionAsync(string sessionCookie, Func<User, Task<IActionResult>> action)
+    protected async Task<IActionResult> PerformAuthenticatedActionAsync(Func<(User User, string SessionCookie), Task<IActionResult>> action)
     {
+        var sessionCookie = Request.Cookies["session"];
+        if(string.IsNullOrEmpty(sessionCookie))
+            return Unauthorized();
+
         //Auth
         var userResult = await _mediator.Send(new UserBySessionQuery(sessionCookie));
         if (userResult.IsError)
             return Problem(userResult.Errors);
 
-        return await action(userResult.Value);
+        return await action((userResult.Value, sessionCookie));
     }
 
     protected Task<IActionResult> PerformAuthorizedActionAsync(
-        string sessionCookie,
-        Func<User, Task<IActionResult>> action, 
+        Func<(User User, string SessionCookie), Task<IActionResult>> action, 
         params UserRole[] roles)
     {
-        return PerformAuthenticatedActionAsync(sessionCookie, async user =>
+        return PerformAuthenticatedActionAsync(async issuer =>
         {
-            if (!user.Roles.Any(roles.Contains))
+            if (!issuer.User.Roles.Any(roles.Contains))
                 return Unauthorized();
 
-            return await action(user);
+            return await action(issuer);
         });
     }
 

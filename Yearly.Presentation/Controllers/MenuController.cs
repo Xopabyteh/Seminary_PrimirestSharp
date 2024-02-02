@@ -1,5 +1,4 @@
-﻿using MapsterMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Yearly.Application.Menus.Commands;
@@ -31,10 +30,9 @@ public class MenuController : ApiController
     }
 
     [HttpPost("force")]
-    public Task<IActionResult> ForceAvailablePersistMenusFromPrimirest([FromHeader] string sessionCookie)
+    public Task<IActionResult> ForceAvailablePersistMenusFromPrimirest()
     {
         return PerformAuthorizedActionAsync(
-            sessionCookie,
             async _ =>
             {
                 var command = new PersistAvailableMenusCommand();
