@@ -1,9 +1,10 @@
 ﻿using CommunityToolkit.Maui;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.LifecycleEvents;
 using Plugin.LocalNotification;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services.SharpApi;
+using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
 
 namespace Yearly.MauiClient;
@@ -35,7 +36,6 @@ public static class MauiProgram
         });
 #endif
 
-
         builder.Services.AddTransient<ToastService>();
 
         builder.Services.AddTransient<OrderCheckerService>();
@@ -46,6 +46,7 @@ public static class MauiProgram
         //Sharp API
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SharpAPIClient>();
+        builder.Services.AddSingleton<WebRequestProblemService>();
 
         builder.Services.AddTransient<MenusFacade>();
         builder.Services.AddTransient<AuthenticationFacade>();

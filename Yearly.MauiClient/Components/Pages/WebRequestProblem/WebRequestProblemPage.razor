@@ -1,0 +1,25 @@
+@page "/webRequestProblem"
+@layout SingleFullFlexLayout
+
+<header class='mb-400'>
+    <svg width="142" height="142" viewBox="0 0 142 142" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M121.727 121.717C116.999 124.102 111.656 125.444 106 125.444H43C19.804 125.444 1 106.812 1 83.8279C1 64.7786 15 47.1806 36 43.7778C36.7513 41.9915 37.6197 40.2586 38.5957 38.5902M62.4608 18.8901C66.8272 17.3812 71.5017 16.5556 76.3612 16.5556C99.6533 16.5556 118.691 34.6195 120 57.3889C132.361 62.7937 141 76.0579 141 90.4203C141 92.6214 140.797 94.7751 140.409 96.8634M1 1L141 141" stroke="#636363" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1 class='fs-large fw-semi-bold color-black mt-200'>Nastala Chyba</h1>
+    <p class='fs-regular color-black mt-200'>Pokud problÈm p¯etrv·v·, obraùte se prosÌm na Martina, developera Primirest#</p>
+    <a class='fs-regular mt-200' @onclick="Retry">Obnovit</a>
+    <a class='fs-regular mt-200' href='https://www.mujprimirest.cz/'>P¯ejÌt na MujPrimirest</a>
+</header>
+<footer class='mt-400'>
+    <h1 class='fs-small'>Detail</h1>
+    <div class='exception-details'>
+        <span class='fs-tiny'>HttpRequestError:</span>
+        <p class='fs-small mh-100'>@_webRequestProblemService.HttpRequestException.HttpRequestError</p>
+
+        <span class='fs-tiny'>Message:</span>
+        <p class='fs-small mh-100'>@_webRequestProblemService.HttpRequestException.Message</p>
+
+        <span class='fs-tiny'>Stack trace:</span>
+        <p class='fs-small mh-100'>Stack trace: @_webRequestProblemService.HttpRequestException.StackTrace</p>
+    </div>
+</footer>

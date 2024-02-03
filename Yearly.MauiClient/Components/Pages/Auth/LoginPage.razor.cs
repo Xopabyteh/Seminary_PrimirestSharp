@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
 
 namespace Yearly.MauiClient.Components.Pages.Auth;

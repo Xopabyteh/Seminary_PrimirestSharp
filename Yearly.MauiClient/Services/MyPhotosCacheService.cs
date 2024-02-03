@@ -1,5 +1,5 @@
 ﻿using Yearly.Contracts.Photos;
-using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;
 

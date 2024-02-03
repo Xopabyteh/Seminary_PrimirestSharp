@@ -1,6 +1,6 @@
 ﻿using Yearly.Contracts.Menu;
 using Yearly.Contracts.Order;
-using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;
 

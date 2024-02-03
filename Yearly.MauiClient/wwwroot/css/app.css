@@ -179,6 +179,7 @@ a:not([class]) {
 }
 a {
     text-decoration: none;
+    color: var(--clr-primary);
 }
 
 /* Make images easier to work with */

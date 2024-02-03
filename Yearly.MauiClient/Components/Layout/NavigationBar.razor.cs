@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Components.Layout;
 

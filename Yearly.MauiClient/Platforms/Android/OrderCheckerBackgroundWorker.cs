@@ -4,7 +4,6 @@ using Java.Util.Concurrent;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.SharpApiFacades;
 
 namespace Yearly.MauiClient;
 

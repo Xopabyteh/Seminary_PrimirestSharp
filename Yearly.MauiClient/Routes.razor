@@ -1,6 +1,17 @@
 ﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Components.Layout.MainLayout)" />
+        <ComponentExceptionHandler>
+            <ChildContent>
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(Components.Layout.MainLayout)"/>
+            </ChildContent>
+            <ErrorContent>
+                <div style="background-color: yellow; border: 2px dashed black; white-space: pre; font-family: consolas, monospace;">
+                    <div class="received-exception" style="background-color: rgba(255,255,255,0.3); margin: 0.5rem; padding: 0.5rem;">
+                        @context.Message
+                    </div>
+                </div>
+            </ErrorContent>
+        </ComponentExceptionHandler>
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(Components.Layout.MainLayout)">

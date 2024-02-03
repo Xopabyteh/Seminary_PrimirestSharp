@@ -4,7 +4,8 @@ using Yearly.Contracts.Common;
 using Yearly.Contracts.Order;
 using Yearly.MauiClient.Exceptions;
 
-namespace Yearly.MauiClient.Services.SharpApiFacades;
+namespace Yearly.MauiClient.Services.SharpApi.Facades;
+
 
 public class OrdersFacade
 {

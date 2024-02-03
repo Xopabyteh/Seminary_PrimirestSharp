@@ -66,6 +66,8 @@
       <None Remove="Components\Pages\Photo\MyPhotosPage.razor.css" />
       <None Remove="Components\Pages\Photo\PhA_PhotoApprovingPage.razor.css" />
       <None Remove="Components\Pages\Settings\SettingsPage.razor.css" />
+      <None Remove="Components\Pages\WebRequestProblem\NoInternetAccessPage.razor.css" />
+      <None Remove="Components\Pages\WebRequestProblem\WebRequestProblemPage.razor.css" />
       <None Remove="Platforms\Android\Resources\xml\file_paths.xml" />
       <None Remove="Resources\Images\notificationicon.png" />
       <None Remove="Resources\Splash\splash.svg" />
@@ -81,6 +83,8 @@
       <Content Include="Components\Pages\Photo\MyPhotosPage.razor.css" />
       <Content Include="Components\Pages\Photo\PhA_PhotoApprovingPage.razor.css" />
       <Content Include="Components\Pages\Settings\SettingsPage.razor.css" />
+      <Content Include="Components\Pages\WebRequestProblem\NoInternetAccessPage.razor.css" />
+      <Content Include="Components\Pages\WebRequestProblem\WebRequestProblemPage.razor.css" />
     </ItemGroup>
 
     <ItemGroup>

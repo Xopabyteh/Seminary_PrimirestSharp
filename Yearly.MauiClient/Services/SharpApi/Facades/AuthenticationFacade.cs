@@ -3,7 +3,8 @@ using System.Net.Http.Json;
 using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Exceptions;
 
-namespace Yearly.MauiClient.Services.SharpApiFacades;
+namespace Yearly.MauiClient.Services.SharpApi.Facades;
+
 
 public class AuthenticationFacade
 {
@@ -22,6 +23,7 @@ public class AuthenticationFacade
     public async Task<OneOf<LoginResponse, ProblemResponse>> LoginAsync(LoginRequest request)
     {
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync("/api/auth/login", request);
+
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();

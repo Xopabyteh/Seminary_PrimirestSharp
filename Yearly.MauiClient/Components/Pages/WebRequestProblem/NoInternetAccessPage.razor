@@ -1,0 +1,12 @@
+@page "/noInternet"
+@layout SingleFullFlexLayout
+
+<header>
+    <svg width="142" height="122" viewBox="0 0 142 122" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M117.667 61.1739C111.262 54.304 103.418 48.9336 94.6967 45.4454M141 39.4153C131.391 29.111 119.625 21.0552 106.545 15.8229C93.4628 10.5906 79.388 8.30897 65.3236 9.14455M41.8312 85.4717C46.7201 80.229 52.9317 76.4004 59.8121 74.3904C66.6931 72.3796 73.989 72.2552 80.9314 74.041M24.3365 61.1707C31.9009 53.0589 41.449 47.0593 52.0392 43.7629M1 39.4136C8.16157 31.7337 16.5381 25.2847 25.7938 20.3251M10.4951 1L123.295 113.8M71.0019 120.643C66.5966 120.643 63.0257 117.072 63.0257 112.666C63.0257 108.261 66.5966 104.69 71.0019 104.69C75.4071 104.69 78.9781 108.261 78.9781 112.666C78.9781 117.072 75.4071 120.643 71.0019 120.643Z" stroke="#636363" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1 class='fs-large fw-semi-bold color-black mt-200'>Žádný pøístup k internetu</h1>
+    <p class='fs-regular color-black mt-200'>Zkontrolujte prosím, že jste pøipojeni k internetu</p>
+    <a class='fs-regular mt-200' @onclick="Retry">Obnovit</a>
+</header>
+

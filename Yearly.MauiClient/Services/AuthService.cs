@@ -1,5 +1,6 @@
 ﻿using Yearly.Contracts.Authentication;
-using Yearly.MauiClient.Services.SharpApiFacades;
+using Yearly.MauiClient.Services.SharpApi;
+using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;
 

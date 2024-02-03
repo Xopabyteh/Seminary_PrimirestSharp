@@ -1,0 +1,11 @@
+﻿@using Yearly.MauiClient.Services.SharpApi
+@inherits ComponentExceptionHandlerBase
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else if(ErrorContent is not null && DidProcessException)
+{
+    @ErrorContent(CurrentException)
+}

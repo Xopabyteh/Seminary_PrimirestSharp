@@ -1,7 +1,8 @@
 ﻿using System.Net.Http.Json;
 using Yearly.Contracts.Foods;
 
-namespace Yearly.MauiClient.Services.SharpApiFacades;
+namespace Yearly.MauiClient.Services.SharpApi.Facades;
+
 
 public class FoodFacade
 {

@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Exceptions;
 
-namespace Yearly.MauiClient.Services.SharpApiFacades;
+namespace Yearly.MauiClient.Services.SharpApi.Facades;
 
 public class PhotoFacade
 {
