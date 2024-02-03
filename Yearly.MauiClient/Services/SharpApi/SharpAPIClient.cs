@@ -59,12 +59,13 @@ public class SafeConnectionAwareHttpClientHandler : HttpClientHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var deviceNetAccess = Connectivity.Current.NetworkAccess;
-        
-        if (deviceNetAccess != NetworkAccess.Internet)
+#if ANDROID || IOS //Shit doesn't work on windows
+        var canAccessInternet = Connectivity.NetworkAccess == NetworkAccess.Internet;
+        if (!canAccessInternet)
         {
             throw new NoInternetAccessException();
         }
+#endif
 
         var response = await base.SendAsync(request, cancellationToken);
         return response;

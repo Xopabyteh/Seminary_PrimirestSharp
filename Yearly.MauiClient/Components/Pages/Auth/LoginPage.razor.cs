@@ -63,7 +63,7 @@ public partial class LoginPage
             }
             // -> Successful login
 
-            await AuthService.SetSessionAsync(loginResult.AsT0);
+            AuthService.SetSession(loginResult.AsT0);
             NavigationManager.NavigateTo("/orders");
         }
 
@@ -112,7 +112,7 @@ public partial class LoginPage
             await AuthService.SetupAutoLoginAsync(request);
         }
 
-        await AuthService.SetSessionAsync(loginResult.AsT0);
+        AuthService.SetSession(loginResult.AsT0);
         NavigationManager.NavigateTo("/orders");
 
         // No need to reset isLoggingIn anymore..

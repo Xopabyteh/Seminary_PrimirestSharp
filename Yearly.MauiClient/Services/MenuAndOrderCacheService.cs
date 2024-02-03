@@ -15,27 +15,27 @@ public class MenuAndOrderCacheService
     private readonly MenusFacade _menusFacade;
 
     private List<WeeklyMenuDTO> cachedAvailableMenus = new();
-    private readonly TaskCompletionSource<IReadOnlyList<WeeklyMenuDTO>> _menusLoadedTcs = new();
+    private TaskCompletionSource<IReadOnlyList<WeeklyMenuDTO>> menusLoadedTcs = new();
     
     //Due to primirest pagination:
     //Key: weekId, value: Orders
     private ConcurrentDictionary<int, List<OrderDTO>> cachedOrdersForWeeks = new();
-    private readonly TaskCompletionSource<IReadOnlyDictionary<int, List<OrderDTO>>> _ordersLoadedTcs = new();
+    private TaskCompletionSource<IReadOnlyDictionary<int, List<OrderDTO>>> ordersLoadedTcs = new();
 
     public decimal Balance { get; private set; }
-    private readonly TaskCompletionSource<bool> _balanceLoadedTcs = new();
+    private TaskCompletionSource<bool> balanceLoadedTcs = new();
 
     public decimal OrderedFor { get; private set; }
-    private readonly TaskCompletionSource<bool> _orderedForLoadedTcs = new();
+    private TaskCompletionSource<bool> orderedForLoadedTcs = new();
     public event Action? OnOrderedForChanged;
 
-    public Task<IReadOnlyList<WeeklyMenuDTO>> CachedMenusAsync() => _menusLoadedTcs.Task;
-    public Task<IReadOnlyDictionary<int, List<OrderDTO>>> CachedOrdersForWeeksAsync() => _ordersLoadedTcs.Task;
+    public Task<IReadOnlyList<WeeklyMenuDTO>> CachedMenusAsync() => menusLoadedTcs.Task;
+    public Task<IReadOnlyDictionary<int, List<OrderDTO>>> CachedOrdersForWeeksAsync() => ordersLoadedTcs.Task;
     //public Task<decimal> CachedBalanceAsync() => _balanceLoadedTcs.Task;
     //public Task<decimal> CachedOrderedForAsync() => _orderedForLoadedTcs.Task;
 
-    public Task WaitUntilBalanceLoaded() => _balanceLoadedTcs.Task;
-    public Task WaitUntilOrderedForLoaded() => _orderedForLoadedTcs.Task;
+    public Task WaitUntilBalanceLoaded() => balanceLoadedTcs.Task;
+    public Task WaitUntilOrderedForLoaded() => orderedForLoadedTcs.Task;
 
     public MenuAndOrderCacheService(OrdersFacade ordersFacade, MenusFacade menusFacade)
     {
@@ -62,7 +62,7 @@ public class MenuAndOrderCacheService
         // AvailableMenus
         var menuResponse = await _menusFacade.GetAvailableMenusAsync();
         cachedAvailableMenus = menuResponse.WeeklyMenus;
-        _menusLoadedTcs.SetResult(cachedAvailableMenus.AsReadOnly());
+        menusLoadedTcs.SetResult(cachedAvailableMenus.AsReadOnly());
 
         //Orders
         var fillOrdersTasks = cachedAvailableMenus.Select(m => Task.Run(async () =>
@@ -72,11 +72,11 @@ public class MenuAndOrderCacheService
         }));
 
         await Task.WhenAll(fillOrdersTasks);
-        _ordersLoadedTcs.SetResult(cachedOrdersForWeeks.AsReadOnly());
+        ordersLoadedTcs.SetResult(cachedOrdersForWeeks.AsReadOnly());
 
         await LoadBalanceAsync();
         ReCalculateOrderedFor();
-        _orderedForLoadedTcs.SetResult(true); //Signal that orders are loaded
+        orderedForLoadedTcs.SetResult(true); //Signal that orders are loaded
     }
 
     public void NewOrderCreated(int forWeekId, OrderDTO newOrder)
@@ -112,6 +112,21 @@ public class MenuAndOrderCacheService
     {
         //Load "Stav konta"
         Balance = await _ordersFacade.GetMyBalanceWithoutOrdersAccounted();
-        _balanceLoadedTcs.SetResult(true); //Signal that balance is loaded
+        balanceLoadedTcs.SetResult(true); //Signal that balance is loaded
+    }
+
+    public void InvalidateCache()
+    {
+        cachedAvailableMenus.Clear();
+        menusLoadedTcs = new();
+        
+        cachedOrdersForWeeks.Clear();
+        ordersLoadedTcs = new();
+
+        Balance = 0;
+        balanceLoadedTcs = new();
+        
+        OrderedFor = 0;
+        orderedForLoadedTcs = new();
     }
 }

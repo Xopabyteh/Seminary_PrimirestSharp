@@ -8,6 +8,8 @@ namespace Yearly.MauiClient.Components.Common;
 /// A global component "exception handling middleware".
 /// Used to handle Connectivity and API availability exceptions.
 /// Also catches other exceptions and displays an error message.
+///
+/// Only catches exceptions thrown within components. Exceptions from services are not caught.
 /// </summary>
 public class ComponentExceptionHandlerBase : ErrorBoundary
 {

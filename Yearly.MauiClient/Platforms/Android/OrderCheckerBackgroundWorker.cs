@@ -4,6 +4,7 @@ using Java.Util.Concurrent;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using Yearly.MauiClient.Services;
+using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient;
 
@@ -23,7 +24,7 @@ public class OrderCheckerBackgroundWorker : Worker
         Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), "DoWork");
 
         var authService = IPlatformApplication.Current!.Services.GetService<AuthService>()!;
-        var authFacade = IPlatformApplication.Current!.Services.GetService<AuthenticationFacade>()!;
+        var authFacade = IPlatformApplication.Current.Services.GetService<AuthenticationFacade>()!;
 
         if (authService.IsLoggedIn)
         {
@@ -32,7 +33,7 @@ public class OrderCheckerBackgroundWorker : Worker
             // 2. It will mess up authentication
 
             //Reschedule self in 15 minutes
-            var workManager = WorkManager.GetInstance(ApplicationContext)!;
+            var workManager = WorkManager.GetInstance(ApplicationContext);
             var workRequest = (OneTimeWorkRequest) OneTimeWorkRequest.Builder
                 .From<OrderCheckerBackgroundWorker>()
                 .SetInitialDelay(15, TimeUnit.Minutes)!
@@ -56,7 +57,7 @@ public class OrderCheckerBackgroundWorker : Worker
             //Unschedule self
 
             Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), "Auto login not setup, un-scheduling work");
-            WorkManager.GetInstance(ApplicationContext)!.CancelUniqueWork(UniqueWorkerName);
+            WorkManager.GetInstance(ApplicationContext).CancelUniqueWork(UniqueWorkerName);
 
             return Result.InvokeFailure();
         }
@@ -68,13 +69,13 @@ public class OrderCheckerBackgroundWorker : Worker
             //Unschedule self
 
             Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), "Login through Auto Login failed, un-scheduling work");
-            WorkManager.GetInstance(ApplicationContext)!.CancelUniqueWork(UniqueWorkerName);
+            WorkManager.GetInstance(ApplicationContext).CancelUniqueWork(UniqueWorkerName);
 
             return Result.InvokeFailure();
         }
 
         var loginResponse = loginResult.AsT0;
-        authService.SetSessionAsync(loginResponse).GetAwaiter().GetResult();
+        authService.SetSession(loginResponse);
 
         //Check
         CheckIfHasOrdered().GetAwaiter().GetResult();

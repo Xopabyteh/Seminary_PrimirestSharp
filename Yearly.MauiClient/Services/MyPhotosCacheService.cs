@@ -29,4 +29,8 @@ public class MyPhotosCacheService
         _photoFacade = photoFacade;
     }
 
+    public void InvalidateCache()
+    {
+        myPhotos = null;
+    }
 }
