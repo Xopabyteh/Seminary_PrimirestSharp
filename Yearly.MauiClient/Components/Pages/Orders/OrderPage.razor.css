@@ -1,7 +1,9 @@
 ﻿header {
     position: sticky;
-    top: 0;
-
+    
+    top: -1rem;
+    padding-top: 1rem;
+    
     background-color: var(--clr-white);
 }
 

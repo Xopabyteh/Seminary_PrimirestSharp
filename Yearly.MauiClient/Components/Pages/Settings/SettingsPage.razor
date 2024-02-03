@@ -20,17 +20,42 @@
                     }
                     else //0 Photos
                     {
-                        <p class='color-secondary'>0 sdílených fotek</p>
+                        <span class='color-secondary'>0 sdílených fotek</span>
                     }
                 }
                 else
                 {
-                    <p class='placeholder-glow'>---</p>
+                    <span class='placeholder placeholder-glow'>----</span>
+                    <span>sdílených fotek</span>
                 }
             </div>
-            <div class='mt-200 @(isMoneyLoaded ? string.Empty : "placeholder-glow")'>
-                <div>Stav konta: @balance.ToString("F1")<sup class='fs-tiny fw-semi-bold'>Kč</sup></div>
-                <div>Objednáno za: @orderedFor.ToString("F1")<sup class='fs-tiny fw-semi-bold'>Kč</sup></div>
+            <div class='mt-200'>
+                @if (isMoneyLoaded)
+                {
+                    <div>
+                        <span>Stav konta:</span>
+                        <span>@balance.ToString("F1")</span>
+                        <sup class='fs-tiny fw-semi-bold'>Kč</sup>
+                    </div>
+                    <div>
+                        <span>Objednáno za:</span>
+                        <span>@orderedFor.ToString("F1")</span>
+                        <sup class='fs-tiny fw-semi-bold'>Kč</sup>
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        <span>Stav konta:</span>
+                        <span class='placeholder placeholder-glow'>----</span>
+                        <sup class='fs-tiny fw-semi-bold'>Kč</sup>
+                    </div>
+                    <div>
+                        <span>Objednáno za:</span>
+                        <span class='placeholder placeholder-glow'>----</span>
+                        <sup class='fs-tiny fw-semi-bold'>Kč</sup>
+                    </div>
+                }
             </div>
         </div>
     </div>

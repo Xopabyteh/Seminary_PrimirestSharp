@@ -385,6 +385,10 @@ nav a {
 }
 
 /*Placeholders and loading*/
+.placeholder {
+    color: transparent;
+}
+
 .placeholder * {
     opacity: 0;
 }

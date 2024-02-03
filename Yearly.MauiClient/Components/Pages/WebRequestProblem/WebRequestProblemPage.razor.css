@@ -13,3 +13,7 @@ header {
     overflow-wrap: break-word;
     background-color: var(--clr-accent);
 }
+
+.exception-details p {
+    user-select: text;
+}
