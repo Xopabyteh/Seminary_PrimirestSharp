@@ -39,23 +39,17 @@ public partial class LoginPage
         {
             autoLoginChecked = true; //Check the auto login box
             await ToastService.ShowInformationAsync("Pøihlaš se znovu pro nastavení Auto Loginu",  durationMillis: -1);
-            return; //We don't want to load a session and continue,
-                    // but wait for login, so we can setup Auto Login
+            return; //We don't want to try to autologin,
+                    // but wait for user typed login, so we can setup Auto Login
         }
-
-        //Removed
-        ////1. Try get session
-        //var hasSession = await AuthService.TryLoadStoredSessionAsync();
-        //if (hasSession)
-        //{
-        //    //We already have a session, skip login
-        //    NavigationManager.NavigateTo("/orders");
-        //    return;
-        //}
 
         //1. Try get stored credentials
         if (AuthService.AutoLoginStoredCredentials is not null)
         {
+            autoLoginChecked = true;
+            isLoggingIn = true;
+            StateHasChanged();
+
             //Try to Auto Login
             var loginResult = await AuthenticationFacade.LoginAsync(AuthService.AutoLoginStoredCredentials);
             if (loginResult.IsT1)

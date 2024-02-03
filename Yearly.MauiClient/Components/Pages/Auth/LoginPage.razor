@@ -23,7 +23,22 @@
                 <input class='input__checkbox' type='checkbox' value='false' @bind="autoLoginChecked" disabled='@isSettingUpAutoLogin'/>
                 <label class='fs-regular color-secondary'>Auto Login</label>
             </div>
-            <button type='submit' class='button bg-primary mt-200' disabled='@isLoggingIn'>LOGIN</button>
+            @if (isLoggingIn)
+            {
+                <button type='submit' disabled class='button bg-primary mt-200'>
+                    LOGIN
+                    <span class='loader'>
+                        <div class='placeholder-glow'></div>
+                        <div class='placeholder-glow'></div>
+                        <div class='placeholder-glow'></div>
+                    </span>
+                </button>
+            }
+            else
+            {
+                <button type='submit' class='button bg-primary mt-200'>LOGIN</button>
+            }
+
         </div>
     </form>
 

@@ -45,3 +45,19 @@ svg path {
     display: flex;
     flex-direction: column;
 }
+
+.loader {
+    display: inline-flex;
+
+    justify-content: center;
+    gap: 3px;
+}
+
+    .loader > div {
+        width: 6px;
+        height: 6px;
+
+        border-radius: 50%;
+        
+        background-color: var(--clr-white);
+    }
