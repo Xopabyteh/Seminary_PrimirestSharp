@@ -97,6 +97,7 @@
 
     position: relative;
     min-width: 1.5rem;
+    /* ReSharper disable once CssNotResolved */
     aspect-ratio: 1/1;
 
     border: solid 1px var(--clr-secondary);
@@ -128,4 +129,87 @@
 button {
     width: 128px;
     /*height: 2rem;*/
+}
+
+.success-overlay {
+    /*Take up entire screen, ignore main page padding*/
+    position: fixed;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    background-color: #000000; /*Fallback*/
+    background-color: rgba(0, 0, 0, 0.4);
+
+    opacity: 0;
+    transition: opacity .5s ease-in-out;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+    .success-overlay[data-active] {
+        opacity: 1;
+
+        pointer-events: all;
+    }
+
+.success-modal {
+    position: relative;
+    top: 20%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+
+    margin-inline: auto;
+    padding: 2rem;
+
+    background-color: var(--clr-white);
+    box-shadow: 1px 2px 4px 0 #000102; /*Fallback*/
+    box-shadow: 1px 2px 4px 0 rgba(0, 1, 2, 0.25);
+
+    border-radius: 1rem;
+
+    width: 280px;
+}
+
+    .success-modal[data-active] {
+        animation: modal-appear .8s ease-in-out;
+    }
+
+    .success-modal[data-fade] {
+        animation: modal-disappear .8s ease-in-out;
+    }
+
+@keyframes modal-appear {
+    0% {
+        transform: translateX(-500%) skewX(27deg) scaleX(0.9);
+    }
+
+    70% {
+        transform: translateX(100px) skewX(0) scaleX(1.2);
+    }
+
+    100% {
+        transform: translateX(0px) skewX(0) scaleX(1);
+    }
+}
+
+@keyframes modal-disappear {
+    0% {
+        transform: translateX(0px) skewX(0) scaleX(1);
+    }
+
+    30% {
+        transform: translateX(100px) skewX(0) scaleX(.9);
+    }
+
+    100% {
+        transform: translateX(-500%) skewX(27deg) scaleX(1.2);
+    }
 }

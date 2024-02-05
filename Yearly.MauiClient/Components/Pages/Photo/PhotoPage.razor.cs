@@ -7,6 +7,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 using Yearly.Contracts.Menu;
+using Yearly.MauiClient.Components.Common;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
@@ -19,7 +20,6 @@ public partial class PhotoPage
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
     [Inject] private PhotoFacade _photoFacade { get; set; } = null!;
     [Inject] private ToastService _toastService { get; set; } = null!;
-
     [Inject] private DateTimeProvider _dateTimeProvider { get; set; } = null!;
 
     private DailyMenuDTO? todayMenu;
@@ -31,6 +31,11 @@ public partial class PhotoPage
     private MediaFile? capturedPhotoRaw;
     private MemoryStream? processedPhotoStream;
     private string? capturedPhotoDisplayData = "";
+
+    private bool showSuccessModal = false;
+    private bool fadeModalAway = false;
+
+    private GoBackButton goBackButton = null!; //@ref
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,6 +68,12 @@ public partial class PhotoPage
             selectedFoodId = todayOrder.SharpFoodId;
         }
 
+        StateHasChanged();
+    }
+
+    private void SelectFoodId(Guid foodId) //Called by the card
+    {
+        selectedFoodId = foodId;
         StateHasChanged();
     }
 
@@ -152,7 +163,7 @@ public partial class PhotoPage
         StateHasChanged();
     }
 
-    private async void TryPublishPhoto()
+    private async Task TryPublishPhoto()
     {
         //Validation
         if (processedPhotoStream is null)
@@ -169,14 +180,35 @@ public partial class PhotoPage
             processedPhotoStream,
             capturedPhotoRaw!.OriginalFilename);
 
-        if (result is null)
+        if (result is not null)
         {
-            //No error
-            await _toastService.ShowSuccessAsync("Yipee!"); //Todo: replace with something more amazing
+            //Error, show it
+            await _toastService.ShowErrorAsync(result.Value.Title);
             return;
         }
 
-        //Error, show it
-        await _toastService.ShowErrorAsync(result.Value.Title);
+        //No error
+        //await _toastService.ShowSuccessAsync("Yipee!"); //Todo: replace with something more amazing
+        showSuccessModal = true;
+        fadeModalAway = false;
+        StateHasChanged();
+    }
+
+    private void OnAddAnotherPhotoClicked()
+    {
+        showSuccessModal = false;
+        fadeModalAway = true;
+
+        capturedPhotoRaw = null;
+        processedPhotoStream = null;
+        capturedPhotoDisplayData = null;
+        
+        selectedFoodId = default;
+        StateHasChanged();
+    }
+
+    private Task GoBack()
+    {
+        return goBackButton.GoBack();
     }
 }

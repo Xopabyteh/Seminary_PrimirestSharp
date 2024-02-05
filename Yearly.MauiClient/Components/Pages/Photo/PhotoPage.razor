@@ -1,7 +1,7 @@
 ﻿@page "/photo"
 @layout SingleFullFlexLayout
 
-<GoBackButton Text='Přidat Fotku'/>
+<GoBackButton Text='Přidat Fotku' @ref="goBackButton"/>
 
 <div class='container'>
     <div class='photo-holder'>
@@ -23,13 +23,13 @@
             </div>
         }
     </div>
-    <div class='card-holder'>
+    <div class='card-holder mv-300'>
         @if (todayMenu is not null)
         {
             <InputRadioGroup @bind-Value='selectedFoodId'>
                 @foreach (var food in todayMenu!.Foods)
                 {
-                    <div class='card bg-accent'>
+                    <div class='card bg-accent' @onclick="() => SelectFoodId(food.FoodId)">
                         <InputRadio Value='food.FoodId'/>
                         <p>@food.Name</p>
                     </div>
@@ -38,4 +38,13 @@
         }
     </div>
     <button class='button bg-success' @onclick="TryPublishPhoto">Poslat</button>
+</div>
+<div class='success-overlay' data-active='@(showSuccessModal)' data-fade='@(fadeModalAway)'>
+    <div class='success-modal' data-active='@(showSuccessModal)' data-fade='@(fadeModalAway)'>
+        <img width='128' height='128' src='svg/heart-love-fork.svg'/>
+        <h1 class='fs-large fw-bold color-black'>DÍKY</h1>
+        <p class='fs-regular color-secondary fw-regular'>za tvůj příspěvek, jsi úžasný a  přispíváš tiím všem</p>
+        <button class='mt-400 button bg-success' @onclick="GoBack">Zpět</button>
+        <a class='mt-200 color-primary fs-regular' @onclick="OnAddAnotherPhotoClicked">Přidat další fotku</a>
+    </div>
 </div>

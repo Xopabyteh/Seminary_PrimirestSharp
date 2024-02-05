@@ -10,8 +10,8 @@
     background-color: var(--clr-white);
 }
 
-a {
-    padding-right: 2rem;
+svg {
+    margin-right: 2rem;
     transform: translateY(-2px);
 }
 

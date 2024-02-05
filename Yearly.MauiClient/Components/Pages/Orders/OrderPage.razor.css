@@ -1,5 +1,6 @@
 ﻿header {
     position: sticky;
+    z-index: 5;
     
     top: -1rem;
     padding-top: 1rem;
