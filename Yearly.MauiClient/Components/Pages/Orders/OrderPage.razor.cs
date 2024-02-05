@@ -7,8 +7,9 @@ namespace Yearly.MauiClient.Components.Pages.Orders;
 
 public partial class OrderPage
 {
-    [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
-    [Inject] private IJSRuntime JS { get; set; } = null!;
+    [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
+    [Inject] private IJSRuntime _js { get; set; } = null!;
+    [Inject] private DateTimeProvider _dateTimeProvider { get; set; } = null!;
 
     private IReadOnlyList<WeeklyMenuDTO> weeklyMenus = Array.Empty<WeeklyMenuDTO>();
     private bool weeklyMenuDTOsLoaded = false; //Not the components themselves, but the DTOs.
@@ -24,13 +25,13 @@ public partial class OrderPage
             return;
 
         //Get weekly menus
-        weeklyMenus = await MenuAndOrderCacheService.CachedMenusAsync();
+        weeklyMenus = await _menuAndOrderCacheService.CachedMenusAsync();
         for (int i = 0; i < weeklyMenus.Count; i++)
         {
             WeeklyMenuDTO weeklyMenuDTO = weeklyMenus[i];
             var menuStartDate = weeklyMenuDTO.DailyMenus.Min(dm => dm.Date);
             var menuEndDate = weeklyMenuDTO.DailyMenus.Max(dm => dm.Date);
-            weeklyMenuSelectables.Add(weeklyMenuDTO, new WeeklyMenuSelectableVM(menuStartDate, menuEndDate, i));
+            weeklyMenuSelectables.Add(weeklyMenuDTO, new WeeklyMenuSelectableVM(menuStartDate, menuEndDate));
         }
 
         if (weeklyMenus.Count == 0)
@@ -67,7 +68,7 @@ public partial class OrderPage
         //If no matches, just pick the first one
 
         //Select based on saturday, sunday
-        var today = DateTime.Today;
+        var today = _dateTimeProvider.Today;
         if (today.DayOfWeek == DayOfWeek.Saturday || today.DayOfWeek == DayOfWeek.Sunday)
         {
             var dayOffset = today.DayOfWeek == DayOfWeek.Saturday ? 1 : 0;
@@ -134,9 +135,9 @@ public partial class OrderPage
 
         // Reselect menu and scroll to top
         selectedWeeklyMenu = menu;
-        await JS.InvokeVoidAsync("window.scrollTo", 0, 0);
+        await _js.InvokeVoidAsync("window.scrollTo", 0, 0);
         CloseDatePicker();
     }
 
-    readonly record struct WeeklyMenuSelectableVM(DateTime StartDate, DateTime EndDate, int OrderInListView);
+    readonly record struct WeeklyMenuSelectableVM(DateTime StartDate, DateTime EndDate);
 }

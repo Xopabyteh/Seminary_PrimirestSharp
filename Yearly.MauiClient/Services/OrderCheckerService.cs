@@ -8,11 +8,13 @@ public class OrderCheckerService
 {
     private readonly MenusFacade _menusFacade;
     private readonly OrdersFacade _ordersFacade;
+    private readonly DateTimeProvider _dateTimeProvider;
 
-    public OrderCheckerService(MenusFacade menusFacade, OrdersFacade ordersFacade)
+    public OrderCheckerService(MenusFacade menusFacade, OrdersFacade ordersFacade, DateTimeProvider dateTimeProvider)
     {
         _menusFacade = menusFacade;
         _ordersFacade = ordersFacade;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<List<DailyMenuDTO>> GetDaysWithoutOrder()
@@ -128,7 +130,7 @@ public class OrderCheckerService
             return GetEmpty(); // No menus
 
 
-        var today = DateTime.Today;
+        var today = _dateTimeProvider.Today;
 
         //Easy case: (N = now, - no action, # check day)
         //M T W T F S W
