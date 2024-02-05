@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Components;
-using Plugin.Media;
 using Plugin.Media.Abstractions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 using Yearly.Contracts.Menu;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace Yearly.MauiClient.Components.Pages.Photo;
 
@@ -22,8 +25,9 @@ public partial class PhotoPage
     //Model
     private Guid selectedFoodId = default;
 
-    private MediaFile? capturedPhoto;
-    private string capturedPhotoDisplayData = "";
+    private MediaFile? capturedPhotoRaw;
+    private MemoryStream? processedPhotoStream;
+    private string? capturedPhotoDisplayData = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,59 +64,95 @@ public partial class PhotoPage
     }
 
     /// <summary>
-    /// Set the <see cref="capturedPhoto"/> to the photo taken by the user along with <see cref="capturedPhotoDisplayData"/> and call state has changed
+    /// Set the <see cref="processedPhotoStream"/> to the photo taken by the user along with <see cref="capturedPhotoDisplayData"/> and call state has changed
     /// </summary>
     /// <returns></returns>
     private async Task CapturePhoto()
     {
-        async Task<string> DisplayDataFrom(MediaFile photo)
+        //async Task<string> DisplayDataFrom(MediaFile photo)
+        //{
+        //    var imageBytes = await File.ReadAllBytesAsync(photo.Path);
+        //    return $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
+        //}
+        async Task<string> DisplayDataFrom(Stream photoStream)
         {
-            var imageBytes = await File.ReadAllBytesAsync(photo.Path);
+            var imageBytes = new byte[photoStream.Length];
+            _ = await photoStream.ReadAsync(imageBytes);
             return $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
         }
 
-#if DEBUG
+#if DEBUG && WINDOWS
         //Take a mock image from documents if on windows and in debug
         //So we don't have to deal with camera stuff on windows
-        if (DeviceInfo.Platform == DevicePlatform.WinUI)
-        {
-            //Mock image from documents
-            var mockImagePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "mock.jpg");
-            var stream = File.OpenRead(mockImagePath);
 
-            capturedPhoto = new MediaFile(
-                mockImagePath,
-                () => stream,
-                originalFilename: "mock.jpg");
+        //Mock image from documents
+        var mockImagePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "mock.jpg");
+        var stream = File.OpenRead(mockImagePath);
 
-            capturedPhotoDisplayData = await DisplayDataFrom(capturedPhoto);
+        var newPhoto = new MediaFile(
+            mockImagePath,
+            () => stream,
+            originalFilename: "mock.jpg");
 
-            return;
-        }
+        // ReSharper disable once RedundantJumpStatement [rev: only applies to windows debug scope]
+        goto skipPhotoTake; //A little dirty, but it's only dev code anyway
+#else
+    // Android/IOS or not debug
+        
+    var newPhoto = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
+    {
+        AllowCropping = true,
+        DefaultCamera = CameraDevice.Front,
+        PhotoSize = PhotoSize.MaxWidthHeight,
+        MaxWidthHeight = 1024,
+        Name = "photo.jpg",
+    });
+
+    if (newPhoto is null)
+        return;
+
 #endif
-        var newPhoto = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
-        {
-            AllowCropping = true,
-            DefaultCamera = CameraDevice.Front,
-            PhotoSize = PhotoSize.MaxWidthHeight,
-            MaxWidthHeight = 1024,
-            Name = "photo.jpg",
-        });
-
-        if (newPhoto is null)
-            return;
+#if DEBUG && WINDOWS
+    skipPhotoTake:
+#endif
 
         //Set new photo
-        capturedPhoto = newPhoto;
-        capturedPhotoDisplayData = await DisplayDataFrom(capturedPhoto);
+        capturedPhotoRaw = newPhoto;
 
+        //Crop photo from sides so it's 1:1 aspect ratio
+
+        //Load to stream
+        var rawPhotoReadStream = newPhoto.GetStreamWithImageRotatedForExternalStorage();
+        using var photoStreamForMutation = new MemoryStream();
+        await rawPhotoReadStream.CopyToAsync(photoStreamForMutation);
+        photoStreamForMutation.Position = 0; //Set for reading
+
+        //Mutate
+        var image = await Image.LoadAsync(photoStreamForMutation);
+        var minDimension = Math.Min(image.Width, image.Height);
+        var cropRectangle = new Rectangle(
+            (image.Width - minDimension) / 2,
+            (image.Height - minDimension) / 2,
+            minDimension,
+            minDimension);
+
+        image.Mutate(x => x.Crop(cropRectangle));
+
+        //Save
+        processedPhotoStream = new();
+        var imageEncoder = new JpegEncoder();
+        await image.SaveAsync(processedPhotoStream , imageEncoder);
+
+        //Display data
+        processedPhotoStream.Position = 0; //Set for reading
+        capturedPhotoDisplayData = await DisplayDataFrom(processedPhotoStream);
         StateHasChanged();
     }
 
     private async void TryPublishPhoto()
     {
         //Validation
-        if (capturedPhoto is null)
+        if (processedPhotoStream is null)
             return;
 
         if (selectedFoodId == default)
@@ -120,7 +160,12 @@ public partial class PhotoPage
 
 
         //Publish
-        var result = await _photoFacade.PublishPhotoAsync(selectedFoodId, capturedPhoto);
+        processedPhotoStream.Position = 0; //Set for reading
+        var result = await _photoFacade.PublishPhotoAsync(
+            selectedFoodId,
+            processedPhotoStream,
+            capturedPhotoRaw!.OriginalFilename);
+
         if (result is null)
         {
             //No error

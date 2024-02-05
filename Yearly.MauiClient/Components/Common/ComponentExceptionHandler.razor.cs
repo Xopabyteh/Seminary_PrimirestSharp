@@ -35,5 +35,9 @@ public class ComponentExceptionHandlerBase : ErrorBoundary
 
         DidProcessException = true;
         StateHasChanged();
+
+#if DEBUG
+        throw exception;
+#endif
     }
 }

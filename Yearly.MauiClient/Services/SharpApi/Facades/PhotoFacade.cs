@@ -14,12 +14,12 @@ public class PhotoFacade
         _sharpAPIClient = sharpAPIClient;
     }
 
-    public async Task<ProblemResponse?> PublishPhotoAsync(Guid foodId, MediaFile photo)
+    public async Task<ProblemResponse?> PublishPhotoAsync(Guid foodId, Stream photoDataStream, string originalPhotoFileName)
     {
         //Convert photo to IFormFile
         var content = new MultipartFormDataContent
         {
-            {new StreamContent(photo.GetStream()), "photo", photo.OriginalFilename},
+            {new StreamContent(photoDataStream), "photo", originalPhotoFileName},
             {new StringContent(foodId.ToString()), "foodId"}
         };
 

@@ -1,17 +1,11 @@
 ﻿@page "/photo"
-@using Yearly.MauiClient.Services
-@using Yearly.MauiClient.Services.SharpApi.Facades
-@using Yearly.MauiClient.Services.Toast
-@using Yearly.Contracts.Menu
-@using Plugin.Media.Abstractions
-@using Plugin.Media
 @layout SingleFullFlexLayout
 
 <GoBackButton Text='Přidat Fotku'/>
 
 <div class='container'>
     <div class='photo-holder'>
-        @if (capturedPhoto is not null)
+        @if (processedPhotoStream is not null)
         {
             <img class='photo' src=@capturedPhotoDisplayData/>
             <div class='photo__overlay bg-white' @onclick="CapturePhoto">
@@ -45,6 +39,3 @@
     </div>
     <button class='button bg-success' @onclick="TryPublishPhoto">Poslat</button>
 </div>
-
-
-
