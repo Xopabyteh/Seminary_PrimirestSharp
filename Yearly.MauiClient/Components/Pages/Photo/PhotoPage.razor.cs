@@ -167,11 +167,18 @@ public partial class PhotoPage
     {
         //Validation
         if (processedPhotoStream is null)
+        {
+            //No photo
+            await _toastService.ShowErrorAsync("Nejdøív udìlej fotku");
             return;
+        }
 
         if (selectedFoodId == default)
+        {
+            //No food selected
+            await _toastService.ShowErrorAsync("Nejdøív vyber jídlo");
             return;
-
+        }
 
         //Publish
         processedPhotoStream.Position = 0; //Set for reading
@@ -188,7 +195,6 @@ public partial class PhotoPage
         }
 
         //No error
-        //await _toastService.ShowSuccessAsync("Yipee!"); //Todo: replace with something more amazing
         showSuccessModal = true;
         fadeModalAway = false;
         StateHasChanged();
