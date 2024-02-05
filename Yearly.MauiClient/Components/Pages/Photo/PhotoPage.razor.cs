@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components;
+#if ANDROID || IOS
+using Plugin.Media;
+#endif
 using Plugin.Media.Abstractions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;

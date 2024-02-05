@@ -1,5 +1,4 @@
-﻿using Plugin.Media.Abstractions;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Exceptions;
 
@@ -14,12 +13,12 @@ public class PhotoFacade
         _sharpAPIClient = sharpAPIClient;
     }
 
-    public async Task<ProblemResponse?> PublishPhotoAsync(Guid foodId, Stream photoDataStream, string originalPhotoFileName)
+    public async Task<ProblemResponse?> PublishPhotoAsync(Guid foodId, Stream photoDataStream, string photoFileName)
     {
         //Convert photo to IFormFile
         var content = new MultipartFormDataContent
         {
-            {new StreamContent(photoDataStream), "photo", originalPhotoFileName},
+            {new StreamContent(photoDataStream), "photo", photoFileName},
             {new StringContent(foodId.ToString()), "foodId"}
         };
 
