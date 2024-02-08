@@ -173,39 +173,60 @@ public partial class PhotoPage
 
     private async Task TryPublishPhoto()
     {
+        if (!await ValidateModel())
+            return;
+
+        //Initialize stream of data to send
+        processedPhotoStream!.Position = 0; //Set for reading
+        var sendStream = new MemoryStream();
+        await processedPhotoStream.CopyToAsync(sendStream);
+
+        // Show thank you modal assuming publish will result in success
+        showSuccessModal = true;
+        fadeModalAway = false;
+        StateHasChanged();
+
+        //Publish in background, hoping it goes right (it should [lol])
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        Task.Run(async () =>
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        {
+            sendStream!.Position = 0; //Set for reading
+            var result = await _photoFacade.PublishPhotoAsync(
+                selectedFoodId,
+                sendStream,
+                capturedPhotoRaw!.OriginalFilename);
+
+            if (result is not null)
+            {
+                //Error, show it
+                await _toastService.ShowErrorAsync(result.Value.Title);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Tells the user what to do if the model is invalid via toasters
+    /// </summary>
+    /// <returns>Whether the model is valid</returns>
+    private async Task<bool> ValidateModel()
+    {
         //Validation
         if (processedPhotoStream is null)
         {
             //No photo
             await _toastService.ShowErrorAsync("Nejdøív udìlej fotku");
-            return;
+            return false;
         }
 
         if (selectedFoodId == default)
         {
             //No food selected
             await _toastService.ShowErrorAsync("Nejdøív vyber jídlo");
-            return;
+            return false;
         }
 
-        //Publish
-        processedPhotoStream.Position = 0; //Set for reading
-        var result = await _photoFacade.PublishPhotoAsync(
-            selectedFoodId,
-            processedPhotoStream,
-            capturedPhotoRaw!.OriginalFilename);
-
-        if (result is not null)
-        {
-            //Error, show it
-            await _toastService.ShowErrorAsync(result.Value.Title);
-            return;
-        }
-
-        //No error
-        showSuccessModal = true;
-        fadeModalAway = false;
-        StateHasChanged();
+        return true;
     }
 
     private void OnAddAnotherPhotoClicked()
