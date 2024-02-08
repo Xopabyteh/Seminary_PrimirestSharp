@@ -86,6 +86,8 @@
 
     .card p {
         color: var(--clr-secondary);
+
+        transition: color 0.2s ease-in-out;
     }
 
     .card:has(input[type="radio"]:checked) p {
@@ -106,24 +108,33 @@
 
 }
 
+    ::deep input[type="radio"]::after {
+        content: "";
+
+        display: block;
+        position: absolute;
+
+        top: 50%;
+        left: 50%;
+
+        width: 0;
+        height: 0;
+
+        transform: translate(-50%, -50%);
+        background-color: var(--clr-primary);
+
+        border-radius: 50%;
+
+        transition: width 0.2s ease-in-out, 
+                    height 0.2s ease-in-out;
+    }
+
 ::deep input[type="radio"]:checked {
     border-color: var(--clr-primary);
 }
     ::deep input[type="radio"]:checked::after {
-        content: "";
-        display: block;
-
-        position: absolute;
-
         width: 0.75rem;
         height: 0.75rem;
-        
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
-        background-color: var(--clr-primary);
-        border-radius: 50%;
     }
 
 button {
