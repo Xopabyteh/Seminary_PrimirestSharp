@@ -1,9 +1,26 @@
 ﻿@for (var i = 0; i < WeeklyMenuDTO.DailyMenus.Count; i++)
 {
     var dailyMenu = WeeklyMenuDTO.DailyMenus[i];
-    <DailyMenu 
-        Parent='@this' 
-        DailyMenuDTO='@dailyMenu' 
-        WeekOrders='@orders' 
-        WeekOrdersLoaded='@ordersLoaded'/>
+    @if (SelectedDailyMenu == dailyMenu)
+    {
+        //Selected daily menu
+        <section class='mv-300 daily-menu__section' @ref=selectedDailyMenuSection>
+            <DailyMenu
+                Parent='@this' 
+                DailyMenuDTO='@dailyMenu' 
+                WeekOrders='@orders' 
+                WeekOrdersLoaded='@ordersLoaded'/>
+        </section>
+    }
+    else
+    {
+        //Not selected daily menu
+        <section class='mv-300 daily-menu__section'>
+            <DailyMenu Parent='@this'
+                       DailyMenuDTO='@dailyMenu'
+                       WeekOrders='@orders'
+                       WeekOrdersLoaded='@ordersLoaded' />
+        </section>
+    }
+
 }

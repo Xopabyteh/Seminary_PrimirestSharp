@@ -14,8 +14,9 @@ public partial class OrderPage
     private IReadOnlyList<WeeklyMenuDTO> weeklyMenus = Array.Empty<WeeklyMenuDTO>();
     private bool weeklyMenuDTOsLoaded = false; //Not the components themselves, but the DTOs.
                                                //Also implies that selected weeklyMenu and dailyMenu are loaded
-    private WeeklyMenuDTO selectedWeeklyMenu;
-    private DailyMenuDTO selectedDailyMenu;
+                                               
+    private WeeklyMenuDTO? selectedWeeklyMenu;
+    private DailyMenuDTO? selectedDailyMenu;
 
     private Dictionary<WeeklyMenuDTO, WeeklyMenuSelectableVM> weeklyMenuSelectables = new(3);
     private bool datePickerOpen = false;
@@ -43,21 +44,23 @@ public partial class OrderPage
         }
 
         InitialSelectWeeklyAndDailyMenu();
-
         weeklyMenuDTOsLoaded = true;
 
-        //Scroll to top smoothly
-
-
         StateHasChanged();
+
+        //We've drawn the page, try to scroll to today's menu
+        //Todo:
     }
 
     /// <summary>
     /// Sets the selected weekly and daily menu for when the user first comes in
-    /// based on what i think are good UX rules
+    /// based on what i think are good UX rules.
     /// </summary>
     private void InitialSelectWeeklyAndDailyMenu()
     {
+        if (weeklyMenus.Count == 0)
+            throw new WeeklyMenusAreEmptyException(); //Don't call this method if there are no weekly menus
+
         //Try to select the best UX weekly menu 
 
         //If it's saturday or sunday, try to select a menu for the next week:
@@ -78,11 +81,10 @@ public partial class OrderPage
             selectedWeeklyMenu = weeklyMenus.FirstOrDefault(wm =>
                 wm.DailyMenus.Any(
                     dm => dm.Date > saturdayDate && dm.Date <= saturdayDate.AddDays(5)));
-            selectedDailyMenu = selectedWeeklyMenu.DailyMenus.First();
         }
 
         //Select based on day within this week
-        if (selectedWeeklyMenu == default)
+        if (selectedWeeklyMenu is null)
         {
             //We didn't select based on it being saturday or sunday
             //Try to pick one from within this week
@@ -102,12 +104,9 @@ public partial class OrderPage
         }
 
         //Select fallback first
-// ReSharper disable once InvertIf
-        if (selectedWeeklyMenu == default)
-        {
-            selectedWeeklyMenu = weeklyMenus.First();
-            selectedDailyMenu = selectedWeeklyMenu.DailyMenus.First();
-        }
+        selectedWeeklyMenu ??= weeklyMenus.First();
+        selectedDailyMenu ??= selectedWeeklyMenu.Value.DailyMenus.FirstOrDefault(); //I hope it never comes to the day, where there is a weekly menu with 0 daily menus,
+                                                                                    //but oh lord, it's primirest, so anything can happen
     }
 
     private void OpenDatePicker()
@@ -122,6 +121,12 @@ public partial class OrderPage
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Called through date picker
+    /// Sets selected menu and scrolls to top
+    /// </summary>
+    /// <param name="menu"></param>
+    /// <returns></returns>
     private async ValueTask SelectMenu(WeeklyMenuDTO menu)
     {
         if (!datePickerOpen)
@@ -140,4 +145,6 @@ public partial class OrderPage
     }
 
     readonly record struct WeeklyMenuSelectableVM(DateTime StartDate, DateTime EndDate);
+
+    class WeeklyMenusAreEmptyException : Exception;
 }

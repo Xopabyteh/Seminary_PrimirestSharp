@@ -1,20 +1,20 @@
-﻿<section class='mv-300'>
-    <h2 class='fs-large fw-semi-bold color-black'>@(DailyMenuDTO.Date.ToString("dddd - dd.MM.").ToUpper())</h2>
-    @for (var i = 0; i < DailyMenuDTO.Foods.Count; i++)
-    {
-        var food = DailyMenuDTO.Foods[i];
-        <FoodBlock
-            Food='@food'
-            IsOrdered='@(order?.SharpFoodId == food.FoodId)'
-            IsLoaded='@WeekOrdersLoaded'
-            OnOrderClicked='HandleFoodOnOrderClicked'/>
+﻿<h2 class='fs-large fw-semi-bold color-black'>@(DailyMenuDTO.Date.ToString("dddd - dd.MM.").ToUpper())</h2>
+@for (var i = 0; i < DailyMenuDTO.Foods.Count; i++)
+{
+    var food = DailyMenuDTO.Foods[i];
+    <FoodBlock
+        Food='@food'
+        IsOrdered='@(order?.SharpFoodId == food.FoodId)'
+        IsLoaded='@WeekOrdersLoaded'
+        OnOrderClicked='HandleFoodOnOrderClicked'/>
 
-        //Don't show br for the last one
-        if (i != DailyMenuDTO.Foods.Count - 1)
-        {
-            <br/>
-        }
+    //Don't show br for the last one
+    if (i != DailyMenuDTO.Foods.Count - 1)
+    {
+        <br/>
     }
-</section>
+}
+
+
 
 
