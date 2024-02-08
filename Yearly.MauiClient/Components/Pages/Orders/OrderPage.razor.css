@@ -74,6 +74,22 @@
     gap: 1rem;
 }
 
+.container__loading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-direction: column;
+    gap: 0.5rem;
+
+}
+
 ::deep .daily-menu__section {
     scroll-margin: 5rem; /*Header height*/
 }

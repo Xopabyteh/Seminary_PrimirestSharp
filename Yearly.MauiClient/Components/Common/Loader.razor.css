@@ -1,0 +1,12 @@
+.loader__dots {
+    display: inline-flex;
+    justify-content: center;
+    gap: 3px;
+}
+
+.loader__dots > div {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--dot-color);
+}

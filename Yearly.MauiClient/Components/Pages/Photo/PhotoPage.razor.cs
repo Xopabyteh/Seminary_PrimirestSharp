@@ -37,6 +37,8 @@ public partial class PhotoPage
 
     private GoBackButton goBackButton = null!; //@ref
 
+    private bool canTakePhotoToday = true;
+    private bool optionsLoaded = false;
     protected override async Task OnInitializedAsync()
     {
         // Get todays daily menu
@@ -44,23 +46,27 @@ public partial class PhotoPage
 
         var availableMenus = await _menuAndOrderCacheService.CachedMenusAsync();
 
-        var todayWeek = availableMenus.FirstOrDefault(m => m.DailyMenus.Any(d => d.Date == today));
-        if (todayWeek == default)
+        var todayWeeklyMenu = availableMenus.FirstOrDefault(m => m.DailyMenus.Any(d => d.Date == today));
+        if (todayWeeklyMenu == default)
         {
-            //Todo:
+            //No weekly menu today
+            canTakePhotoToday = false;
+            StateHasChanged();
             return;
         }
 
-        todayMenu = todayWeek.DailyMenus.FirstOrDefault(d => d.Date == today);
+        todayMenu = todayWeeklyMenu.DailyMenus.FirstOrDefault(d => d.Date == today);
         if (todayMenu is null)
         {
-            //Todo:
+            //No daily menu today
+            canTakePhotoToday = false;
+            StateHasChanged();
             return;
         }
 
         // Preselect our ordered item
         var ordersForWeeks = await _menuAndOrderCacheService.CachedOrdersForWeeksAsync();
-        var orders = ordersForWeeks[todayWeek.PrimirestMenuId];
+        var orders = ordersForWeeks[todayWeeklyMenu.PrimirestMenuId];
         var todayOrder = orders.FirstOrDefault(o => todayMenu.Foods.Any(f => f.FoodId == o.SharpFoodId));
 
         if (todayOrder is not null)
@@ -68,6 +74,8 @@ public partial class PhotoPage
             selectedFoodId = todayOrder.SharpFoodId;
         }
 
+        canTakePhotoToday = true;
+        optionsLoaded = true;
         StateHasChanged();
     }
 

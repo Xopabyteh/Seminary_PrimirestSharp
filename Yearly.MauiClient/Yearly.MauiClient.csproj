@@ -57,6 +57,7 @@
 
     <ItemGroup>
       <None Remove="Components\Common\GoBackButton.razor.css" />
+      <None Remove="Components\Common\Loader.razor.css" />
       <None Remove="Components\Common\PopupAlert.razor.css" />
       <None Remove="Components\Common\ToggleSwitch.razor.css" />
       <None Remove="Components\Pages\Food\Adm_FoodSimilarityTable.razor.css" />
@@ -75,6 +76,7 @@
 
     <ItemGroup>
       <Content Include="Components\Common\GoBackButton.razor.css" />
+      <Content Include="Components\Common\Loader.razor.css" />
       <Content Include="Components\Common\PopupAlert.razor.css" />
       <Content Include="Components\Common\ToggleSwitch.razor.css" />
       <Content Include="Components\Pages\Food\Adm_FoodSimilarityTable.razor.css" />

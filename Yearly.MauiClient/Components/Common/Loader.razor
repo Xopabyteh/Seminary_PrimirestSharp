@@ -1,0 +1,10 @@
+<span class='loader__dots' style='--dot-color: @DotColor'>
+    <div class='placeholder-glow'></div>
+    <div class='placeholder-glow'></div>
+    <div class='placeholder-glow'></div>
+</span>
+
+@code
+{
+    [Parameter] public string DotColor { get; set; } = "var(--clr-white)";
+}

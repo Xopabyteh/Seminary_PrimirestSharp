@@ -1,7 +1,7 @@
 /*some nav properties assigned in app.css due to idk wtf blazor is tripping*/
 
 #navbar {
-    position: sticky;
+    position: fixed;
     z-index: 100;
 
     bottom: 0;
