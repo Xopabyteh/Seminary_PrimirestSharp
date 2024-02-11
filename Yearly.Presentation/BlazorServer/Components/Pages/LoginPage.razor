@@ -1,0 +1,21 @@
+﻿@page "/login"
+@layout NoMenuLayout
+
+<div class="container mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+            <h1>Login</h1>
+            <div class="card px-5 py-5" id="form1">
+                <EditForm Model='model'>
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+
+                    <HxInputText Label="Username" @bind-Value="@model.Username" Placeholder="ICOM"/>
+                    <HxInputText Type='InputType.Password' Label="Password" @bind-Value="@model.Password" Placeholder="****"/>
+
+                    <HxSubmit Text="Sign in" Color="ThemeColor.Primary" OnValidClick="SubmitLogin"/>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="BlazorServer\Components\Layout\MainLayout.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Yearly.Application\Yearly.Application.csproj" />
     <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
@@ -27,6 +31,7 @@
     <Folder Include="Docs\Requests\" />
     <Folder Include="Http\" />
     <Folder Include="Mappings\" />
+    <Folder Include="wwwroot\NewFolder\" />
     <Folder Include="wwwroot\photos\" />
   </ItemGroup>
 
@@ -67,6 +72,12 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="BlazorServer\Components\Pages\Home.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="BlazorServer\Components\Layout\MainLayout.razor.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

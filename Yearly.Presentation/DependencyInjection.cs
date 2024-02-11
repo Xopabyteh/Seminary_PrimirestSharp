@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Hangfire;
+using Havit.Blazor.Components.Web;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -74,5 +75,7 @@ public static class DependencyInjection
         services
             .AddRazorComponents()
             .AddInteractiveServerComponents();
+
+        services.AddHxServices();
     }
 }
