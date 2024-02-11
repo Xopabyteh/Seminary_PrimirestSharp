@@ -1,8 +1,8 @@
-﻿using ErrorOr;
+﻿using System.Net;
+using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Net;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
@@ -92,6 +92,9 @@ public class PrimirestOrderService : IPrimirestOrderService
         var responseJson = await response.Content.ReadAsStringAsync();
 
         var responseObj = JsonConvert.DeserializeObject<PrimirestOrderResponseRoot>(responseJson);
+
+        if (responseObj is null)
+            throw new InvalidPrimirestContractException("Parsed response is null");
 
         if(responseObj.Success)
             return Unit.Value;

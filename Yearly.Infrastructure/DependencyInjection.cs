@@ -51,6 +51,8 @@ public static class DependencyInjection
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
         services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();
         services.AddScoped<IFoodSimilarityService, FoodSimilarityService>();
+        services.Configure<FoodSimilarityServiceOptions>(
+            builder.Configuration.GetSection(FoodSimilarityServiceOptions.SectionName));
 
         services.Configure<PrimirestAdminCredentialsOptions>(
             builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
@@ -113,10 +115,8 @@ public static class DependencyInjection
     }
 
 
-    private static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
+    private static void AddBackgroundJobs(this IServiceCollection services)
     {
         services.AddTransient<FireOutboxDomainEventsJob>();
-
-        return services;
     }
 }

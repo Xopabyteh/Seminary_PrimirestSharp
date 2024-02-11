@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using System.Reflection;
-using Yearly.Application.Common.Interfaces;
+﻿using Newtonsoft.Json.Linq;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.PhotoAgg;
-using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.WeeklyMenuAgg;
+
+//This will be changed in the future, it's temporary, but it works (lol)
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
 
 namespace Yearly.Infrastructure.Persistence.Seeding;
 
 /// <summary>
 /// Seeds a few foods, daily menus and a weekly menu. Photos, similarity table records. Persists the given user adminUser.
-/// Uses the current <see cref="IPhotoStorage"/> dependency to upload photo files from <b>wwwroot/seedPhotos/</b>.
 /// </summary>
 public class DataSeeder
 {
@@ -340,12 +338,10 @@ public class DataSeeder
                                     """;
 
     private readonly PrimirestSharpDbContext _context;
-    private readonly IPhotoStorage _photoStorage;
 
-    public DataSeeder(PrimirestSharpDbContext context, IPhotoStorage photoStorage)
+    public DataSeeder(PrimirestSharpDbContext context)
     {
         _context = context;
-        _photoStorage = photoStorage;
     }
 
     /// <summary>
@@ -376,7 +372,7 @@ public class DataSeeder
             case "sample":
                 EnsureCreated();
                 SeedAdminUser(adminUser);
-                SeedSample(adminUser);
+                SeedSample();
                 break;
 
             default:
@@ -409,8 +405,7 @@ public class DataSeeder
     /// Creates a random (always the same) similarity record (not yet approved or anything)
     /// One of the foods is an alias for another food
     /// </summary>
-    /// <param name="admin"></param>
-    private void SeedSample(User admin)
+    private void SeedSample()
     {
         // Impl (mostly) of menus by ChatGPT (lol)
 

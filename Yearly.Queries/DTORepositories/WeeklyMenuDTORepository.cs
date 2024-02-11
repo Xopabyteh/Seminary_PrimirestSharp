@@ -105,7 +105,7 @@ public class WeeklyMenuDTORepository
         int PrimirestItemId,
         int PrimirestMenuId)
     {
-        public List<PhotoLinkDTO> PhotoLinks { get; set; }
+        public List<PhotoLinkDTO> PhotoLinks { get; set; } = new();
     }
 
     private record PhotoVm(
@@ -114,11 +114,11 @@ public class WeeklyMenuDTORepository
 
     private record DailyMenuVm(int DailyMenuId, DateTime Date)
     {
-        public List<FoodVm> Foods { get; set; }
+        public List<FoodVm> Foods { get; set; } = new();
     }
 
     private record WeeklyMenuVm(int PrimirestMenuId)
     {
-        public List<DailyMenuVm> DailyMenus { get; set; }
+        public List<DailyMenuVm> DailyMenus { get; set; } = new();
     }
 }

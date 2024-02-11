@@ -42,12 +42,16 @@ public class DomainEventsToOutboxMessageDatabaseInterceptor : SaveChangesInterce
             {
                 Id = Guid.NewGuid(),
                 OccurredOnUtc = _dateTimeProvider.UtcNow,
-                ContentJson = JsonConvert.SerializeObject(e, new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.All //Save type along with the content
-                    //for easier deserialization
-                }),
-                Type = e.GetType().Name
+                ContentJson = JsonConvert.SerializeObject(
+                    e,
+                    new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.All //Save type along with the content
+                        //for easier deserialization
+                    }),
+                Type = e.GetType()
+                    .Name,
+                ProcessedOnUtc = null
             })
             .ToList();
 
