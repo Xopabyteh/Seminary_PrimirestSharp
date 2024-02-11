@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="BlazorServer\Components\Layout\MainLayout.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Yearly.Application\Yearly.Application.csproj" />
     <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
@@ -23,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="BlazorServer\Components\Common\" />
     <Folder Include="Docs\Requests\" />
     <Folder Include="Http\" />
     <Folder Include="Mappings\" />
@@ -51,5 +56,22 @@
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="BlazorServer\Components\Layout\MainLayout.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="BlazorServer\Components\Layout\MainLayout.razor" />
+    <_ContentIncludedByDefault Remove="BlazorServer\Components\Pages\Home.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="BlazorServer\Components\Layout\MainLayout.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="BlazorServer\Components\Pages\Home.razor" />
+  </ItemGroup>
 
 </Project>

@@ -7,6 +7,7 @@ using Yearly.Infrastructure;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
+using Yearly.Presentation.BlazorServer.Components;
 using Yearly.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,12 @@ app.UseHangfireDashboard(options: new DashboardOptions()
         new PrimirestSharpAdminHangfireDashboardAuthorizationFilter()
     }
 });
+
+app.UseAntiforgery();
+app.UseStaticFiles();
+app
+    .MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 //Add background jobs
 {

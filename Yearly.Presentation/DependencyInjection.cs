@@ -29,6 +29,8 @@ public static class DependencyInjection
         });
 
         services.AddBackgroundJobs(builder);
+
+        services.AddBlazor();
         return services;
     }
 
@@ -65,5 +67,12 @@ public static class DependencyInjection
 
         // Background jobs:
         services.AddTransient<PersistAvailableMenusJob>();
+    }
+
+    private static void AddBlazor(this IServiceCollection services)
+    {
+        services
+            .AddRazorComponents()
+            .AddInteractiveServerComponents();
     }
 }
