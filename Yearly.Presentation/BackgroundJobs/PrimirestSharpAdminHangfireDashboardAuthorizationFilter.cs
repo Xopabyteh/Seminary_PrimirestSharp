@@ -18,7 +18,6 @@ public class PrimirestSharpAdminHangfireDashboardAuthorizationFilter : IDashboar
         }
 
         //Get session from cache
-        //TODO: FIX RELOAD INTERVAL 0MS WTF
         var query = new UserBySessionQuery(sessionCookie);
 
         using var scope = context.GetHttpContext().RequestServices.CreateScope();

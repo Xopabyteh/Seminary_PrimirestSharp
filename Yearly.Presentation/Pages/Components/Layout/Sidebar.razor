@@ -1,0 +1,25 @@
+﻿<HxSidebar CssClass="sticky-top">
+     <HeaderTemplate>
+         <HxSidebarBrand BrandName="Primirest#">
+             <LogoTemplate>
+                 <img src="/svg/logo_bubble.svg" width="32" class="mx-1" />
+             </LogoTemplate>
+         </HxSidebarBrand>
+     </HeaderTemplate>
+     <ItemsTemplate>
+         <HxSidebarItem Text="Hangfire dashboard" Href="/hangfire" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire" />
+         <HxSidebarItem Text="Photos" Href="/photos" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire" />
+     </ItemsTemplate>
+     <FooterTemplate>
+         @if (_sessionDetails.IsAuthenticated)
+        {
+            <HxSidebarFooter Href="/logout" Icon="BootstrapIcon.BoxArrowRight" Text="@(context.SidebarCollapsed ? null : "Logout")" />
+        }
+        else
+         {
+            <HxSidebarFooter Href="/login" Icon="BootstrapIcon.Person" Text="@(context.SidebarCollapsed ? null : "Login")" />
+         }
+     </FooterTemplate>
+ </HxSidebar>
+ 
+ 

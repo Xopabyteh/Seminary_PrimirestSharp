@@ -7,7 +7,6 @@ using Yearly.Infrastructure;
 using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
-using Yearly.Presentation.BlazorServer.Components;
 using Yearly.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,7 +47,8 @@ app.UseHangfireDashboard(options: new DashboardOptions()
     AsyncAuthorization = new []
     {
         new PrimirestSharpAdminHangfireDashboardAuthorizationFilter()
-    }
+    },
+    StatsPollingInterval = 120_000 //Poll once per two minutes (to not burn our DB with auth requests)
 });
 
 app.UseAntiforgery();
@@ -68,9 +68,14 @@ app.UseStaticFiles();
     //    @"* * * * *"); //Every minute
 }
 
+
+//app
+//    .MapRazorComponents<App>()
+//    .AddInteractiveServerRenderMode();
 app.MapControllers();
-app
-    .MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+
+app.UseRouting();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
 app.Run();

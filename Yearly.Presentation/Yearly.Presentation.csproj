@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BlazorServer\Components\Common\" />
     <Folder Include="Docs\Requests\" />
     <Folder Include="Mappings\" />
+    <Folder Include="Pages\Components\Common\" />
     <Folder Include="wwwroot\photos\" />
   </ItemGroup>
 
@@ -55,21 +55,10 @@
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="BlazorServer\Components\Layout\MainLayout.razor" />
+    <UpToDateCheckInput Remove="Pages\Components\Layout\MainLayout.razor" />
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="BlazorServer\Components\Layout\MainLayout.razor" />
-    <_ContentIncludedByDefault Remove="BlazorServer\Components\Pages\Home.razor" />
-    <_ContentIncludedByDefault Remove="BlazorServer\Components\Pages\LoginPage.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Components\Layout\MainLayout.razor" />
   </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="BlazorServer\Components\Pages\Home.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="BlazorServer\Components\Pages\LoginPage.razor" />
-  </ItemGroup>
-
 </Project>

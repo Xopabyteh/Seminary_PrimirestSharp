@@ -5,10 +5,10 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Yearly.Presentation.BackgroundJobs;
-using Yearly.Presentation.BlazorServer;
 using Yearly.Presentation.Errors;
 using Yearly.Presentation.Http;
 using Yearly.Presentation.OutputCaching;
+using Yearly.Presentation.Pages;
 
 namespace Yearly.Presentation;
 

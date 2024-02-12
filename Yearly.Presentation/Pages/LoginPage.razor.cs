@@ -1,14 +1,16 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Contracts.Authentication;
-using Yearly.Presentation.BlazorServer.Services;
 using Yearly.Presentation.Http;
+using Yearly.Presentation.Pages.Services;
 
-namespace Yearly.Presentation.BlazorServer.Components.Pages;
+namespace Yearly.Presentation.Pages;
 
 public partial class LoginPage
 {
     [Inject] private IHttpClientFactory _clientFactory { get; set; } = null!;
+    [Inject] private SessionDetailsService _sessionDetailsService { get; set; } = null!;
     [Inject] private BrowserCookieService _browserCookieService { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
 
@@ -28,14 +30,17 @@ public partial class LoginPage
             return;
         }
 
-        // -> Success
-        
+        // -> Successfully logged in
         var response = await result.Content.ReadFromJsonAsync<LoginResponse>();
 
-        await _browserCookieService.WriteCookie(
+        //Save cookie
+        await _browserCookieService.WriteCookieAsync(
             SessionCookieDetails.Name,
             response.SessionCookieDetails.Value,
             response.SessionCookieDetails.ExpirationDate.Date);
+
+        //Init session
+        _sessionDetailsService.Init(response.SessionCookieDetails.Value, response.UserDetails);
 
         // -> Redirect to home page
         _navigationManager.NavigateTo("/");
@@ -43,7 +48,8 @@ public partial class LoginPage
 
     private class LoginModel
     {
-        public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        [Required] public string Username { get; set; } = string.Empty;
+
+        [Required] public string Password { get; set; } = string.Empty;
     }
 }
