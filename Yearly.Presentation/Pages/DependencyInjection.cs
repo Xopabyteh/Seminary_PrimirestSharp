@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddServerSideBlazor();
 
         services.AddHxServices();
+        services.AddHxMessenger();
 
         return services;
     }

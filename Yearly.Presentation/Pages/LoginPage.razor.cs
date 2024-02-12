@@ -1,3 +1,5 @@
+using Havit.Blazor.Components.Web;
+using Havit.Blazor.Components.Web.Bootstrap;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,8 @@ public partial class LoginPage
     [Inject] private SessionDetailsService _sessionDetailsService { get; set; } = null!;
     [Inject] private BrowserCookieService _browserCookieService { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
+    [Inject] private IHxMessengerService _messenger { get; set; } = null!;
+
 
     private LoginModel model = new();
 
@@ -27,6 +31,7 @@ public partial class LoginPage
         if (!result.IsSuccessStatusCode)
         {
             var problem = await result.Content.ReadFromJsonAsync<ProblemDetails>();
+            _messenger.AddError(problem!.Title);
             return;
         }
 
