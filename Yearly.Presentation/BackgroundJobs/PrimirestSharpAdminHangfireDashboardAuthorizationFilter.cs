@@ -1,6 +1,7 @@
 ﻿using Hangfire.Dashboard;
 using MediatR;
 using Yearly.Application.Authentication.Queries;
+using Yearly.Contracts.Authentication;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Presentation.BackgroundJobs;
@@ -10,13 +11,14 @@ public class PrimirestSharpAdminHangfireDashboardAuthorizationFilter : IDashboar
     public async Task<bool> AuthorizeAsync(DashboardContext context)
     {
         //Get cookie session
-        var sessionCookie = context.GetHttpContext().Request.Cookies["session"];
+        var sessionCookie = context.GetHttpContext().Request.Cookies[SessionCookieDetails.Name];
         if (string.IsNullOrWhiteSpace(sessionCookie))
         {
             return false;
         }
 
         //Get session from cache
+        //TODO: FIX RELOAD INTERVAL 0MS WTF
         var query = new UserBySessionQuery(sessionCookie);
 
         using var scope = context.GetHttpContext().RequestServices.CreateScope();

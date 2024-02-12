@@ -25,7 +25,6 @@
   <ItemGroup>
     <Folder Include="BlazorServer\Components\Common\" />
     <Folder Include="Docs\Requests\" />
-    <Folder Include="Http\" />
     <Folder Include="Mappings\" />
     <Folder Include="wwwroot\photos\" />
   </ItemGroup>

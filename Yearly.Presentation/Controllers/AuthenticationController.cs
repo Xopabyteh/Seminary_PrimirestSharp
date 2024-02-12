@@ -43,7 +43,7 @@ public class AuthenticationController : ApiController
             return Problem(loginResult.Errors);
 
         //Add session cookie to cookies
-        Response.Cookies.Append("session", loginResult.Value.SessionCookie, new CookieOptions
+        Response.Cookies.Append(SessionCookieDetails.Name, loginResult.Value.SessionCookie, new CookieOptions
         {
             //SameSite = SameSiteMode.Strict,
             Secure = true,

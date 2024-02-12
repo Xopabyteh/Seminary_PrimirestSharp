@@ -42,7 +42,6 @@ if (app.Environment.IsDevelopment())
     await sessionCache.AddAsync("debug", adminUser.Id);
 }
 
-app.MapControllers();
 app.UseOutputCache();
 app.UseHangfireDashboard(options: new DashboardOptions()
 {
@@ -54,9 +53,6 @@ app.UseHangfireDashboard(options: new DashboardOptions()
 
 app.UseAntiforgery();
 app.UseStaticFiles();
-app
-    .MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
 
 //Add background jobs
 {
@@ -71,5 +67,10 @@ app
     //    x => x.ExecuteAsync(),
     //    @"* * * * *"); //Every minute
 }
+
+app.MapControllers();
+app
+    .MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();

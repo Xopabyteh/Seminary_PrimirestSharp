@@ -5,7 +5,9 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Yearly.Presentation.BackgroundJobs;
+using Yearly.Presentation.BlazorServer;
 using Yearly.Presentation.Errors;
+using Yearly.Presentation.Http;
 using Yearly.Presentation.OutputCaching;
 
 namespace Yearly.Presentation;
@@ -32,6 +34,15 @@ public static class DependencyInjection
         services.AddBackgroundJobs(builder);
 
         services.AddBlazor();
+
+        services.AddHttpClient(HttpClientNames.SharpAPI, client =>
+        {
+            client.BaseAddress = builder.Environment.IsProduction()
+                ? new Uri(builder.Configuration["API:ProdBaseAddress"]!)
+                : new Uri(builder.Configuration["API:DevBaseAddress"]!);
+
+        });
+
         return services;
     }
 
@@ -68,14 +79,5 @@ public static class DependencyInjection
 
         // Background jobs:
         services.AddTransient<PersistAvailableMenusJob>();
-    }
-
-    private static void AddBlazor(this IServiceCollection services)
-    {
-        services
-            .AddRazorComponents()
-            .AddInteractiveServerComponents();
-
-        services.AddHxServices();
     }
 }
