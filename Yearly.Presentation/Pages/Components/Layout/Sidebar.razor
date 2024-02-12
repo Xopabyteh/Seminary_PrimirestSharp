@@ -13,7 +13,14 @@
      <FooterTemplate>
          @if (_sessionDetails.IsAuthenticated)
         {
-            <HxSidebarFooter Href="/logout" Icon="BootstrapIcon.BoxArrowRight" Text="@(context.SidebarCollapsed ? null : "Logout")" />
+            <div class="login-display d-flex align-items-center w-100 p-3">
+                <span class="login-display-nickname mx-3">@_sessionDetails.UserDetails!.Value.Username</span>
+                <div class="ms-auto">
+                    <HxContextMenu>
+                        <HxContextMenuItem Text="Odhlásit" OnClick='BeginLogout' />
+                    </HxContextMenu>
+                </div>
+            </div>
         }
         else
          {
@@ -22,4 +29,4 @@
      </FooterTemplate>
  </HxSidebar>
  
- 
+                
