@@ -63,7 +63,6 @@ public partial class UsersPage
         // -> Successfully updated roles
         _messenger.AddMessage(new MessengerMessage()
         {
-            CssClass = "bg-success",
             AutohideDelay = 5000,
             Title = "Success",
             Icon = BootstrapIcon.Check
