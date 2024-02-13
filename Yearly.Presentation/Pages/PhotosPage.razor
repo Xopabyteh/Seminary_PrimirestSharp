@@ -1,7 +1,7 @@
 ﻿@page "/PhotosPage"
 @using Yearly.Contracts.Photos
 
-<LeaveIfNotAuthorized RequiredRoles='new [] {UserRoleDTO.PhotoApprover}'/>
+<LeaveIfNotAuthorized RequiredRoles='new [] {UserRole.PhotoApprover}'/>
 
 <HxGrid 
     @ref="gridComponent"

@@ -1,17 +1,17 @@
+using System.ComponentModel.DataAnnotations;
 using Havit.Blazor.Components.Web;
 using Havit.Blazor.Components.Web.Bootstrap;
-using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
+using Yearly.Application.Authentication.Commands;
 using Yearly.Contracts.Authentication;
-using Yearly.Presentation.Http;
 using Yearly.Presentation.Pages.Services;
 
 namespace Yearly.Presentation.Pages;
 
 public partial class LoginPage
 {
-    [Inject] private IHttpClientFactory _clientFactory { get; set; } = null!;
+    [Inject] private ISender _mediator { get; set; } = null!;
     [Inject] private SessionDetailsService _sessionDetailsService { get; set; } = null!;
     [Inject] private BrowserCookieService _browserCookieService { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
@@ -22,30 +22,22 @@ public partial class LoginPage
 
     private async Task SubmitLogin()
     {
-        var request = new LoginRequest(model.Username, model.Password);
+        var loginCommand = new LoginCommand(model.Username, model.Password);
+        var result = await _mediator.Send(loginCommand);
 
-        using var client = _clientFactory.CreateClient(HttpClientNames.SharpAPI);
-
-        var result = await client.PostAsJsonAsync("/api/auth/login", request);
-
-        if (!result.IsSuccessStatusCode)
+        if (result.IsError)
         {
-            var problem = await result.Content.ReadFromJsonAsync<ProblemDetails>();
-            _messenger.AddError(problem!.Title);
-            return;
+            _messenger.AddError(result.FirstError.Description);
         }
-
-        // -> Successfully logged in
-        var response = await result.Content.ReadFromJsonAsync<LoginResponse>();
 
         //Save cookie
         await _browserCookieService.WriteCookieAsync(
             SessionCookieDetails.Name,
-            response.SessionCookieDetails.Value,
-            response.SessionCookieDetails.ExpirationDate.Date);
+            result.Value.SessionCookie,
+            result.Value.SessionExpirationTime.Date);
 
         //Init session
-        _sessionDetailsService.Init(response.SessionCookieDetails.Value, response.UserDetails);
+        _sessionDetailsService.Init(result.Value.SessionCookie, result.Value.User);
 
         // -> Redirect to home page
         _navigationManager.NavigateTo("/");

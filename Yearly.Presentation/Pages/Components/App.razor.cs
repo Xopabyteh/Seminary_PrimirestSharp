@@ -27,15 +27,15 @@ public partial class App
 
         //Load our details
         var query = new UserBySessionQuery(SessionCookie);
-        var userDetailsResult = await _mediator.Send(query);
-        if (userDetailsResult.IsError)
+        var userResult = await _mediator.Send(query);
+        if (userResult.IsError)
         {
             //Cookie is invalid..
             return;
         }
 
         // -> Sucessfully loaded details
-        var userDetailsReadonly = _mapper.Map<UserDetailsResponse>(userDetailsResult.Value);
-        _sessionDetailsService.Init(SessionCookie, userDetailsReadonly);
+        //var userDetailsReadonly = _mapper.Map<UserDetailsResponse>(userDetailsResult.Value);
+        _sessionDetailsService.Init(SessionCookie, userResult.Value);
     }
 }

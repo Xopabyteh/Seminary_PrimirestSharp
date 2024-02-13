@@ -1,19 +1,20 @@
 using Microsoft.AspNetCore.Components;
-using Yearly.Contracts.Authentication;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Presentation.Pages.Services;
 
 namespace Yearly.Presentation.Pages.Components.Common;
 
+/// <summary>
+/// Can be used as "LeaveIfNotAuthenticated" when provided <see cref="RequiredRoles"/> is null (or not provided)
+/// </summary>
 public partial class LeaveIfNotAuthorized : IDisposable
 {
-    [Inject] private SessionDetailsService _sessionDetailsService { get; set; } = null!;
-
-    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    [Parameter] public UserRoleDTO[]? RequiredRoles { get; set; }
+    [Parameter] public required RenderFragment? ChildContent { get; set; }
+    [Parameter] public UserRole[]? RequiredRoles { get; set; }
     [Parameter] public string ToLink { get; set; } = "/";
 
+    [Inject] private SessionDetailsService _sessionDetailsService { get; set; } = null!;
+    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
 
     public void Dispose()
     {
@@ -34,8 +35,8 @@ public partial class LeaveIfNotAuthorized : IDisposable
 
     private void CheckAuthorized()
     {
-        var authorized = _sessionDetailsService is { IsAuthenticated: true, UserDetails: not null }
-                     && (RequiredRoles is null || RequiredRoles.All(_sessionDetailsService.UserDetails.Value.Roles.Contains));
+        var authorized = _sessionDetailsService is { IsAuthenticated: true, User: not null }
+                     && (RequiredRoles is null || RequiredRoles.All(_sessionDetailsService.User.Roles.Contains));
 
         if (authorized)
             return;
