@@ -38,6 +38,6 @@ public partial class AuthorizedView : IDisposable
     private void ResetAuthorized()
     {
         authorized = _sessionDetailsService is {IsAuthenticated: true, User: not null}
-                     && (RequiredRoles is null || RequiredRoles.All(_sessionDetailsService.User!.Roles.Contains));
+                     && (RequiredRoles is null || RequiredRoles.All(_sessionDetailsService.User!.Roles.Contains) || _sessionDetailsService.User!.Roles.Contains(UserRole.Admin));
     }
 }

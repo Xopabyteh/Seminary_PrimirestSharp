@@ -1,3 +1,3 @@
 ﻿namespace Yearly.Contracts.Authentication;
 
-public readonly record struct UserWithContextDTO(string Name, List<UserRoleDTO> Roles);
+public readonly record struct UserWithContextDTO(int Id, string Username, List<UserRoleDTO> Roles);

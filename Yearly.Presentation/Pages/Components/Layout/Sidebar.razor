@@ -11,10 +11,13 @@
 
     <ItemsTemplate>
         <AuthorizedView RequiredRoles='new[] {UserRole.Admin}'>
-            <HxSidebarItem Text="Hangfire dashboard" Href="/hangfire" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire"/>
+            <HxSidebarItem Text="User roles" Href="/UsersPage" Match="NavLinkMatch.All" Icon="BootstrapIcon.PersonBadge"/>
         </AuthorizedView>
-        <AuthorizedView RequiredRoles='new [] {UserRole.PhotoApprover}'>
-            <HxSidebarItem Text="Photos" Href="/PhotosPage" Match="NavLinkMatch.All" Icon="BootstrapIcon.Image" />
+        <AuthorizedView RequiredRoles='new[] {UserRole.PhotoApprover}'>
+            <HxSidebarItem Text="Photos" Href="/PhotosPage" Match="NavLinkMatch.All" Icon="BootstrapIcon.Image"/>
+        </AuthorizedView>
+        <AuthorizedView RequiredRoles='new[] {UserRole.Admin}'>
+            <HxSidebarItem Text="Hangfire dashboard" Href="/hangfire" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire"/>
         </AuthorizedView>
     </ItemsTemplate>
 

@@ -1,0 +1,45 @@
+﻿@page "/UsersPage"
+@using Yearly.Contracts.Authentication
+
+<LeaveIfNotAuthorized/>
+<HxGrid 
+    @ref="grid" 
+    TItem="UserWithContextDTO" 
+    DataProvider="GetGridData" 
+    PageSize="5" 
+    Responsive="true">
+    <Columns>
+        <HxGridColumn HeaderText="Username" ItemTextSelector="u => u.Username">
+            <HeaderTemplate>
+                <HxInputText @bind-Value="filterModel.UsernameFilter" BindEvent="BindEvent.OnInput" @bind-Value:after="grid.RefreshDataAsync" Placeholder="Type to search Name" InputSize="InputSize.Small"/>
+            </HeaderTemplate>
+        </HxGridColumn>
+        <HxGridColumn HeaderText="Roles" ItemTextSelector='@(u => string.Join(',', ((UserWithContextDTO)u).Roles.Select(r => r.RoleCode)))' />
+        <HxContextMenuGridColumn Context="item">
+            <HxContextMenu>
+                <HxContextMenuItem Text="Edit" Icon="BootstrapIcon.Pencil" OnClick="async () => await HandleEditUserClick(item)"/>
+            </HxContextMenu>
+        </HxContextMenuGridColumn>    
+    </Columns>
+</HxGrid>
+
+<HxOffcanvas
+    @ref="offcanvasComponent"
+    Title="@($"Editting {editSelectedUser.Username}")"
+    CloseButtonIcon="BootstrapIcon.X">    
+    <HeaderTemplate>
+        <h2>@editSelectedUser.Username</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <HxCheckboxList TItem="UserRoleDTO"
+                        TValue="UserRoleDTO"
+                        Label="Roles"
+                        Data="@(UserRoleDTO.AllRoles)"
+                        ItemTextSelector="@(u => u.RoleCode)"
+                        ItemValueSelector="@(u => u)"
+                        @bind-Value="editSelectedRoles" />
+    </BodyTemplate>
+    <FooterTemplate>
+        <HxButton OnClick='HandleSaveClick' Text="Save" Icon="BootstrapIcon.FileArrowUp" Color="ThemeColor.Success" />
+    </FooterTemplate>
+</HxOffcanvas>

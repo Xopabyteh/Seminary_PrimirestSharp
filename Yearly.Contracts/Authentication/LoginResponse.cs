@@ -17,4 +17,11 @@ public readonly record struct UserRoleDTO(string RoleCode)
     public static readonly UserRoleDTO PhotoApprover = new("PhA");
     public static readonly UserRoleDTO Admin = new("Adm");
     public static readonly UserRoleDTO BlackListedFromTakingPhotos = new("BFP");
+
+    public static readonly UserRoleDTO[] AllRoles = new[]
+    {
+        PhotoApprover,
+        Admin,
+        BlackListedFromTakingPhotos
+    };
 }

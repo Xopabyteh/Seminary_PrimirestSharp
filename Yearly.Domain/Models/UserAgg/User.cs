@@ -79,6 +79,10 @@ public class User : AggregateRoot<UserId>
         fromUser.RemoveRole(role);
     }
 
+    internal void UpdateRoles(User ofUser, List<UserRole> roles)
+    {
+        ofUser.UpdateRoles(roles);
+    }
     private void AddRole(UserRole role)
     {
         _roles.Add(role);
@@ -87,6 +91,12 @@ public class User : AggregateRoot<UserId>
     private void RemoveRole(UserRole role)
     {
         _roles.Remove(role);
+    }
+
+    private void UpdateRoles(List<UserRole> roles)
+    {
+        _roles.Clear();
+        _roles.AddRange(roles);
     }
 }
 
@@ -137,5 +147,10 @@ public class Admin
     public void RemoveRole(UserRole role, User fromUser)
     {
         user.RemoveRole(role, fromUser);
+    }
+
+    public void UpdateRoles(User ofUser, List<UserRole> roles)
+    {
+        ofUser.UpdateRoles(ofUser, roles);
     }
 }

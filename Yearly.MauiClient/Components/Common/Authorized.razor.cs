@@ -35,7 +35,7 @@ public partial class Authorized : IDisposable
     {
         authorized = AuthService.IsLoggedIn
                      && AuthService.UserDetails is not null
-                     && (RequiredRoles is null || RequiredRoles.All(AuthService.UserDetails.Value.Roles.Contains));
+                     && (RequiredRoles is null || RequiredRoles.All(AuthService.UserDetailsLazy.Roles.Contains) || AuthService.UserDetailsLazy.Roles.Contains(UserRoleDTO.Admin));
     }
 
     public void Dispose()

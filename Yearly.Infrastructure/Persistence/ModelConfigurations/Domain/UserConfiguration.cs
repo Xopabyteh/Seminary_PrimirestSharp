@@ -29,7 +29,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
                 roleBuilder.WithOwner().HasForeignKey(nameof(UserId));
 
-                roleBuilder.HasKey(r => r.RoleCode);
+                //roleBuilder.HasKey(r => r.RoleCode);
 
                 roleBuilder
                     .Property(r => r.RoleCode)

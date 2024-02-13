@@ -13,6 +13,7 @@ public static class DependencyInjection
         services.AddScoped<PhotosDTORepository>();
         services.AddScoped<FoodSimilarityTableDTORepository>();
         services.AddScoped<WeeklyMenuDTORepository>();
+        services.AddScoped<UserDTORepository>();
 
         return services;
     }

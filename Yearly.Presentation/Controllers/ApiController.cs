@@ -38,7 +38,9 @@ public class ApiController : ControllerBase
     {
         return PerformAuthenticatedActionAsync(async issuer =>
         {
-            if (!issuer.User.Roles.Any(roles.Contains))
+            if (
+                !issuer.User.Roles.Any(roles.Contains)
+                && !issuer.User.Roles.Contains(UserRole.Admin)) //Admin can do anything
                 return Unauthorized();
 
             return await action(issuer);
