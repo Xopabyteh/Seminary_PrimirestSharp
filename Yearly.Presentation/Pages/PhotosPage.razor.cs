@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Yearly.Application.Photos.Commands;
 using Yearly.Contracts.Photos;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
-using Yearly.Domain.Models.UserAgg;
+using Yearly.Presentation.Pages.Services;
 using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Pages;
@@ -13,6 +13,7 @@ namespace Yearly.Presentation.Pages;
 public partial class PhotosPage
 {
     [Inject] private PhotosDTORepository _photosDTORepository { get; set; } = null!;
+    [Inject] private SessionDetailsService _sessionDetails { get; set; } = null!;
     [Inject] private ISender _mediator { get; set; } = null!;
     [Inject] private IHxMessengerService _messenger { get; set; } = null!;
 
@@ -41,32 +42,32 @@ public partial class PhotosPage
         // -> Successfully deleted
         await gridComponent.RefreshDataAsync();
     }
-    private async Task HandleApprovePhoto(PhotoWithContextDTO photoToDelete)
+    private async Task HandleApproveClick(PhotoWithContextDTO photoToDelete)
     {
-        //var command = new ApprovePhotoCommand(new PhotoId(photoToDelete.Id), );
-        //var result = await _mediator.Send(command);
+        var command = new ApprovePhotoCommand(new PhotoId(photoToDelete.Id), _sessionDetails.User!);
+        var result = await _mediator.Send(command);
 
-        //if (result.IsError)
-        //{
-        //    _messenger.AddError(result.FirstError.Code, result.FirstError.Description);
-        //    return;
-        //}
+        if (result.IsError)
+        {
+            _messenger.AddError(result.FirstError.Code, result.FirstError.Description);
+            return;
+        }
 
-        //// -> Successfully deleted
-        //await gridComponent.RefreshDataAsync();
+        // -> Successfully approved
+        await gridComponent.RefreshDataAsync();
     }
-    private async Task HandleRejectPhoto(PhotoWithContextDTO photoToDelete)
+    private async Task HandleRejectClick(PhotoWithContextDTO photoToDelete)
     {
-        //var command = new DeletePhotoCommand(new PhotoId(photoToDelete.Id));
-        //var result = await _mediator.Send(command);
+        var command = new RejectPhotoCommand(new PhotoId(photoToDelete.Id), _sessionDetails.User!);
+        var result = await _mediator.Send(command);
 
-        //if (result.IsError)
-        //{
-        //    _messenger.AddError(result.FirstError.Code, result.FirstError.Description);
-        //    return;
-        //}
+        if (result.IsError)
+        {
+            _messenger.AddError(result.FirstError.Code, result.FirstError.Description);
+            return;
+        }
 
-        //// -> Successfully deleted
-        //await gridComponent.RefreshDataAsync();
+        // -> Successfully rejected
+        await gridComponent.RefreshDataAsync();
     }
 }
