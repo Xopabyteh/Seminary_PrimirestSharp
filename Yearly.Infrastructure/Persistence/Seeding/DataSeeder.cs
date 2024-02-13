@@ -360,6 +360,11 @@ public class DataSeeder
             case "none":
                 return true;
 
+            case "dbreset":
+                _context.Database.EnsureDeleted();
+                EnsureCreated();
+                return true;
+
             case "ensurecreated":
                 EnsureCreated();
                 break;

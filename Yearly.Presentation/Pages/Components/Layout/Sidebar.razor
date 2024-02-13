@@ -1,15 +1,22 @@
-﻿<HxSidebar CssClass="sticky-top">
-     <HeaderTemplate>
-         <HxSidebarBrand BrandName="Primirest#">
-             <LogoTemplate>
-                 <img src="/svg/logo_bubble.svg" width="32" class="mx-1" />
-             </LogoTemplate>
-         </HxSidebarBrand>
-     </HeaderTemplate>
-     <ItemsTemplate>
-         <HxSidebarItem Text="Hangfire dashboard" Href="/hangfire" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire" />
-         <HxSidebarItem Text="Photos" Href="/photos" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire" />
-     </ItemsTemplate>
+﻿@using Yearly.Contracts.Authentication
+<HxSidebar CssClass="sticky-top">
+    <HeaderTemplate>
+        <HxSidebarBrand BrandName="Primirest#">
+            <LogoTemplate>
+                <img src="/svg/logo_bubble.svg" width="32" class="mx-1" />
+            </LogoTemplate>
+        </HxSidebarBrand>
+    </HeaderTemplate>
+
+    <ItemsTemplate>
+        <AuthorizedView RequiredRoles='new[] {UserRoleDTO.Admin}'>
+            <HxSidebarItem Text="Hangfire dashboard" Href="/hangfire" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire"/>
+        </AuthorizedView>
+        <AuthorizedView RequiredRoles='new [] {UserRoleDTO.PhotoApprover}'>
+            <HxSidebarItem Text="Photos" Href="/PhotosPage" Match="NavLinkMatch.All" Icon="BootstrapIcon.Image" />
+        </AuthorizedView>
+    </ItemsTemplate>
+
      <FooterTemplate>
          @if (_sessionDetails.IsAuthenticated)
         {

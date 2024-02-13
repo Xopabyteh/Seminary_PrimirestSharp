@@ -25,7 +25,6 @@
   <ItemGroup>
     <Folder Include="Docs\Requests\" />
     <Folder Include="Mappings\" />
-    <Folder Include="Pages\Components\Common\" />
     <Folder Include="wwwroot\photos\" />
   </ItemGroup>
 
@@ -60,5 +59,10 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Pages\Components\Layout\MainLayout.razor" />
+    <_ContentIncludedByDefault Remove="Pages\PhotosPage.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\PhotosPage.razor" />
   </ItemGroup>
 </Project>

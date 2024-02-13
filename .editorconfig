@@ -274,6 +274,8 @@ dotnet_diagnostic.SA1206.severity = silent
 dotnet_diagnostic.SA1401.severity = none
 dotnet_diagnostic.SA1303.severity = silent
 dotnet_diagnostic.SA1310.severity = silent
+dotnet_diagnostic.SA1134.severity = none
+dotnet_diagnostic.SA1300.severity = none
 
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
@@ -322,3 +324,4 @@ dotnet_style_qualification_for_field = false:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_property = false:silent
 dotnet_style_qualification_for_event = false:silent
+dotnet_style_prefer_collection_expression = true:suggestion

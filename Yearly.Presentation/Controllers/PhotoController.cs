@@ -77,7 +77,7 @@ public class PhotoController : ApiController
     {
         return PerformAuthenticatedActionAsync(async issuer => 
         {
-            var userPhotos = await _photosDTORepository.GetUsersPhotos(issuer.User.Id.Value);
+            var userPhotos = await _photosDTORepository.GetUsersPhotosAsync(issuer.User.Id.Value);
             return Ok(userPhotos);
         });
     }
