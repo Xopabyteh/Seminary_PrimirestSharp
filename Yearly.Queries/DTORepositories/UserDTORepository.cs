@@ -7,6 +7,4 @@ public class UserDTORepository
     {
         _connectionFactory = connectionFactory;
     }
-
-    public async Task<>
 }

@@ -1,30 +1,42 @@
 var FoodBlock = FoodBlock || {};
-FoodBlock.initializeImagesSlider = function(
+FoodBlock.initializeImagesSlider = function (
     imagesRef = new Element(),
     imageControlsRef = new Element())
 {
-    const scrollWidth = imagesRef.scrollWidth;
+    //Disable manual scrolling
+    imagesRef.addEventListener('scroll', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        return false;
+    });
+
+    //Setup onclick scrolling
+    const images = imagesRef.children;
+    const ammOfImages = images.length;
     const indexShowers = imageControlsRef.querySelectorAll('.index-shower');
-    //const ammOfImages = imagesRef.children.length;
 
-    let selectedIndexShower = indexShowers[0];
-    selectedIndexShower.classList.add('selected');
+    let selectedImageI = 0;
+    indexShowers[selectedImageI].classList.add('selected');
 
-    //On scroll:
-    imagesRef.addEventListener('scroll', () => {
-        const scrollAmm = imagesRef.scrollLeft;
-        const viewedImageIndex = Math.round(scrollAmm / scrollWidth);
+    //On click
+    imagesRef.addEventListener('click', (e) => {
+        //Deselect old indexShower
+        indexShowers[selectedImageI].classList.remove('selected');
 
-        //Check if we've changed view
-        const currentlyViewedIndexShower = indexShowers[viewedImageIndex];
-        if (currentlyViewedIndexShower === selectedIndexShower)
-            return;
+        selectedImageI++;
 
-        //Deselect
-        selectedIndexShower.classList.remove('selected');
+        if (selectedImageI >= ammOfImages)
+            selectedImageI = 0; //Loop around
 
-        //Select
-        selectedIndexShower = currentlyViewedIndexShower;
-        selectedIndexShower.classList.add('selected');
+        const selectedImage = images[selectedImageI];
+        imagesRef.scrollTo(
+            {
+                left: selectedImage.offsetLeft,
+                behavior: 'smooth'
+            });
+
+        //Select new indexShower
+        indexShowers[selectedImageI].classList.add('selected');
     });
 }
