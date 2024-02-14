@@ -1,7 +1,7 @@
 ﻿@page "/UsersPage"
 @using Yearly.Contracts.Authentication
 
-<LeaveIfNotAuthorized/>
+<LeaveIfNotAuthorized RequiredRoles='new [] {UserRole.Admin}'/>
 <HxGrid 
     @ref="grid" 
     TItem="UserWithContextDTO" 
@@ -25,10 +25,10 @@
 
 <HxOffcanvas
     @ref="offcanvasComponent"
-    Title="@($"Editting {editSelectedUser.Username}")"
+    Title="Editting"
     CloseButtonIcon="BootstrapIcon.X">    
     <HeaderTemplate>
-        <h2>@editSelectedUser.Username</h2>
+        <h3>@editSelectedUser.Username</h3>
     </HeaderTemplate>
     <BodyTemplate>
         <HxCheckboxList TItem="UserRoleDTO"

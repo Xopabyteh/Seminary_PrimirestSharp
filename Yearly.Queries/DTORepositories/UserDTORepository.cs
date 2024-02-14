@@ -13,7 +13,7 @@ public class UserDTORepository
 
     public async Task<List<UserWithContextDTO>> GetUsersWithContextAsync(
         UsersWithContextFilter filter,
-        int page,
+        int pageOffset,
         int pageSize,
         CancellationToken ctx)
     {
@@ -26,7 +26,7 @@ public class UserDTORepository
                   LEFT JOIN [Domain].[UserRoles] R ON U.Id = R.UserId
                   WHERE Username LIKE '%' + @Filter + '%'
                   ORDER BY Id
-                  OFFSET (@Page) * @PageSize ROWS
+                  OFFSET @PageOffset ROWS
                   FETCH NEXT @PageSize ROWS ONLY;
                   """;
 
@@ -35,7 +35,7 @@ public class UserDTORepository
             sql,
             parameters: new {
                 Filter = filter.UsernameFilter,
-                Page = page,
+                PageOffset = pageOffset,
                 PageSize = pageSize
             },
             cancellationToken: ctx));

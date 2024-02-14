@@ -1,0 +1,40 @@
+﻿@page "/FoodsPage"
+@using Yearly.Contracts.Foods
+
+<LeaveIfNotAuthorized RequiredRoles='new [] {UserRole.Admin}' />
+<HxGrid @ref="grid"
+        TItem="FoodWithContextDTO"
+        DataProvider="GetGridData"
+        PageSize="8"
+        Responsive="true">
+    <Columns>
+        <HxGridColumn HeaderText="Id" ItemTextSelector="f => f.Id.ToString()"/>
+        <HxGridColumn HeaderText="Name" ItemTextSelector="f => f.Name">
+            <HeaderTemplate>
+                <HxInputText @bind-Value="filterModel.NameFilter" BindEvent="BindEvent.OnInput" @bind-Value:after="grid.RefreshDataAsync" Placeholder="Type to search Name" InputSize="InputSize.Small" />
+            </HeaderTemplate>
+        </HxGridColumn>
+        <HxGridColumn HeaderText="AliasForFoodId" ItemTextSelector="@(f => f.AliasForFoodId?.ToString() ?? "-")" />
+        <HxGridColumn HeaderText="AliasOriginName" ItemTextSelector="@(f => f.AliasOriginName ?? "-")"/>
+        <HxContextMenuGridColumn Context="item">
+            <HxContextMenu>
+                <HxContextMenuItem Text="Edit" Icon="BootstrapIcon.Pencil" OnClick="async () => await HandleEditUserClick(item)" />
+            </HxContextMenu>
+        </HxContextMenuGridColumn>
+    </Columns>
+</HxGrid>
+
+<HxOffcanvas @ref="offcanvasComponent"
+             Title="Editting"
+             CloseButtonIcon="BootstrapIcon.X">
+    <HeaderTemplate>
+        <h3>@(editSelectedFood.Name.Length < 10 ? editSelectedFood.Name : $"{editSelectedFood.Name.Substring(0,8)}..")</h3>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <HxInputText Label='Alias For Food Id' Placeholder='Enter custom alias id' Type='InputType.Text' InputMode='InputMode.Text' @bind-Value='editInputAliasForFoodId'>
+            <InputGroupEndTemplate>
+                <HxButton OnClick='HandleSetAliasClick' Text="Set alias" Icon="BootstrapIcon.FileArrowUp" Color="ThemeColor.Primary" />
+            </InputGroupEndTemplate>
+        </HxInputText>
+    </BodyTemplate>
+</HxOffcanvas>

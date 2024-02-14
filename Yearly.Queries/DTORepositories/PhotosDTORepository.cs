@@ -59,7 +59,10 @@ public class PhotosDTORepository
         return new MyPhotosResponse(photoLinks.ToList(), totalPhotoCount);
     }
 
-    public async Task<List<PhotoWithContextDTO>> GetPhotosWithContextAsync(int pageSize, int pageNumber, CancellationToken ctx)
+    public async Task<List<PhotoWithContextDTO>> GetPhotosWithContextAsync(
+        int pageOffset,
+        int pageSize,
+        CancellationToken ctx)
     {
         var sql = """
                   SELECT
@@ -73,7 +76,7 @@ public class PhotosDTORepository
                   JOIN [Domain].[Foods] F ON P.FoodId_Value = F.Id
                   JOIN [Domain].[Users] U ON P.PublisherId_Value = U.Id
                   ORDER BY P.PublishDate
-                  OFFSET @Page ROWS
+                  OFFSET @PageOffset ROWS
                   FETCH NEXT @PageSize ROWS ONLY;
                   """;
 
@@ -86,7 +89,7 @@ public class PhotosDTORepository
             sql,
             parameters: new
             {
-                Page = pageNumber * pageSize,
+                PageOffset = pageOffset,
                 PageSize = pageSize
             },
             cancellationToken: ctx));

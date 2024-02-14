@@ -23,7 +23,10 @@ public partial class PhotosPage
     {
         return new GridDataProviderResult<PhotoWithContextDTO>()
         {
-            Data = await _photosDTORepository.GetPhotosWithContextAsync(request.Count!.Value, request.StartIndex, request.CancellationToken),
+            Data = await _photosDTORepository.GetPhotosWithContextAsync(
+                request.StartIndex,
+                request.Count!.Value, 
+                request.CancellationToken),
             TotalCount = await _photosDTORepository.GetTotalPhotosCountAsync(request.CancellationToken)
         };
     }

@@ -11,6 +11,7 @@ public static class DependencyInjection
         //services.Configure<QueryModelOptions>(configuration.GetSection(QueryModelOptions.SectionName));
 
         services.AddScoped<PhotosDTORepository>();
+        services.AddScoped<FoodDTORepository>();
         services.AddScoped<FoodSimilarityTableDTORepository>();
         services.AddScoped<WeeklyMenuDTORepository>();
         services.AddScoped<UserDTORepository>();
