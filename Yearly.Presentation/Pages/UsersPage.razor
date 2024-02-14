@@ -1,7 +1,10 @@
 ﻿@page "/UsersPage"
 @using Yearly.Contracts.Authentication
 
+<PageTitle>Users</PageTitle>
+
 <LeaveIfNotAuthorized RequiredRoles='new [] {UserRole.Admin}'/>
+
 <HxGrid 
     @ref="grid" 
     TItem="UserWithContextDTO" 

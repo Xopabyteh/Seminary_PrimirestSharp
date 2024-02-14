@@ -1,7 +1,10 @@
 ﻿@page "/FoodsPage"
 @using Yearly.Contracts.Foods
 
+<PageTitle>Foods</PageTitle>
+
 <LeaveIfNotAuthorized RequiredRoles='new [] {UserRole.Admin}' />
+
 <HxGrid @ref="grid"
         TItem="FoodWithContextDTO"
         DataProvider="GetGridData"
