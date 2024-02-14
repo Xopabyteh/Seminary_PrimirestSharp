@@ -21,6 +21,8 @@ public partial class FoodBlock
     private ElementReference imagesReference;
     //<div class="controls">
     private ElementReference imagesControlsReference;
+
+    private string foodPrice = "53~55";
     private async void RaiseOnOrderClickedEvent()
     {
         await OnOrderClicked.InvokeAsync(this);

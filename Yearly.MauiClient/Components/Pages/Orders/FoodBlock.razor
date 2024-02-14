@@ -1,9 +1,8 @@
-﻿
-<div class='card @(IsOrdered ? "ordered" : string.Empty)'>
+﻿<div class='card @(IsOrdered ? "ordered" : string.Empty)'>
     <div class='card-body'>
         <p class='fs-regular fw-regular'>@Food.Name</p>
         <div class='food-details fs-small color-secondary'>
-            <p>73Kč</p>
+            <p>@foodPrice Kč</p>
             <p>@(string.IsNullOrEmpty(Food.Allergens) ? "-" : Food.Allergens)</p>
         </div>
         <button @onclick='RaiseOnOrderClickedEvent' class='button bg-primary @(!IsLoaded ? "placeholder placeholder-glow" : string.Empty) @(IsOrdered ? "accent" : string.Empty)'>
