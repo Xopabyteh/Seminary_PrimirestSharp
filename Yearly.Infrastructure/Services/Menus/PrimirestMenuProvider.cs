@@ -36,11 +36,6 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
 
     public async Task<ErrorOr<List<Food>>> PersistAvailableMenusAsync()
     {
-        // Delete old menus from primirest
-        var deleteMenusResult = await DeleteOldMenusAsync();
-        if(deleteMenusResult.IsError)
-            return deleteMenusResult.Errors;
-
         // Load menus from primirest
         var primirestMenusResult = await GetMenusThisWeekAsync();
         if (primirestMenusResult.IsError)
@@ -58,27 +53,24 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     }
 
     /// <summary>
-    /// Scrape the index page of Primirest to get the menu ids
+    /// Delete menus from our db, that are no longer accessible through primirest
     /// </summary>
     /// <returns></returns>
-    private static async Task<int[]> GetMenuIdsAsync(HttpClient loggedClient)
+    public Task<ErrorOr<Unit>> DeleteOldMenusAsync()
     {
-        //Get index page
-        var indexPageHtml = await loggedClient.GetStringAsync(
-            "CS/boarding/index?purchasePlaceID=24087276&suppressOptionsDialog=true&menuViewType=SIMPLE");
+        return _authService.PerformAdminLoggedSessionAsync<Unit>(async loggedClient =>
+        {
+            var menusOnPrimirest = await GetMenuIdsAsync(loggedClient);
+            var menusInDb = await _weeklyMenuRepository.GetWeeklyMenuIdsAsync();
 
-        //Scrape the menu ids
-        var indexPageDoc = new HtmlDocument();
-        indexPageDoc.LoadHtml(indexPageHtml);
+            var menusToDelete = menusInDb
+                .Where(id => !menusOnPrimirest.Contains(id.Value))
+                .ToList();
 
-        const string xpath = @"//div[@class='menu-select panel-control responsive-control']//select//option";
-        var idOptionElements = indexPageDoc.DocumentNode.SelectNodes(xpath);
-        var idsResult = idOptionElements
-            .Select(e => e.GetAttributeValue("value", string.Empty))
-            .Select(int.Parse)
-            .ToArray();
+            await _weeklyMenuRepository.ExecuteDeleteMenusAsync(menusToDelete);
 
-        return idsResult;
+            return Unit.Value;
+        });
     }
 
     /// <summary>
@@ -87,7 +79,8 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     /// </summary>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    private async Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync()
+    //Internal for testing purposes
+    internal async Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
@@ -202,32 +195,12 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     }
 
     /// <summary>
-    /// Delete menus from our db, that are no longer accessible through primirest
-    /// </summary>
-    /// <returns></returns>
-    private Task<ErrorOr<Unit>> DeleteOldMenusAsync()
-    {
-        return _authService.PerformAdminLoggedSessionAsync<Unit>(async loggedClient =>
-        {
-            var menusOnPrimirest = await GetMenuIdsAsync(loggedClient);
-            var menusInDb = await _weeklyMenuRepository.GetWeeklyMenuIdsAsync();
-
-            var menusToDelete = menusInDb
-                .Where(id => !menusOnPrimirest.Contains(id.Value))
-                .ToList();
-
-            await _weeklyMenuRepository.ExecuteDeleteMenusAsync(menusToDelete);
-
-            return Unit.Value;
-        });
-    }
-
-    /// <summary>
     /// Persists foods from primirest to sharp repositories
     /// and returns the newly persisted foods (which are essentially remapped primirest foods)
     /// </summary>
     /// <returns>Returns newly persisted foods</returns>
-    private async Task<List<Food>> PersistNewMenusAsync(List<PrimirestWeeklyMenu> primirestWeeklyMenusToPersist)
+    //Internal for testing purposes
+    internal async Task<List<Food>> PersistNewMenusAsync(List<PrimirestWeeklyMenu> primirestWeeklyMenusToPersist)
     {
         var newlyPersistedFoods = new List<Food>(primirestWeeklyMenusToPersist.Count * 3);
         foreach (var primirestWeeklyMenu in primirestWeeklyMenusToPersist)
@@ -282,5 +255,29 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
         }
 
         return newlyPersistedFoods;
+    }
+
+    /// <summary>
+    /// Scrape the index page of Primirest to get the menu ids
+    /// </summary>
+    /// <returns></returns>
+    private static async Task<int[]> GetMenuIdsAsync(HttpClient loggedClient)
+    {
+        //Get index page
+        var indexPageHtml = await loggedClient.GetStringAsync(
+            "CS/boarding/index?purchasePlaceID=24087276&suppressOptionsDialog=true&menuViewType=SIMPLE");
+
+        //Scrape the menu ids
+        var indexPageDoc = new HtmlDocument();
+        indexPageDoc.LoadHtml(indexPageHtml);
+
+        const string xpath = @"//div[@class='menu-select panel-control responsive-control']//select//option";
+        var idOptionElements = indexPageDoc.DocumentNode.SelectNodes(xpath);
+        var idsResult = idOptionElements
+            .Select(e => e.GetAttributeValue("value", string.Empty))
+            .Select(int.Parse)
+            .ToArray();
+
+        return idsResult;
     }
 }

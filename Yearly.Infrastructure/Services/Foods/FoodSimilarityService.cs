@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using F23.StringSimilarity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -48,22 +49,33 @@ public class FoodSimilarityService : IFoodSimilarityService
             .Select(f => new FoodView(f.Id, f.Name))
             .ToList();
 
+        var similarityRecords = CreateFoodSimilarityRecords(newlyLearnedFoodViews, viewsFromDb);
+
+        await _dbContext.FoodSimilarityTable.AddRangeAsync(similarityRecords);
+
+        return Unit.Value;
+    }
+
+    internal List<FoodSimilarityRecord> CreateFoodSimilarityRecords(
+        List<FoodView> newlyLearnedFoodViews,
+        List<FoodView> viewsFromDb)
+    {
         var similarityAlg = new F23.StringSimilarity.JaroWinkler();
         var similarFoods = new List<FoodSimilarityRecord>();
 
         //Compare newly learned foods with each other, and aginst foods in database
-        for (int f = 0; f < newlyLearnedFoods.Count; f++)
+        for (int f = 0; f < newlyLearnedFoodViews.Count; f++)
         {
             var firstFood = newlyLearnedFoodViews[f];
 
             //Compare to other new foods
-            for (int s = f + 1; s < newlyLearnedFoods.Count; s++)
+            for (int s = f + 1; s < newlyLearnedFoodViews.Count; s++)
             {
                 var secondFood = newlyLearnedFoodViews[s];
                 var similarity = similarityAlg.Similarity(firstFood.Name, secondFood.Name);
                 if (similarity >= _options.NameStringSimilarityThreshold)
                 {
-                    similarFoods.Add(new (firstFood.Id, secondFood.Id, similarity));
+                    similarFoods.Add(new(firstFood.Id, secondFood.Id, similarity));
                 }
             }
 
@@ -74,14 +86,12 @@ public class FoodSimilarityService : IFoodSimilarityService
                 var similarity = similarityAlg.Similarity(firstFood.Name, secondFood.Name);
                 if (similarity >= _options.NameStringSimilarityThreshold)
                 {
-                    similarFoods.Add(new (firstFood.Id, secondFood.Id, similarity));
+                    similarFoods.Add(new(firstFood.Id, secondFood.Id, similarity));
                 }
             }
         }
 
-        await _dbContext.FoodSimilarityTable.AddRangeAsync(similarFoods);
-
-        return Unit.Value;
+        return similarFoods;
     }
 
     public void RemoveRecordFromTable(FoodId newlyPersistedFoodId, FoodId potentialAliasOriginId)
@@ -126,6 +136,5 @@ public class FoodSimilarityService : IFoodSimilarityService
             .Where(r => r.Similarity >= 1)
             .ExecuteDeleteAsync();
     }
-
-    private readonly record struct FoodView(FoodId Id, string Name);
+    internal readonly record struct FoodView(FoodId Id, string Name); // Internal due to testing purposes
 }

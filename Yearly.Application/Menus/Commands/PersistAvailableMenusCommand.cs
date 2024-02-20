@@ -27,6 +27,10 @@ public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvaila
 
     public async Task<ErrorOr<Unit>> Handle(PersistAvailableMenusCommand request, CancellationToken cancellationToken)
     {
+        var deleteResult = await _primirestMenuProvider.DeleteOldMenusAsync();
+        if(deleteResult.IsError)
+            return deleteResult.Errors;
+
         //The menus here are not yet in the db, because unit of work was not saved yet.
         var newlyPersistedFoods = await _primirestMenuProvider.PersistAvailableMenusAsync();
         if(newlyPersistedFoods.IsError)

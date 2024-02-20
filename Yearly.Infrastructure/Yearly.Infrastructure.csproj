@@ -56,4 +56,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
 
+    <!--Show internals to tests project-->
+    <ItemGroup>
+	    <InternalsVisibleTo Include="Yearly.Infrastructure.Tests" />
+    </ItemGroup>
 </Project>
