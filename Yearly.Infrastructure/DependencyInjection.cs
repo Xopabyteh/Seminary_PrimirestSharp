@@ -85,6 +85,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProviderDev>();
         services.AddScoped<IPrimirestAdminLoggedSessionRunner, PrimirestAdminLoggedSessionRunnerDev>();
+        services.AddScoped<IPrimirestOrderService, PrimirestOrderServiceDev>();
     }
 
     private static void AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
