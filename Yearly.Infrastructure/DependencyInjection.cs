@@ -44,11 +44,15 @@ public static class DependencyInjection
 
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
-        services.AddScoped<PrimirestAuthService>();
-        //services.AddScoped<IAuthService, PrimirestAuthService>();
-        services.AddScoped<IAuthService>(sp => sp.GetRequiredService<PrimirestAuthService>());
+        //services.AddScoped<PrimirestAuthService>();
+        //services.AddScoped<IAuthService>(sp =t6> sp.GetRequiredService<PrimirestAuthService>());
 
+        services.AddScoped<IAuthService, PrimirestAuthService>();
+        services.AddScoped<IPrimirestAdminLoggedSessionRunner, PrimirestAdminLoggedSessionRunner>();
+
+        services.AddScoped<IPrimirestMenuPersister, PrimirestMenuPersister>();
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
+
         services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();
         services.AddScoped<IFoodSimilarityService, FoodSimilarityService>();
         services.Configure<FoodSimilarityServiceOptions>(

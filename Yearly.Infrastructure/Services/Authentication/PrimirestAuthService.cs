@@ -2,7 +2,6 @@
 using System.Security.Cryptography;
 using System.Text;
 using ErrorOr;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Yearly.Application.Authentication;
 using Yearly.Infrastructure.Http;
@@ -13,14 +12,10 @@ public class PrimirestAuthService : IAuthService
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly PrimirestAdminCredentialsOptions _adminCredentials;
-    //private readonly IUserRepository _userRepository;
-    public PrimirestAuthService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider, IOptions<PrimirestAdminCredentialsOptions> adminCredentials/*, IUserRepository userRepository*/)
+    public PrimirestAuthService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider)
     {
         _httpClientFactory = httpClientFactory;
         _dateTimeProvider = dateTimeProvider;
-        //_userRepository = userRepository;
-        _adminCredentials = adminCredentials.Value;
     }
 
     /// <summary>
@@ -129,42 +124,6 @@ public class PrimirestAuthService : IAuthService
         var userId = (int)int.Parse(userDetailsObj.ID.ToString());
         var userName = (string)userDetailsObj.Name.ToString();
         return new PrimirestUserInfo(userId, userName);
-    }
-
-    /// <summary>
-    /// Login to primirest with the infrastructue admin credentials (Martin's credentials)
-    /// Performs the given action
-    /// Logs out the admin credentials
-    /// </summary>
-    /// <typeparam name="TResult">The type to be returned from the function</typeparam>
-    /// <param name="action">The function to be called. It should be async. You receive a <see cref="HttpClient"/>
-    /// created by the factory with the name <see cref="HttpClientNames.Primirest"/> and with the session cookie set.
-    /// </param>
-    /// <returns>Error or TResult</returns>
-    internal async Task<ErrorOr<TResult>> PerformAdminLoggedSessionAsync<TResult>(Func<HttpClient, Task<ErrorOr<TResult>>> action)
-    {
-        //Login as admin
-        var username = _adminCredentials.AdminUsername;
-        var password = _adminCredentials.AdminPassword;
-
-        var loginResult = await LoginAsync(username, password);
-        if (loginResult.IsError)
-            return Errors.Errors.PrimirestAdapter.InvalidAdminCredentials;
-
-
-        var sessionCookie = loginResult.Value;
-
-        var primirestLoggedClient = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
-        primirestLoggedClient.DefaultRequestHeaders.Add("Cookie", sessionCookie);
-
-        //Perform the action
-        var result = await action(primirestLoggedClient);
-
-        //Logout
-        await LogoutAsync(sessionCookie);
-        primirestLoggedClient.DefaultRequestHeaders.Remove("Cookie");
-
-        return result;
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using Yearly.Domain.Models.FoodAgg;
+﻿
+using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 
 namespace Yearly.Domain.Repositories;
@@ -13,4 +14,6 @@ public interface IFoodRepository
     /// <returns></returns>
     public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds);
     public Task UpdateFoodAsync(Food food);
+    public Task AddFoodAsync(Food food);
+    public Task<bool> DoesFoodWithPrimirestIdentifierExistAsync(PrimirestFoodIdentifier id);
 }

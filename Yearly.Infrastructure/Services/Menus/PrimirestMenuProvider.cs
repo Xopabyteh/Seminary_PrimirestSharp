@@ -1,15 +1,8 @@
 ﻿using ErrorOr;
 using HtmlAgilityPack;
-using MediatR;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Yearly.Application.Common.Interfaces;
-using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Domain.Models.MenuAgg.ValueObjects;
-using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Infrastructure.Errors;
-using Yearly.Infrastructure.Persistence.Repositories;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Orders.PrimirestStructures;
 
@@ -17,70 +10,14 @@ namespace Yearly.Infrastructure.Services.Menus;
 
 public class PrimirestMenuProvider : IPrimirestMenuProvider
 {
-    private readonly PrimirestAuthService _authService;
-    private readonly WeeklyMenuRepository _weeklyMenuRepository;
-    private readonly ILogger<PrimirestMenuProvider> _logger;
-    private readonly FoodRepository _foodRepository;
+    private readonly IPrimirestAdminLoggedSessionRunner _loggedSessionRunner;
 
-    public PrimirestMenuProvider(
-        PrimirestAuthService authService, 
-        WeeklyMenuRepository weeklyMenuRepository,
-        ILogger<PrimirestMenuProvider> logger, 
-        FoodRepository foodRepository)
+    public PrimirestMenuProvider(IPrimirestAdminLoggedSessionRunner loggedSessionRunner)
     {
-        _authService = authService;
-        _weeklyMenuRepository = weeklyMenuRepository;
-        _logger = logger;
-        _foodRepository = foodRepository;
+        _loggedSessionRunner = loggedSessionRunner;
     }
 
-    public async Task<ErrorOr<List<Food>>> PersistAvailableMenusAsync()
-    {
-        // Load menus from primirest
-        var primirestMenusResult = await GetMenusThisWeekAsync();
-        if (primirestMenusResult.IsError)
-            return primirestMenusResult.Errors;
-
-        // Check if there are any menus
-        var primirestWeeklyMenus = primirestMenusResult.Value;
-        if (primirestWeeklyMenus.Count == 0)
-            return new List<Food>(); //No menus available -> nothing to persist
-
-        // If there are new menus, persist them
-        var newlyPersistedFoods = await PersistNewMenusAsync(primirestWeeklyMenus);
-
-        return newlyPersistedFoods;
-    }
-
-    /// <summary>
-    /// Delete menus from our db, that are no longer accessible through primirest
-    /// </summary>
-    /// <returns></returns>
-    public Task<ErrorOr<Unit>> DeleteOldMenusAsync()
-    {
-        return _authService.PerformAdminLoggedSessionAsync<Unit>(async loggedClient =>
-        {
-            var menusOnPrimirest = await GetMenuIdsAsync(loggedClient);
-            var menusInDb = await _weeklyMenuRepository.GetWeeklyMenuIdsAsync();
-
-            var menusToDelete = menusInDb
-                .Where(id => !menusOnPrimirest.Contains(id.Value))
-                .ToList();
-
-            await _weeklyMenuRepository.ExecuteDeleteMenusAsync(menusToDelete);
-
-            return Unit.Value;
-        });
-    }
-
-    /// <summary>
-    /// Fetch menus from primirest
-    /// Nothing else is done, only fetching
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    //Internal for testing purposes
-    internal async Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync()
+    public async Task<ErrorOr<List<PrimirestWeeklyMenu>>> GetMenusThisWeekAsync()
     {
         //In order to get the menus from Primirest, we need to call their menu API.
         //But since it sucks, we have to request by some arcane wizard random id
@@ -119,7 +56,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
             return commonSubstring;
         }
 
-        return await _authService.PerformAdminLoggedSessionAsync<List<PrimirestWeeklyMenu>>(async loggedClient =>
+        return await _loggedSessionRunner.PerformAdminLoggedSessionAsync<List<PrimirestWeeklyMenu>>(async loggedClient =>
         {
             //Fetch menu ids from primirest
             var menuIds = await GetMenuIdsAsync(loggedClient);
@@ -151,7 +88,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                 {
                     //Construct menu per day here
 
-                    var foods = new List<PrimirestFood>(3); 
+                    var foods = new List<PrimirestFood>(3);
                     var menuDate = day.Date.AddHours(1); //Primirest stores in cz, we parse in utc, so we add 1 to go back to cz
 
                     var rawFoodNames = new List<string>(3); //Foods with soup name in them
@@ -179,7 +116,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                     }
 
                     var soup = new PrimirestSoup(soupName.Trim(',', ' '));
-                    
+
                     //Construct menu for this day
                     var dailyMenu = new PrimirestDailyMenu(menuDate, foods, soup);
                     //reconstructedMenus.Add(menu);
@@ -195,76 +132,13 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
     }
 
     /// <summary>
-    /// Persists foods from primirest to sharp repositories
-    /// and returns the newly persisted foods (which are essentially remapped primirest foods)
-    /// </summary>
-    /// <returns>Returns newly persisted foods</returns>
-    //Internal for testing purposes
-    internal async Task<List<Food>> PersistNewMenusAsync(List<PrimirestWeeklyMenu> primirestWeeklyMenusToPersist)
-    {
-        var newlyPersistedFoods = new List<Food>(primirestWeeklyMenusToPersist.Count * 3);
-        foreach (var primirestWeeklyMenu in primirestWeeklyMenusToPersist)
-        {
-            var weeklyMenuId = new WeeklyMenuId(primirestWeeklyMenu.PrimirestMenuId);
-
-            //If we already have this menu, skip it
-            //We only want to persist menus and foods from menus, that we don't have yet
-            if (await _weeklyMenuRepository.DoesMenuExist(weeklyMenuId))
-                continue;
-
-            var dailyMenus = new List<DailyMenu>(5);
-
-            //Handle foods from this weekly menu
-            foreach (var primirestDailyMenu in primirestWeeklyMenu.DailyMenus)
-            {
-                var foodIdsForDay = new List<FoodId>(3);
-
-                //Handle foods
-                foreach (var primirestFood in primirestDailyMenu.Foods)
-                {
-                    //Don't add foods that have the same primirest food identifier
-                    //It might happen that the delete old menus function miss behaves
-                    // and we will get duplicate primirest foods in our db. That is bad
-                    if (await _foodRepository.DoesFoodWithPrimirestIdentifierExistAsync(primirestFood
-                            .PrimirestFoodIdentifier))
-                    {
-                        _logger.LogWarning("Food with primirest identifier {identifier} already exists in our db. Skipping it.", primirestFood.PrimirestFoodIdentifier);
-                        continue;
-                    }
-
-                    var food = Food.Create(
-                        new FoodId(Guid.NewGuid()),
-                        primirestFood.Name,
-                        primirestFood.Allergens,
-                        primirestFood.PrimirestFoodIdentifier);
-
-                    _logger.Log(LogLevel.Information, "New food created - {foodName}", food.Name);
-                    newlyPersistedFoods.Add(food);
-                    await _foodRepository.AddFoodAsync(food); //Todo: optimize with addRange
-
-                    foodIdsForDay.Add(food.Id);
-                }
-
-                var menuForDay = new DailyMenu(foodIdsForDay, primirestDailyMenu.Date);
-                dailyMenus.Add(menuForDay);
-            }
-
-            //Construct menu for week and store it
-            var menuForWeek = WeeklyMenu.Create(weeklyMenuId, dailyMenus);
-            await _weeklyMenuRepository.AddMenuAsync(menuForWeek);
-        }
-
-        return newlyPersistedFoods;
-    }
-
-    /// <summary>
     /// Scrape the index page of Primirest to get the menu ids
     /// </summary>
     /// <returns></returns>
-    private static async Task<int[]> GetMenuIdsAsync(HttpClient loggedClient)
+    public async Task<int[]> GetMenuIdsAsync(HttpClient adminSessionLoggedClient)
     {
         //Get index page
-        var indexPageHtml = await loggedClient.GetStringAsync(
+        var indexPageHtml = await adminSessionLoggedClient.GetStringAsync(
             "CS/boarding/index?purchasePlaceID=24087276&suppressOptionsDialog=true&menuViewType=SIMPLE");
 
         //Scrape the menu ids

@@ -5,7 +5,7 @@ using Yearly.Domain.Repositories;
 
 namespace Yearly.Infrastructure.Persistence.Repositories;
 
-public class FoodRepository : IFoodRepository
+internal sealed class FoodRepository : IFoodRepository
 {
     private readonly PrimirestSharpDbContext _context;
 
@@ -39,14 +39,12 @@ public class FoodRepository : IFoodRepository
         _context.Foods.Update(food);
         return Task.CompletedTask;
     }
-
-    internal async Task<bool> DoesFoodWithPrimirestIdentifierExistAsync(PrimirestFoodIdentifier identifier)
+    public async Task<bool> DoesFoodWithPrimirestIdentifierExistAsync(PrimirestFoodIdentifier identifier)
     {
         var result = await _context.Foods.AnyAsync(f => f.PrimirestFoodIdentifier == identifier);
         return result;
     }
-
-    internal async Task AddFoodAsync(Food food)
+    public async Task AddFoodAsync(Food food)
     {
         await _context.Foods.AddAsync(food);
     }

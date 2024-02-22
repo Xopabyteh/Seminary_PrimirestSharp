@@ -11,28 +11,28 @@ public record PersistAvailableMenusCommand : IRequest<ErrorOr<Unit>>;
 /// </summary>
 public class PersistAvailableMenusCommandHandler : IRequestHandler<PersistAvailableMenusCommand, ErrorOr<Unit>>
 {
-    private readonly IPrimirestMenuProvider _primirestMenuProvider;
+    private readonly IPrimirestMenuPersister _primirestMenuPersister;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFoodSimilarityService _foodSimilarityService;
 
     public PersistAvailableMenusCommandHandler(
-        IPrimirestMenuProvider primirestMenuProvider,
+        IPrimirestMenuPersister primirestMenuPersister,
         IUnitOfWork unitOfWork,
         IFoodSimilarityService foodSimilarityService)
     {
-        _primirestMenuProvider = primirestMenuProvider;
+        _primirestMenuPersister = primirestMenuPersister;
         _unitOfWork = unitOfWork;
         _foodSimilarityService = foodSimilarityService;
     }
 
     public async Task<ErrorOr<Unit>> Handle(PersistAvailableMenusCommand request, CancellationToken cancellationToken)
     {
-        var deleteResult = await _primirestMenuProvider.DeleteOldMenusAsync();
+        var deleteResult = await _primirestMenuPersister.DeleteOldMenusAsync();
         if(deleteResult.IsError)
             return deleteResult.Errors;
 
         //The menus here are not yet in the db, because unit of work was not saved yet.
-        var newlyPersistedFoods = await _primirestMenuProvider.PersistAvailableMenusAsync();
+        var newlyPersistedFoods = await _primirestMenuPersister.PersistAvailableMenusAsync();
         if(newlyPersistedFoods.IsError)
             return newlyPersistedFoods.Errors;
 

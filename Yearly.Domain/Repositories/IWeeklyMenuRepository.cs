@@ -7,4 +7,6 @@ public interface IWeeklyMenuRepository
     public Task AddMenuAsync(WeeklyMenu weeklyMenu);
 
     public Task<bool> DoesMenuExist(WeeklyMenuId id);
+    public Task<List<WeeklyMenuId>> GetWeeklyMenuIdsAsync();
+    public Task<int> ExecuteDeleteMenusAsync(List<WeeklyMenuId> menuIds);
 }

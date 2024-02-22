@@ -28,8 +28,4 @@
     <ProjectReference Include="..\Yearly.Infrastructure\Yearly.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Menus\" />
-  </ItemGroup>
-
 </Project>
