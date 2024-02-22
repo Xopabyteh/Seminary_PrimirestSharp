@@ -20,7 +20,7 @@ public class PrimirestMenuPersisterTest
         // Arrange
         var pLoggedSessionRunnerMock = new PrimirestAdminLoggedSessionRunnerFixture();
         var weeklyMenuRepositoryMock = new WeeklyMenuRepositoryFixture();
-        var foodRepository = new FoodRepositoryFixture();
+        var foodRepositoryMock = new FoodRepositoryFixture();
         var nullLogger = new NullLogger<PrimirestMenuPersister>();
         var pMenuProviderMock = new Mock<IPrimirestMenuProvider>();
         var mockedMenus = new List<PrimirestWeeklyMenu>()
@@ -79,7 +79,7 @@ public class PrimirestMenuPersisterTest
         var sut = new PrimirestMenuPersister(
             weeklyMenuRepositoryMock,
             nullLogger,
-            foodRepository,
+            foodRepositoryMock,
             pLoggedSessionRunnerMock, 
             pMenuProviderMock.Object);
 
@@ -88,21 +88,106 @@ public class PrimirestMenuPersisterTest
 
         // Assert
             //Foods
-            Assert.Equal(2, foodRepository.Foods.Count(f => f.Name == "Jídlo1"));
-            Assert.Equal(2, foodRepository.Foods.Count(f => f.Name == "Jídlo2"));
-            Assert.Equal(2, foodRepository.Foods.Count(f => f.Name == "Jídlo3"));
+            Assert.Equal(2, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo1"));
+            Assert.Equal(2, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo2"));
+            Assert.Equal(2, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo3"));
 
-            Assert.Equal(1, foodRepository.Foods.Count(f => f.Name == "Jídlo4"));
-            Assert.Equal(1, foodRepository.Foods.Count(f => f.Name == "Jídlo5"));
-            Assert.Equal(1, foodRepository.Foods.Count(f => f.Name == "Jídlo6"));
-            Assert.Equal(1, foodRepository.Foods.Count(f => f.Name == "Jídlo7"));
-            Assert.Equal(1, foodRepository.Foods.Count(f => f.Name == "Jídlo8"));
-            Assert.Equal(1, foodRepository.Foods.Count(f => f.Name == "Jídlo9"));
+            Assert.Equal(1, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo4"));
+            Assert.Equal(1, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo5"));
+            Assert.Equal(1, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo6"));
+            Assert.Equal(1, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo7"));
+            Assert.Equal(1, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo8"));
+            Assert.Equal(1, foodRepositoryMock.Foods.Count(f => f.Name == "Jídlo9"));
             
             //Menus
             Assert.Equal(2, weeklyMenuRepositoryMock.WeeklyMenus.Count);
     }
 
+    [Fact]
+    public async Task Persister_DoesntPersistFoodThatIsAlreadyInRepository()
+    {
+        // According to PrimirestOrderIdentifierRule
+        // Arrange
+        var pLoggedSessionRunnerMock = new PrimirestAdminLoggedSessionRunnerFixture();
+        var weeklyMenuRepositoryMock = new WeeklyMenuRepositoryFixture();
+        var foodRepositoryMock = new FoodRepositoryFixture();
+        foodRepositoryMock.Foods.Add(Food.Create(new FoodId(Guid.NewGuid()), "Jídlo1", "", new(1337, 0, 0))); //Food is already present in repo
+
+        var nullLogger = new NullLogger<PrimirestMenuPersister>();
+        var pMenuProviderMock = new Mock<IPrimirestMenuProvider>();
+        var mockedMenus = new List<PrimirestWeeklyMenu>()
+        {
+            new (
+                new List<PrimirestDailyMenu>()
+                {
+                    new PrimirestDailyMenu(
+                        new DateTime(1999, 1, 1),
+                        new List<PrimirestFood>()
+                        {
+                            new ("Jídlo1", "", new(1337, 0, 0)), //Food is already present in repo
+                            new ("Jídlo2", "", new(1337, 0, 1)),
+                            new ("Jídlo3", "", new(1337, 0, 2)),
+                        },
+                        new PrimirestSoup("Polévka1"))
+                },
+                1337),
+            };
+        pMenuProviderMock
+            .Setup(s => s.GetMenusThisWeekAsync())
+            .ReturnsAsync(mockedMenus);
+
+        var sut = new PrimirestMenuPersister(
+            weeklyMenuRepositoryMock,
+            nullLogger,
+            foodRepositoryMock,
+            pLoggedSessionRunnerMock,
+            pMenuProviderMock.Object);
+
+        // Act
+        await sut.PersistAvailableMenusAsync();
+
+        // Assert
+        Assert.Equal(1, foodRepositoryMock.Foods.Count(f => f.PrimirestFoodIdentifier.ItemId == 0));
+    }
+    
+    [Fact]
+    public async Task Persister_SkipsMenusWhichAreAlreadyInRepository()
+    {
+        // According to PrimirestWeeklyMenuId
+        // Arrange
+        var pLoggedSessionRunnerMock = new PrimirestAdminLoggedSessionRunnerFixture();
+        var weeklyMenuRepositoryMock = new Mock<WeeklyMenuRepositoryFixture>();
+        weeklyMenuRepositoryMock.Object.WeeklyMenus.Add(WeeklyMenu.Create(new WeeklyMenuId(1337), new()));
+        weeklyMenuRepositoryMock
+            .Setup(s => s.AddMenusAsync(It.IsAny<List<WeeklyMenu>>()))
+            .Verifiable();
+
+        var foodRepositoryMock = new FoodRepositoryFixture();
+        var nullLogger = new NullLogger<PrimirestMenuPersister>();
+        var pMenuProviderMock = new Mock<IPrimirestMenuProvider>();
+        var mockedMenus = new List<PrimirestWeeklyMenu>()
+        {
+            new(new(), 1337)
+        };
+        pMenuProviderMock
+            .Setup(s => s.GetMenusThisWeekAsync())
+            .ReturnsAsync(mockedMenus);
+
+        var sut = new PrimirestMenuPersister(
+            weeklyMenuRepositoryMock.Object,
+            nullLogger,
+            foodRepositoryMock,
+            pLoggedSessionRunnerMock,
+            pMenuProviderMock.Object);
+
+        // Act
+        await sut.PersistAvailableMenusAsync();
+
+        // Assert
+        weeklyMenuRepositoryMock.Verify(s
+            => s.AddMenusAsync(It.Is<List<WeeklyMenu>>(l => l.Any(w => w.Id.Value == 1337))), 
+            Times.Never);
+    }
     private class FoodRepositoryFixture : IFoodRepository
     {
         public List<Food> Foods { get; init; } = new();
@@ -114,8 +199,8 @@ public class PrimirestMenuPersisterTest
         public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds)
         {
             return Task.FromResult(Foods
-                           .Where(f => itemIds.Contains(f.PrimirestFoodIdentifier.ItemId))
-                           .ToDictionary(f => f.PrimirestFoodIdentifier.ItemId));
+                .Where(f => itemIds.Contains(f.PrimirestFoodIdentifier.ItemId))
+                .ToDictionary(f => f.PrimirestFoodIdentifier.ItemId));
         }
 
         public Task UpdateFoodAsync(Food food)
@@ -129,24 +214,34 @@ public class PrimirestMenuPersisterTest
             return Task.CompletedTask;
         }
 
-        public Task AddFoodAsync(Food food)
+        public Task<List<PrimirestFoodIdentifier>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
+            List<PrimirestFoodIdentifier> identifiers)
         {
-            Foods.Add(food);
-            return Task.CompletedTask;
+            return Task.FromResult(Foods
+                .Where(f => identifiers.Contains(f.PrimirestFoodIdentifier))
+                .Select(f => f.PrimirestFoodIdentifier)
+                .ToList());
         }
 
-        public Task<bool> DoesFoodWithPrimirestIdentifierExistAsync(PrimirestFoodIdentifier id)
+        public Task AddFoodsAsync(List<Food> foods)
         {
-            return Task.FromResult(Foods.Any(f => f.PrimirestFoodIdentifier == id));
+            Foods.AddRange(foods);
+            return Task.CompletedTask;
         }
     }
 
-    private class WeeklyMenuRepositoryFixture : IWeeklyMenuRepository
+    public class WeeklyMenuRepositoryFixture : IWeeklyMenuRepository
     {
         public List<WeeklyMenu> WeeklyMenus { get; init; } = new();
-        public Task AddMenuAsync(WeeklyMenu weeklyMenu)
+        //public Task AddMenuAsync(WeeklyMenu weeklyMenu)
+        //{
+        //    WeeklyMenus.Add(weeklyMenu);
+        //    return Task.CompletedTask;
+        //}
+
+        public virtual Task AddMenusAsync(List<WeeklyMenu> menus)
         {
-            WeeklyMenus.Add(weeklyMenu);
+            WeeklyMenus.AddRange(menus);
             return Task.CompletedTask;
         }
 

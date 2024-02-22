@@ -1,16 +1,12 @@
 ﻿using ErrorOr;
-using HtmlAgilityPack;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
 using Yearly.Domain.Models.WeeklyMenuAgg;
 using Yearly.Domain.Repositories;
-using Yearly.Infrastructure.Errors;
-using Yearly.Infrastructure.Persistence.Repositories;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Orders.PrimirestStructures;
 
@@ -84,7 +80,16 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
     /// <returns>Returns newly persisted foods</returns>
     private async Task<List<Food>> PersistNewMenusAsync(List<PrimirestWeeklyMenu> primirestWeeklyMenusToPersist)
     {
+        var newlyPersistedWeeklyMenus = new List<WeeklyMenu>(primirestWeeklyMenusToPersist.Count);
         var newlyPersistedFoods = new List<Food>(primirestWeeklyMenusToPersist.Count * 3);
+
+        var foodsWithAlreadyExistingIdentifiers = await _foodRepository.GetFoodsWithIdentifiersThatAlreadyExistAsync(
+            primirestWeeklyMenusToPersist
+                .SelectMany(w => w.DailyMenus)
+                .SelectMany(d => d.Foods)
+                .Select(f => f.PrimirestFoodIdentifier)
+                .ToList());
+
         foreach (var primirestWeeklyMenu in primirestWeeklyMenusToPersist)
         {
             var weeklyMenuId = new WeeklyMenuId(primirestWeeklyMenu.PrimirestMenuId);
@@ -107,10 +112,9 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
                     //Don't add foods that have the same primirest food identifier
                     //It might happen that the delete old menus function miss behaves
                     // and we will get duplicate primirest foods in our db. That is bad
-                    if (await _foodRepository.DoesFoodWithPrimirestIdentifierExistAsync(primirestFood
-                            .PrimirestFoodIdentifier))
+                    if (foodsWithAlreadyExistingIdentifiers.Contains(primirestFood.PrimirestFoodIdentifier))
                     {
-                        _logger.LogWarning("Food with primirest identifier {identifier} already exists in our db. Skipping it.", primirestFood.PrimirestFoodIdentifier);
+                        _logger.LogError("Food with primirest identifier {identifier} already exists in our db. Skipping it.", primirestFood.PrimirestFoodIdentifier);
                         continue;
                     }
 
@@ -122,7 +126,6 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
 
                     _logger.Log(LogLevel.Information, "New food created - {foodName}", food.Name);
                     newlyPersistedFoods.Add(food);
-                    await _foodRepository.AddFoodAsync(food); //Todo: optimize with addRange
 
                     foodIdsForDay.Add(food.Id);
                 }
@@ -133,8 +136,11 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
 
             //Construct menu for week and store it
             var menuForWeek = WeeklyMenu.Create(weeklyMenuId, dailyMenus);
-            await _weeklyMenuRepository.AddMenuAsync(menuForWeek);
+            newlyPersistedWeeklyMenus.Add(menuForWeek);
         }
+
+        await _foodRepository.AddFoodsAsync(newlyPersistedFoods);
+        await _weeklyMenuRepository.AddMenusAsync(newlyPersistedWeeklyMenus);
 
         return newlyPersistedFoods;
     }

@@ -44,8 +44,25 @@ internal sealed class FoodRepository : IFoodRepository
         var result = await _context.Foods.AnyAsync(f => f.PrimirestFoodIdentifier == identifier);
         return result;
     }
-    public async Task AddFoodAsync(Food food)
+
+    ///<returns>A list of foods that answer yes to: "Is there a food in our DB that has the same order identifier?"</returns>
+    public async Task<List<PrimirestFoodIdentifier>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
+        List<PrimirestFoodIdentifier> identifiers)
     {
-        await _context.Foods.AddAsync(food);
+        var result = await _context.Foods
+            .Where(f => identifiers.Contains(f.PrimirestFoodIdentifier))
+            .Select(f => f.PrimirestFoodIdentifier)
+            .ToListAsync();
+
+        return result;
+    }
+    //public async Task AddFoodAsync(Food food)
+    //{
+    //    await _context.Foods.AddAsync(food);
+    //}
+
+    public async Task AddFoodsAsync(List<Food> foods)
+    {
+        await _context.Foods.AddRangeAsync(foods);
     }
 }

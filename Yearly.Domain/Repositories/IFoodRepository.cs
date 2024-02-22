@@ -14,6 +14,9 @@ public interface IFoodRepository
     /// <returns></returns>
     public Task<Dictionary<int, Food>> GetFoodsByPrimirestItemIdsAsync(List<int> itemIds);
     public Task UpdateFoodAsync(Food food);
-    public Task AddFoodAsync(Food food);
-    public Task<bool> DoesFoodWithPrimirestIdentifierExistAsync(PrimirestFoodIdentifier id);
+    //public Task AddFoodAsync(Food food);
+    //public Task<bool> DoesFoodWithPrimirestIdentifierExistAsync(PrimirestFoodIdentifier id);
+    public Task<List<PrimirestFoodIdentifier>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
+        List<PrimirestFoodIdentifier> identifiers);
+    public Task AddFoodsAsync(List<Food> foods);
 }

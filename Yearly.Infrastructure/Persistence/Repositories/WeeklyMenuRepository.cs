@@ -14,10 +14,10 @@ public class WeeklyMenuRepository : IWeeklyMenuRepository
         _context = context;
     }
 
-    public async Task AddMenuAsync(WeeklyMenu weeklyMenu)
-    {
-        await _context.WeeklyMenus.AddAsync(weeklyMenu);
-    }
+    //public async Task AddMenuAsync(WeeklyMenu weeklyMenu)
+    //{
+    //    await _context.WeeklyMenus.AddAsync(weeklyMenu);
+    //}
 
     public async Task<bool> DoesMenuExist(WeeklyMenuId id)
     {
@@ -39,5 +39,10 @@ public class WeeklyMenuRepository : IWeeklyMenuRepository
             .ExecuteDeleteAsync();
 
         return deleteCount;
+    }
+
+    public async Task AddMenusAsync(List<WeeklyMenu> menus)
+    {
+        await _context.WeeklyMenus.AddRangeAsync(menus);
     }
 }
