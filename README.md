@@ -60,6 +60,10 @@ With admin user seeding:
 ```bash
 $ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https seedProfile=adminuser
 ```
+With dev mocks: (primirest API mocks, to avoid hitting their endpoints. Great in development)
+```bash
+$ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https useMock=true
+```
 ##### Arguments
 * seedProfile - the profile to seed the database with, if not provided, the database will not be seeded
 	* There are various profiles, the profiles and the way they work can be found in the `Yearly.Infrastructure` project in `Persistence\Seeding\DataSeeder.cs`

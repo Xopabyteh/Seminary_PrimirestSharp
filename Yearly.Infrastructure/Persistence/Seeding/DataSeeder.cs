@@ -363,22 +363,27 @@ public class DataSeeder
             case "dbreset":
                 _context.Database.EnsureDeleted();
                 EnsureCreated();
+                SeedAdminUser(adminUser);
+                SaveSeed();
                 return true;
 
             case "ensurecreated":
                 EnsureCreated();
+                SaveSeed();
                 break;
 
             case "adminuser":
                 EnsureCreated();
                 SeedAdminUser(adminUser);
+                SaveSeed();
                 break;
 
             case "sample":
                 EnsureCreated();
                 SeedAdminUser(adminUser);
                 SeedSample();
-                break;
+                SaveSeed();
+                return true;
 
             default:
                 Console.WriteLine("Unknown seed value - the registered ones are:");
@@ -388,8 +393,6 @@ public class DataSeeder
                 Console.WriteLine("\t-sample");
                 return false;
         }
-
-        SaveSeed();
 
         return true;
     }

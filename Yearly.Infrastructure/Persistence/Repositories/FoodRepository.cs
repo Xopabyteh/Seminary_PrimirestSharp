@@ -49,8 +49,17 @@ internal sealed class FoodRepository : IFoodRepository
     public async Task<List<PrimirestFoodIdentifier>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
         List<PrimirestFoodIdentifier> identifiers)
     {
+        //Todo: Wtf, why does this not work like this? Why must there be this obscure select statement
+        //var result = await _context.Foods
+        //    .AsNoTracking()
+        //    .Where(f => identifiers.Contains(f.PrimirestFoodIdentifier))
+        //    .Select(f => f.PrimirestFoodIdentifier)
+        //    .ToListAsync();
+
+        var identifierItemIds = identifiers.Select(i => i.ItemId).ToList();
         var result = await _context.Foods
-            .Where(f => identifiers.Contains(f.PrimirestFoodIdentifier))
+            .AsNoTracking()
+            .Where(f => identifierItemIds.Contains(f.PrimirestFoodIdentifier.ItemId))
             .Select(f => f.PrimirestFoodIdentifier)
             .ToListAsync();
 

@@ -126,7 +126,6 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
 
                 weeklyMenus.Add(weeklyMenu);
             }
-
             return weeklyMenus;
         });
     }

@@ -31,10 +31,14 @@ public static class DependencyInjection
         //Add Azure key vault if in production
         if (builder.Environment.IsProduction())
         {
-            var keyVaultUrl = builder.Configuration["KeyVaultUrl"]!; // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            var keyVaultUrl =
+                builder.Configuration[
+                    "KeyVaultUrl"]
+                !; // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
             builder.Configuration.AddAzureKeyVault(
                 new Uri(keyVaultUrl),
-                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeSharedTokenCacheCredential = true }));
+                new DefaultAzureCredential(
+                    new DefaultAzureCredentialOptions {ExcludeSharedTokenCacheCredential = true}));
         }
 
         services.AddHttpClient(HttpClientNames.Primirest, client =>
@@ -59,12 +63,28 @@ public static class DependencyInjection
             builder.Configuration.GetSection(FoodSimilarityServiceOptions.SectionName));
 
         services.Configure<PrimirestAdminCredentialsOptions>(
-            builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            builder.Configuration.GetSection(PrimirestAdminCredentialsOptions
+                .SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
         services.AddPersistence(builder);
         services.AddBackgroundJobs();
 
+        if (builder.Environment.IsDevelopment())
+        {
+            var shouldUseDevMocks = builder.Configuration.GetValue<bool?>("useMock");
+            if (shouldUseDevMocks is not null && shouldUseDevMocks.Value == true)
+            {
+                services.ReplaceServicesWithDevMocks(builder);
+            }
+        }
+
         return services;
+    }
+
+    private static void ReplaceServicesWithDevMocks(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+        services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProviderDev>();
+        services.AddScoped<IPrimirestAdminLoggedSessionRunner, PrimirestAdminLoggedSessionRunnerDev>();
     }
 
     private static void AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
@@ -78,7 +98,8 @@ public static class DependencyInjection
         //});
 
         services.Configure<DatabaseConnectionOptions>(
-            builder.Configuration.GetSection(DatabaseConnectionOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            builder.Configuration.GetSection(DatabaseConnectionOptions
+                .SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
         services.AddTransient<ISqlConnectionFactory, SqlConnectionFactory>(); //Dapper
 
@@ -90,7 +111,8 @@ public static class DependencyInjection
             options.AddInterceptors(eventsToOutboxInterceptor!);
 
             options.UseSqlServer(
-                builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString").Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+                builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString")
+                    .Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
         });
 
         services.AddScoped<WeeklyMenuRepository>();

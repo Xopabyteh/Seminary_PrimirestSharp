@@ -90,13 +90,15 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
                 .Select(f => f.PrimirestFoodIdentifier)
                 .ToList());
 
+        var existingWeeklyMenus = await _weeklyMenuRepository.GetWeeklyMenuIdsAsync();
+
         foreach (var primirestWeeklyMenu in primirestWeeklyMenusToPersist)
         {
             var weeklyMenuId = new WeeklyMenuId(primirestWeeklyMenu.PrimirestMenuId);
 
             //If we already have this menu, skip it
             //We only want to persist menus and foods from menus, that we don't have yet
-            if (await _weeklyMenuRepository.DoesMenuExist(weeklyMenuId))
+            if (existingWeeklyMenus.Contains(weeklyMenuId))
                 continue;
 
             var dailyMenus = new List<DailyMenu>(5);
