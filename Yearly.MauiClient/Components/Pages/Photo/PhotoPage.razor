@@ -27,10 +27,10 @@
                 }
             </div>
             <div class='card-holder mv-300'>
-                @if (todayMenu is not null)
+                @if (selectedMenu is not null)
                 {
                     <InputRadioGroup @bind-Value='selectedFoodId'>
-                        @foreach (var food in todayMenu!.Foods)
+                        @foreach (var food in selectedMenu!.Foods)
                         {
                             <div class='card bg-accent' @onclick="() => SelectFoodId(food.FoodId)">
                                 <InputRadio Value='food.FoodId' />

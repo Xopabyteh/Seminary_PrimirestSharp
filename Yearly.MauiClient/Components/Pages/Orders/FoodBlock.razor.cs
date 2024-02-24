@@ -6,7 +6,8 @@ namespace Yearly.MauiClient.Components.Pages.Orders;
 
 public partial class FoodBlock
 {
-    [Inject] private IJSRuntime JS { get; set; } = null!;
+    [Inject] private IJSRuntime _js { get; set; } = null!;
+    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
 
     [Parameter] public FoodDTO Food { get; set; } = null!;
     [Parameter] public bool IsOrdered { get; set; }
@@ -39,6 +40,11 @@ public partial class FoodBlock
         //var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Orders/FoodBlock.razor.js");
         //await module.InvokeVoidAsync("initializeImagesSlider", imagesReference, imagesControlsReference);
 
-        await JS.InvokeVoidAsync("FoodBlock.initializeImagesSlider", imagesReference, imagesControlsReference);
+        await _js.InvokeVoidAsync("FoodBlock.initializeImagesSlider", imagesReference, imagesControlsReference);
+    }
+
+    private async Task Handle_AddPhotoClicked(FoodDTO forFood)
+    {
+        _navigationManager.NavigateTo($"/photo?selectedFoodId={forFood.FoodId}");
     }
 }

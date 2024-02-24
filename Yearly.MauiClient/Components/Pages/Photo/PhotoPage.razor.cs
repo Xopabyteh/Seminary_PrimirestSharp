@@ -22,10 +22,9 @@ public partial class PhotoPage
     [Inject] private ToastService _toastService { get; set; } = null!;
     [Inject] private DateTimeProvider _dateTimeProvider { get; set; } = null!;
 
-    private DailyMenuDTO? todayMenu;
-    // private bool isLoading = false;
+    [Parameter, SupplyParameterFromQuery(Name = "selectedFoodId")] public string? SelectedFoodIdQuery { get; set; } = null;
 
-    //Model
+    private DailyMenuDTO? selectedMenu;
     private Guid selectedFoodId = default;
 
     private MediaFile? capturedPhotoRaw;
@@ -41,6 +40,21 @@ public partial class PhotoPage
     private bool optionsLoaded = false;
     protected override async Task OnInitializedAsync()
     {
+        // Preselect our item. If we're coming with a selected food already -> select it,
+        // otherwise select the food we have ordered
+        // if no order, don't select anything
+        if (SelectedFoodIdQuery is not null && Guid.TryParse(SelectedFoodIdQuery, out selectedFoodId))
+        {
+            await SelectBasedOnQuery();
+        }
+        else
+        {
+            await SelectBasedOnToday();
+        }
+    }
+
+    private async Task SelectBasedOnToday()
+    {
         // Get todays daily menu
         var today = _dateTimeProvider.Today;
 
@@ -50,29 +64,44 @@ public partial class PhotoPage
         if (todayWeeklyMenu == default)
         {
             //No weekly menu today
+            optionsLoaded = true;
             canTakePhotoToday = false;
             StateHasChanged();
             return;
         }
 
-        todayMenu = todayWeeklyMenu.DailyMenus.FirstOrDefault(d => d.Date == today);
-        if (todayMenu is null)
+        selectedMenu = todayWeeklyMenu.DailyMenus.FirstOrDefault(d => d.Date == today);
+        if (selectedMenu is null)
         {
             //No daily menu today
+            optionsLoaded = true;
             canTakePhotoToday = false;
             StateHasChanged();
             return;
         }
 
-        // Preselect our ordered item
+        //Try to select food that we have ordered
         var ordersForWeeks = await _menuAndOrderCacheService.CachedOrdersForWeeksAsync();
         var orders = ordersForWeeks[todayWeeklyMenu.PrimirestMenuId];
-        var todayOrder = orders.FirstOrDefault(o => todayMenu.Foods.Any(f => f.FoodId == o.SharpFoodId));
+        var todayOrder = orders.FirstOrDefault(o => selectedMenu.Foods.Any(f => f.FoodId == o.SharpFoodId));
 
         if (todayOrder is not null)
         {
             selectedFoodId = todayOrder.SharpFoodId;
         }
+
+        canTakePhotoToday = true;
+        optionsLoaded = true;
+        StateHasChanged();
+    }
+
+    private async Task SelectBasedOnQuery()
+    {
+        //selectedFoodId is filled from query here
+        var availableMenus = await _menuAndOrderCacheService.CachedMenusAsync();
+        selectedMenu = availableMenus
+            .SelectMany(m => m.DailyMenus)
+            .Single(d => d.Foods.Any(f => f.FoodId == selectedFoodId));
 
         canTakePhotoToday = true;
         optionsLoaded = true;
