@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Icu.Util;
 using Android.OS;
+using Android.Views;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using AndroidX.Work;
@@ -10,7 +11,9 @@ using Google.Common.Util.Concurrent;
 using Java.Lang;
 using Java.Util.Concurrent;
 using WindowsAzure.Messaging.NotificationHubs;
+using Yearly.MauiClient.Services;
 using Calendar = Android.Icu.Util.Calendar;
+using Debug = System.Diagnostics.Debug;
 using Locale = Java.Util.Locale;
 using NetworkType = AndroidX.Work.NetworkType;
 using TimeUnit = Java.Util.Concurrent.TimeUnit;
@@ -241,5 +244,18 @@ public class MainActivity : MauiAppCompatActivity
             Android.Util.Log.Debug(nameof(MainActivity), "Error getting work info - stack trace: {0}", e.StackTrace);
             return false;
         }
+    }
+
+    public override bool DispatchKeyEvent(KeyEvent? e)
+    {
+        if (e is {KeyCode: Keycode.Back, Action: KeyEventActions.Down})
+        {
+            //Back key pressed, go back in history
+            var historyService = IPlatformApplication.Current!.Services.GetService<HistoryService>()!;
+            historyService.TryGoBackAsync().GetAwaiter().GetResult();
+
+            return true;
+        }
+        return base.DispatchKeyEvent(e);
     }
 }
