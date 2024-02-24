@@ -271,8 +271,8 @@ public partial class PhotoPage
         StateHasChanged();
     }
 
-    private Task GoBack()
+    private void GoBack()
     {
-        return goBackButton.GoBack();
+        goBackButton.GoBack();
     }
 }

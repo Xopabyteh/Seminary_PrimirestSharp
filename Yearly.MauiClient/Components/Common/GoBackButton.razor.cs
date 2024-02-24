@@ -7,10 +7,8 @@ public partial class GoBackButton
 {
     [Parameter] public required string Text { get; set; }
 
-    [Inject] private HistoryService _history { get; set; } = null!;
-
-    public Task GoBack()
+    public void GoBack()
     {
-        return _history.TryGoBackAsync();
+        HistoryManager.Instance.TryGoBack();
     }
 }

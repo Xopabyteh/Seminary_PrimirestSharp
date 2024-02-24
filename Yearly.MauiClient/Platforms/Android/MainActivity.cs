@@ -11,6 +11,7 @@ using Google.Common.Util.Concurrent;
 using Java.Lang;
 using Java.Util.Concurrent;
 using WindowsAzure.Messaging.NotificationHubs;
+using Yearly.MauiClient.Components.Common;
 using Yearly.MauiClient.Services;
 using Calendar = Android.Icu.Util.Calendar;
 using Debug = System.Diagnostics.Debug;
@@ -251,8 +252,7 @@ public class MainActivity : MauiAppCompatActivity
         if (e is {KeyCode: Keycode.Back, Action: KeyEventActions.Down})
         {
             //Back key pressed, go back in history
-            var historyService = IPlatformApplication.Current!.Services.GetService<HistoryService>()!;
-            historyService.TryGoBackAsync().GetAwaiter().GetResult();
+            HistoryManager.Instance.TryGoBack();
 
             return true;
         }

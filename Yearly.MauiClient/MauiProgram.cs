@@ -35,8 +35,6 @@ public static class MauiProgram
             c.AddDebug();
         });
 #endif
-        builder.Services.AddTransient<HistoryService>();
-
         builder.Services.AddTransient<DateTimeProvider>();
 
         builder.Services.AddTransient<ToastService>();

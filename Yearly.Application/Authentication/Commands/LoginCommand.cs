@@ -41,21 +41,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
 
     public async Task<ErrorOr<LoginResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-#if DEBUG
-        //This is a little dirty, but it's only dev code
-        if (request.Username == "debug")
-        {
-            var debugUserId = await _sessionCache.GetAsync("debug");
-            if (debugUserId is null)
-            {
-                return Errors.Errors.Authentication.SessionNotCached;
-            }
-            var debugUser = await _userRepository.GetByIdAsync(debugUserId!);
-            var result = new LoginResult("debug", debugUser!, _sessionCache.SessionExpiration);
-            return result;
-        }
-#endif
-
         var externalLoginResult = await _authService.LoginAsync(request.Username, request.Password);
 
         if (externalLoginResult.IsError)
