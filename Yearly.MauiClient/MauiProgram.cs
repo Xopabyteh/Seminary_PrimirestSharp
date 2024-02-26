@@ -25,7 +25,6 @@ public static class MauiProgram
 #if ANDROID || IOS
         builder.UseLocalNotification();
 #endif
-
         builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
@@ -34,6 +33,7 @@ public static class MauiProgram
         {
             c.AddDebug();
         });
+
 #endif
         builder.Services.AddTransient<DateTimeProvider>();
 

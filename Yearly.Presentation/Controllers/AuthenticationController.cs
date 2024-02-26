@@ -66,10 +66,11 @@ public class AuthenticationController : ApiController
     {
         return PerformAuthenticatedActionAsync(async issuer =>
         {
+
             var logoutQuery = new LogoutCommand(issuer.SessionCookie);
             await _mediator.Send(logoutQuery);
 
-            Response.Cookies.Delete("session");
+            Response.Cookies.Delete(SessionCookieDetails.Name);
 
             return Ok();
         });

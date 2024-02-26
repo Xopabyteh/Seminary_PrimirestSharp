@@ -1,7 +1,9 @@
-﻿using ErrorOr;
+﻿
+using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Authentication.Queries;
+using Yearly.Contracts.Authentication;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Presentation.Http;
@@ -20,7 +22,7 @@ public class ApiController : ControllerBase
 
     protected async Task<IActionResult> PerformAuthenticatedActionAsync(Func<(User User, string SessionCookie), Task<IActionResult>> action)
     {
-        var sessionCookie = Request.Cookies["session"];
+        var sessionCookie = Request.Cookies[SessionCookieDetails.Name];
         if(string.IsNullOrEmpty(sessionCookie))
             return Unauthorized();
 

@@ -1,4 +1,5 @@
-﻿using Yearly.Contracts.Authentication;
+﻿using System.Net;
+using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services.SharpApi;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 
@@ -29,9 +30,10 @@ public class AuthService
     /// <summary>
     /// Returns true if a session cookie is set.
     /// </summary>
-    public bool IsLoggedIn => _sharpAPIClient.HttpClientHandler.CookieContainer.GetCookies(_sharpAPIClient.HttpClient.BaseAddress!)["session"] is not null;
+    public bool IsLoggedIn => sessionCookie is not null;
 
     public event Action OnLogin = null!;
+    private Cookie? sessionCookie;
 
 
     /// <summary>
@@ -49,6 +51,7 @@ public class AuthService
     private readonly SharpAPIClient _sharpAPIClient;
     private readonly MenuAndOrderCacheService _menuAndOrderCacheService; //Todo: remove dependency
     private readonly MyPhotosCacheService _myPhotosCacheService; //Todo: remove dependency
+    
 
     public AuthService(AuthenticationFacade authenticationFacade, SharpAPIClient sharpAPIClient, MenuAndOrderCacheService menuAndOrderCacheService, MyPhotosCacheService myPhotosCacheService)
     {
@@ -66,6 +69,7 @@ public class AuthService
     public void SetSession(LoginResponse loginResponse)
     {
         UserDetails = loginResponse.UserDetails;
+        //sessionCookie = _sharpAPIClient.SetSessionCookie(loginResponse.SessionCookieDetails);
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         OnLogin?.Invoke();
@@ -124,6 +128,12 @@ public class AuthService
         await _authenticationFacade.LogoutAsync();
 
         UserDetails = null;
+
+        if (sessionCookie is not null)
+        {
+            //_sharpAPIClient.RemoveCookie(sessionCookie);
+            sessionCookie = null;
+        }
 
         //Todo: move to event based
         _myPhotosCacheService.InvalidateCache();

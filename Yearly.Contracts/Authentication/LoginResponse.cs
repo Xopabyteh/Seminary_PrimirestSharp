@@ -7,6 +7,9 @@ public readonly record struct LoginResponse(
 
 public readonly record struct SessionCookieDetails(string Value, DateTimeOffset ExpirationDate)
 {
+    /// <summary>
+    /// Name of the cookie in the request
+    /// </summary>
     public const string Name = "session";
 }
 
