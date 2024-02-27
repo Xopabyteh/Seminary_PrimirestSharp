@@ -25,11 +25,13 @@ public class SharpAPIClient : IDisposable
 
 #if ANDROID
         //const string baseAddressLocalHost = "http://10.0.2.2:5281";
-        const string baseAddressLocalHost = "https://localhost:7217";
+        //const string baseAddressLocalHost = "https://localhost:7217";
+        const string baseAddressLocalHost = "https://ntg29zg8-7217.euw.devtunnels.ms";
         httpClient.BaseAddress = new Uri(baseAddressLocalHost);
 #endif
 #if WINDOWS
-        const string baseAddressLocalHost = "https://localhost:7217";
+        //const string baseAddressLocalHost = "https://localhost:7217";
+        const string baseAddressLocalHost = "https://ntg29zg8-7217.euw.devtunnels.ms";
         httpClient.BaseAddress = new Uri(baseAddressLocalHost);
 #endif
 #if IOS
@@ -91,5 +93,5 @@ public class SafeConnectionAwareHttpClientHandler : HttpClientHandler
         return response;
     }
 
-    public class NoInternetAccessException : Exception;
+    public class NoInternetAccessException : Exception { }
 }
