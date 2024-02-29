@@ -1,0 +1,47 @@
+using System.ComponentModel.DataAnnotations;
+using Havit.Blazor.Components.Web;
+using Microsoft.AspNetCore.Components;
+using Yearly.Presentation.Pages.Services;
+
+namespace Yearly.PanelClient.Pages;
+
+public partial class LoginPage
+{
+    //[Inject] private SessionDetailsService _sessionDetailsService { get; set; } = null!;
+    [Inject] private BrowserCookieService _browserCookieService { get; set; } = null!;
+    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
+    [Inject] private IHxMessengerService _messenger { get; set; } = null!;
+
+
+    private LoginModel model = new();
+
+    private async Task SubmitLogin()
+    {
+        //var loginCommand = new LoginCommand(model.Username, model.Password);
+        //var result = await _mediator.Send(loginCommand);
+
+        //if (result.IsError)
+        //{
+        //    _messenger.AddError(result.FirstError.Description);
+        //}
+
+        ////Save cookie
+        //await _browserCookieService.WriteCookieAsync(
+        //    SessionCookieDetails.Name,
+        //    result.Value.SessionCookie,
+        //    result.Value.SessionExpirationTime.Date);
+
+        ////Init session
+        //_sessionDetailsService.Init(result.Value.SessionCookie, result.Value.User);
+
+        //// -> Redirect to home page
+        //_navigationManager.NavigateTo("/");
+    }
+
+    private class LoginModel
+    {
+        [Required] public string Username { get; set; } = string.Empty;
+
+        [Required] public string Password { get; set; } = string.Empty;
+    }
+}

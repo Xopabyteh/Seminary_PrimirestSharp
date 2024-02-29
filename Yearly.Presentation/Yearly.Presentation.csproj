@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
     <ProjectReference Include="..\Yearly.Infrastructure\Yearly.Infrastructure.csproj" />
+    <ProjectReference Include="..\Yearly.PanelClient\Yearly.PanelClient.csproj" />
     <ProjectReference Include="..\Yearly.Queries\Yearly.Queries.csproj" />
   </ItemGroup>
 
@@ -37,10 +38,12 @@
     <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="4.5.5" />
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

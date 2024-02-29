@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\App.razor" />
+    <Content Remove="Routes.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\app.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap-min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\svg\logo_bubble.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Components\Common\AuthorizedView.razor" />
+    <None Include="Layout\NoMenuLayout.razor" />
+    <None Include="Layout\Sidebar.razor" />
+    <None Include="Components\App.razor" />
+    <None Include="Components\Routes.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Havit.Blazor.Components.Web" Version="4.5.5" />
+    <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="4.5.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\favicon.png">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

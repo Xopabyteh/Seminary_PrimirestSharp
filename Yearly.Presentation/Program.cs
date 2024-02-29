@@ -5,6 +5,8 @@ using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure;
 using Yearly.Infrastructure.Persistence.Seeding;
+using Yearly.PanelClient;
+using Yearly.PanelClient.Components;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
 using Yearly.Queries;
@@ -15,7 +17,8 @@ builder.Services
     .AddPresentation(builder)
     .AddQueries(builder.Configuration)
     .AddInfrastructure(builder)
-    .AddApplication();
+    .AddApplication()
+    .AddPanelClient(); //Hosted blazor client application
 
 var app = builder.Build();
 
@@ -68,14 +71,14 @@ app.UseStaticFiles();
     //    @"* * * * *"); //Every minute
 }
 
-
-//app
-//    .MapRazorComponents<App>()
-//    .AddInteractiveServerRenderMode();
 app.MapControllers();
-
 app.UseRouting();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+
+//Panel client - hosted blazor client application
+app.UseAntiforgery();
+app.MapRazorComponents<App>()
+    .AddInteractiveWebAssemblyRenderMode();
+
+//app.MapFallbackToPage("/_Host");
 
 app.Run();

@@ -8,7 +8,6 @@ using Yearly.Presentation.BackgroundJobs;
 using Yearly.Presentation.Errors;
 using Yearly.Presentation.Http;
 using Yearly.Presentation.OutputCaching;
-using Yearly.Presentation.Pages;
 
 namespace Yearly.Presentation;
 
@@ -33,8 +32,6 @@ public static class DependencyInjection
 
         services.AddBackgroundJobs(builder);
 
-        services.AddBlazor();
-
         services.AddHttpClient(HttpClientNames.SharpAPI, client =>
         {
             client.BaseAddress = builder.Environment.IsProduction()
@@ -42,6 +39,8 @@ public static class DependencyInjection
                 : new Uri(builder.Configuration["API:DevBaseAddress"]!);
 
         });
+
+        services.AddBlazor();
 
         return services;
     }
@@ -73,11 +72,22 @@ public static class DependencyInjection
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
-            .UseSqlServerStorage(builder.Configuration["Persistence:DbConnectionString"])); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
-        
+            .UseSqlServerStorage(
+                builder.Configuration
+                    ["Persistence:DbConnectionString"])); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+
         services.AddHangfireServer();
 
         // Background jobs:
         services.AddTransient<PersistAvailableMenusJob>();
     }
+
+    private static void AddBlazor(this IServiceCollection services)
+    {
+        services
+            .AddRazorComponents()
+            .AddInteractiveWebAssemblyComponents();
+        services.AddAntiforgery();
+    }
+
 }

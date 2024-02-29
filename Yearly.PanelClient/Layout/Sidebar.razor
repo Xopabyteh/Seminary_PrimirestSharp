@@ -1,6 +1,4 @@
-﻿@using Yearly.Contracts.Authentication
-@using Yearly.Domain.Models.UserAgg.ValueObjects
-<HxSidebar CssClass="sticky-top">
+﻿<HxSidebar CssClass="sticky-top">
     <HeaderTemplate>
         <HxSidebarBrand BrandName="Primirest#">
             <LogoTemplate>
@@ -25,8 +23,8 @@
     </ItemsTemplate>
 
      <FooterTemplate>
-         @if (_sessionDetails.IsAuthenticated)
-        {
+         @* @if (_sessionDetails.IsAuthenticated) *@
+        @* {
             <div class="login-display d-flex align-items-center w-100 p-3">
                 <span class="login-display-nickname mx-3">@_sessionDetails.User!.Username</span>
                 <div class="ms-auto">
@@ -39,7 +37,7 @@
         else
          {
             <HxSidebarFooter Href="/login" Icon="BootstrapIcon.Person" Text="@(context.SidebarCollapsed ? null : "Login")" />
-         }
+         } *@
      </FooterTemplate>
  </HxSidebar>
  
