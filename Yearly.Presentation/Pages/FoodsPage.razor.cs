@@ -3,6 +3,7 @@ using Havit.Blazor.Components.Web.Bootstrap;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Yearly.Application.Foods.Commands.FoodSimilarity;
+using Yearly.Application.Menus.Commands;
 using Yearly.Contracts.Foods;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Queries.DTORepositories;
@@ -72,5 +73,19 @@ public partial class FoodsPage
         await offcanvasComponent.HideAsync();
 
         await grid.RefreshDataAsync();
+    }
+
+    private async Task HandleForcePersistClick()
+    {
+        var command = new PersistAvailableMenusCommand();
+        var result = await _mediator.Send(command);
+        if (result.IsError)
+        {
+            _messenger.AddError(result.FirstError.Code, result.FirstError.Description);
+            return;
+        }
+
+        await grid.RefreshDataAsync();
+        StateHasChanged();
     }
 }
