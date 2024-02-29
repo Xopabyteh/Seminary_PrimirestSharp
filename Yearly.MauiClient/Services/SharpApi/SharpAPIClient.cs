@@ -17,37 +17,16 @@ public class SharpAPIClient : IDisposable
 
     private (HttpClient client, SafeConnectionAwareHttpClientHandler handler) CreateClient()
     {
+        var handler = new SafeConnectionAwareHttpClientHandler() { UseCookies = true };
+        var httpClient = new HttpClient(handler);
+
 #if DEBUG
-
-        //Debug:
-        var handler = new SafeConnectionAwareHttpClientHandler() {UseCookies = true};
-        var httpClient = new HttpClient(handler);
-
-#if ANDROID
-        //const string baseAddressLocalHost = "http://10.0.2.2:5281";
-        //const string baseAddressLocalHost = "https://localhost:7217";
-        const string baseAddressLocalHost = "https://ntg29zg8-7217.euw.devtunnels.ms";
-        httpClient.BaseAddress = new Uri(baseAddressLocalHost);
+        const string baseAddress = "https://ntg29zg8-7217.euw.devtunnels.ms";
+#elif RELEASE
+       const string baseAddress = "https://primirest-sharp-webapp.azurewebsites.net";
 #endif
-#if WINDOWS
-        //const string baseAddressLocalHost = "https://localhost:7217";
-        const string baseAddressLocalHost = "https://ntg29zg8-7217.euw.devtunnels.ms";
-        httpClient.BaseAddress = new Uri(baseAddressLocalHost);
-#endif
-#if IOS
+        httpClient.BaseAddress = new Uri(baseAddress);
 
-#endif
-
-#endif
-
-#if RELEASE
-        //Release:
-        var handler = new SafeConnectionAwareHttpClientHandler() {UseCookies = true};
-        var httpClient = new HttpClient(handler);
-
-        const string baseAddressCloud = "https://primirest-sharp-webapp.azurewebsites.net";
-        httpClient.BaseAddress = new Uri(baseAddressCloud);
-#endif
         return (httpClient, handler);
     }
 

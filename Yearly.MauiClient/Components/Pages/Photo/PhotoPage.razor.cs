@@ -29,6 +29,7 @@ public partial class PhotoPage
 
     private MediaFile? capturedPhotoRaw;
     private MemoryStream? processedPhotoStream;
+    private bool didCapturePhoto => processedPhotoStream is not null;
     private string? capturedPhotoDisplayData = "";
 
     private bool showSuccessModal = false;
@@ -38,6 +39,9 @@ public partial class PhotoPage
 
     private bool canTakePhotoToday = true;
     private bool optionsLoaded = false;
+
+    private bool takingPhotoLoading = false;
+    private bool isPublishingPhoto = false;
     protected override async Task OnInitializedAsync()
     {
         // Preselect our item. If we're coming with a selected food already -> select it,
@@ -120,11 +124,6 @@ public partial class PhotoPage
     /// <returns></returns>
     private async Task CapturePhoto()
     {
-        //async Task<string> DisplayDataFrom(MediaFile photo)
-        //{
-        //    var imageBytes = await File.ReadAllBytesAsync(photo.Path);
-        //    return $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
-        //}
         async Task<string> DisplayDataFrom(Stream photoStream)
         {
             var imageBytes = new byte[photoStream.Length];
@@ -132,6 +131,8 @@ public partial class PhotoPage
             return $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
         }
 
+        takingPhotoLoading = true;
+        StateHasChanged();
 #if DEBUG && WINDOWS
         //Take a mock image from documents if on windows and in debug
         //So we don't have to deal with camera stuff on windows
@@ -148,19 +149,23 @@ public partial class PhotoPage
         // ReSharper disable once RedundantJumpStatement [rev: only applies to windows debug scope]
         goto skipPhotoTake; //A little dirty, but it's only dev code anyway
 #else
-    // Android/IOS or not debug
-        
-    var newPhoto = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
-    {
-        AllowCropping = true,
-        DefaultCamera = CameraDevice.Front,
-        PhotoSize = PhotoSize.MaxWidthHeight,
-        MaxWidthHeight = 1024,
-        Name = "photo.jpg",
-    });
+        // Android/IOS or not debug
+            
+        var newPhoto = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
+        {
+            AllowCropping = true,
+            DefaultCamera = CameraDevice.Front,
+            PhotoSize = PhotoSize.MaxWidthHeight,
+            MaxWidthHeight = 1024,
+            Name = "photo.jpg",
+        });
 
-    if (newPhoto is null)
-        return;
+        if (newPhoto is null)
+        {
+            takingPhotoLoading = false;
+            StateHasChanged();
+            return;
+        }
 
 #endif
 #if DEBUG && WINDOWS
@@ -197,13 +202,19 @@ public partial class PhotoPage
         //Display data
         processedPhotoStream.Position = 0; //Set for reading
         capturedPhotoDisplayData = await DisplayDataFrom(processedPhotoStream);
+
+        takingPhotoLoading = false;
         StateHasChanged();
     }
 
     private async Task TryPublishPhoto()
     {
+        if (isPublishingPhoto)
+            return;
         if (!await ValidateModel())
             return;
+
+        isPublishingPhoto = true;
 
         //Initialize stream of data to send
         processedPhotoStream!.Position = 0; //Set for reading
@@ -268,6 +279,7 @@ public partial class PhotoPage
         capturedPhotoDisplayData = null;
         
         selectedFoodId = default;
+        isPublishingPhoto = false;
         StateHasChanged();
     }
 
