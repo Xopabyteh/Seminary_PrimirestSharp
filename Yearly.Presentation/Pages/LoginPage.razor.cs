@@ -28,6 +28,7 @@ public partial class LoginPage
         if (result.IsError)
         {
             _messenger.AddError(result.FirstError.Description);
+            return;
         }
 
         //Save cookie

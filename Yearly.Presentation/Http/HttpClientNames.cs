@@ -1,6 +1,6 @@
-﻿namespace Yearly.Presentation.Http;
+﻿//namespace Yearly.Presentation.Http;
 
-public static class HttpClientNames
-{
-    public const string SharpAPI = "SharpAPI";
-}
+//public static class HttpClientNames
+//{
+//    public const string SharpAPI = "SharpAPI";
+//}

@@ -9,6 +9,16 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
+    "https-mock": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "https://localhost:7217;http://localhost:5281",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "useMock": "true"
+      }
+    },
     "https-production": {
       "commandName": "Project",
       "dotnetRunMessages": true,

@@ -35,13 +35,13 @@ public static class DependencyInjection
 
         services.AddBlazor();
 
-        services.AddHttpClient(HttpClientNames.SharpAPI, client =>
-        {
-            client.BaseAddress = builder.Environment.IsProduction()
-                ? new Uri(builder.Configuration["API:ProdBaseAddress"]!)
-                : new Uri(builder.Configuration["API:DevBaseAddress"]!);
+        //services.AddHttpClient(HttpClientNames.SharpAPI, client =>
+        //{
+        //    client.BaseAddress = builder.Environment.IsProduction()
+        //        ? new Uri(builder.Configuration["API:ProdBaseAddress"]!)
+        //        : new Uri(builder.Configuration["API:DevBaseAddress"]!);
 
-        });
+        //});
 
         return services;
     }

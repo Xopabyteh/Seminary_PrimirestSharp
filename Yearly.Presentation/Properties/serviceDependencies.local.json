@@ -5,7 +5,6 @@
       "secretStore": null,
       "containerName": "azurite",
       "containerImage": "mcr.microsoft.com/azure-storage/azurite",
-      "resourceId": null,
       "type": "storage.container",
       "connectionId": "Persistence:AzureStorageConnectionString"
     }
