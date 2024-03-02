@@ -37,6 +37,8 @@ public static class MauiProgram
 #endif
         builder.Services.AddTransient<DateTimeProvider>();
 
+        builder.Services.AddTransient<IndependentNotificationHubService>();
+
         builder.Services.AddTransient<ToastService>();
 
         builder.Services.AddTransient<OrderCheckerService>();

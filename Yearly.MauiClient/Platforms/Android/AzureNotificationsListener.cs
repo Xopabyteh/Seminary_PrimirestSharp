@@ -8,14 +8,13 @@ internal class AzureNotificationsListener : Java.Lang.Object, INotificationListe
 {
     internal const string HubName = "PrimirestSharpNH";
     internal const string ListenConnectionString = "Endpoint=sb://PrimirestSharpNotificationHubNS.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=jbGQazmRlrCHqKOyIO+/UoA5YeY0PcfCiKx0xqBA6Ys=";
-
+    
     public async void OnPushNotificationReceived(Context context, INotificationMessage message)
     {
         //Push Notification arrived - print out the keys/values
         var data = message.Data;
         if (data == null)
             return;
-
         
 
         //Log data

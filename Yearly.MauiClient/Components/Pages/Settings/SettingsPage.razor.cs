@@ -6,11 +6,11 @@ namespace Yearly.MauiClient.Components.Pages.Settings;
 
 public partial class SettingsPage
 {
-    [Inject] private AuthService AuthService { get; set; } = null!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
-    //[Inject] private PhotoFacade PhotoFacade { get; set; } = null!;
-    [Inject] private MyPhotosCacheService MyPhotosCacheService { get; set; } = null!;
+    [Inject] private AuthService _authService { get; set; } = null!;
+    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
+    [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
+    [Inject] private IndependentNotificationHubService _notificationHubService { get; set; } = null!;
+    [Inject] private MyPhotosCacheService _myPhotosCacheService { get; set; } = null!;
 
     private decimal balance = 0;
     private decimal orderedFor = 0;
@@ -24,7 +24,10 @@ public partial class SettingsPage
 
     protected override Task OnInitializedAsync()
     {
+        LoadActiveHubNotificationTags();
+
         isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerPrefKey, false);
+
         return Task.CompletedTask;
     }
 
@@ -58,12 +61,11 @@ public partial class SettingsPage
         StateHasChanged();
     }
 
-
     private async Task Logout()
     {
-        await AuthService.LogoutAsync();
+        await _authService.LogoutAsync();
         
-        NavigationManager.NavigateTo("/login");
+        _navigationManager.NavigateTo("/login");
     }
 
     private Task RemoveAutoLogin()
@@ -72,10 +74,10 @@ public partial class SettingsPage
         //Todo:
 
         //Remove
-        AuthService.RemoveAutoLogin();
+        _authService.RemoveAutoLogin();
 
         //Refresh page
-        NavigationManager.Refresh(true);
+        _navigationManager.Refresh(true);
 
         return Task.CompletedTask;
     }
@@ -85,15 +87,15 @@ public partial class SettingsPage
         if (!firstRender)
             return;
 
-        await MenuAndOrderCacheService.WaitUntilBalanceLoaded();
-        await MenuAndOrderCacheService.WaitUntilOrderedForLoaded();
+        await _menuAndOrderCacheService.WaitUntilBalanceLoaded();
+        await _menuAndOrderCacheService.WaitUntilOrderedForLoaded();
 
-        balance = MenuAndOrderCacheService.Balance;
-        orderedFor = MenuAndOrderCacheService.OrderedFor;
+        balance = _menuAndOrderCacheService.Balance;
+        orderedFor = _menuAndOrderCacheService.OrderedFor;
         isMoneyLoaded = true;
         StateHasChanged();
 
-        myPhotos = await MyPhotosCacheService.GetMyPhotosCachedAsync();
+        myPhotos = await _myPhotosCacheService.GetMyPhotosCachedAsync();
         myPhotosLoaded = true;
         StateHasChanged();
     }
@@ -107,4 +109,29 @@ public partial class SettingsPage
             _ => $"{myPhotos.TotalPhotoCount} Sdílených fotek"
         };
     }
+
+    #region HubNotifications
+
+    string[] loadedNotificationTags; //These tags are not updated!, they are only loaded on app init.
+    private bool isEnabled_PhaNewWaitingPhoto = false;
+    private void LoadActiveHubNotificationTags()
+    {
+        loadedNotificationTags = _notificationHubService.GetTags();
+
+        isEnabled_PhaNewWaitingPhoto = loadedNotificationTags.Contains("PhaNewWaitingPhoto");
+    }
+
+    private void OnPhaNewWaitingPhotoToggle(bool isChecked)
+    {
+        if (isChecked)
+        {
+            _notificationHubService.AddTag("PhaNewWaitingPhoto");
+        }
+        else
+        {
+            _notificationHubService.RemoveTag("PhaNewWaitingPhoto");
+        }
+    }
+
+    #endregion
 }
