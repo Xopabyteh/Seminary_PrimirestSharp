@@ -121,6 +121,7 @@
 
 .status-bar-safe-area {
     display: none;
+    background-color: var(--clr-primary);
 }
 
 #splash-screen {
