@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Errors.Exceptions;
 using Yearly.Domain.Models.UserAgg;
@@ -69,7 +68,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         }
 
         //Add to cache
-        await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser.Id);
+        await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser);
 
         return new LoginResult(externalLoginResult.Value, sharpUser, _sessionCache.SessionExpiration);
     }

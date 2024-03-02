@@ -73,7 +73,7 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
 
         var photoId = new PhotoId(Guid.NewGuid());
 
-        try
+        try // try-finally Scope, so that we can dispose photo data streams
         {
             //Publish photos
             var imageLinkResult = await _photoStorage.UploadPhotoAsync(
@@ -100,6 +100,7 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
                 thumbnailLinkResult.Value);
 
             await _photoRepository.AddAsync(photo);
+            _unitOfWork.AddForUpdate(request.Publisher);
             await _unitOfWork.SaveChangesAsync();
 
             return photo;

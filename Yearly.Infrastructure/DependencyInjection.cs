@@ -91,7 +91,7 @@ public static class DependencyInjection
 
     private static void AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        services.AddSingleton<ISessionCache, SessionCache>();
+        services.AddScoped<ISessionCache, SessionCache>();
         services.AddDistributedMemoryCache();
         //services.AddStackExchangeRedisCache(c =>
         //{
