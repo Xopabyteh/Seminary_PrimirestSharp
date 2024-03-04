@@ -47,9 +47,6 @@ public partial class OrderPage
         weeklyMenuDTOsLoaded = true;
 
         StateHasChanged();
-
-        //We've drawn the page, try to scroll to today's menu
-        //Todo:
     }
 
     /// <summary>

@@ -5,12 +5,12 @@
 /// </summary>
 public class DateTimeProvider
 {
-#if RELEASE
+//#if RELEASE
     public DateTime Now => DateTime.Now;
     public DateTime Today => DateTime.Today;
-#endif
-#if DEBUG
-    public DateTime Now => DateTime.Now;
-    public DateTime Today => new DateTime(2024, 2, 23);
-#endif
+//#endif
+//#if DEBUG
+//    public DateTime Now => DateTime.Now;
+//    public DateTime Today => new DateTime(2024, 2, 23);
+//#endif
 }

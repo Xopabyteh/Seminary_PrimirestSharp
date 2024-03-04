@@ -1,6 +1,8 @@
-﻿using Java.Lang;
+﻿#if ANDROID
+using Java.Lang;
 using WindowsAzure.Messaging.NotificationHubs;
 using Object = Java.Lang.Object;
+#endif
 
 namespace Yearly.MauiClient.Services;
 
