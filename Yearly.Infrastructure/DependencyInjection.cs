@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
+using Yearly.Domain.Models.UserAgg;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Http;
@@ -127,7 +130,8 @@ public static class DependencyInjection
         services.AddScoped<IPhotoRepository, PhotoRepository>();
         //services.AddScoped<ISoupRepository, SoupRepository>();
 
-        services.AddScoped<IPhotoStorage, AzurePhotoStorage>();
+        services.AddScoped<AzurePhotoStorage>();
+        services.AddScoped<IPhotoStorage, AzurePhotoStorage>(sp => sp.GetRequiredService<AzurePhotoStorage>());
 
         builder.Services.AddAzureClients(clientBuilder =>
         {
@@ -146,5 +150,40 @@ public static class DependencyInjection
     private static void AddBackgroundJobs(this IServiceCollection services)
     {
         services.AddTransient<FireOutboxDomainEventsJob>();
+    }
+
+    public static IHost UseInfrastructure(this IHost app, IWebHostEnvironment environment, IConfiguration config)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        
+        EnsureServiceInitialization(services);
+
+        if (environment.IsDevelopment())
+        {
+            SeedData(services, config);
+        }
+
+        return app;
+    }
+
+    private static void EnsureServiceInitialization(IServiceProvider services)
+    {
+        var azureStorage = services.GetRequiredService<AzurePhotoStorage>();
+        azureStorage.EnsureContainerExists().Wait();
+    }
+
+    private static void SeedData(IServiceProvider services, IConfiguration config)
+    {
+        //Init admin user
+        var adminUser = new User(new UserId(26564871), @"Martin Fiala");
+        var admin = Admin.FromUser(adminUser);
+        admin.AddRole(UserRole.Admin, adminUser);
+
+        //Seed data (before hangfire initializes in the db)
+        //Use seed profile from args
+        var seedProfile = config.GetValue<string?>("seedProfile");
+        var dataSeeder = services.GetRequiredService<DataSeeder>();
+        dataSeeder.Seed(seedProfile, adminUser);
     }
 }

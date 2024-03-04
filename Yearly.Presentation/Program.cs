@@ -19,27 +19,7 @@ builder.Services
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-
-    //Init admin user
-    var adminUser = new User(new UserId(26564871), @"Martin Fiala");
-    var admin = Admin.FromUser(adminUser);
-    admin.AddRole(UserRole.Admin, adminUser);
-
-    //Seed data (before hangfire initializes in the db)
-    //Use seed profile from args
-    var seedProfile = builder.Configuration.GetValue<string?>("seedProfile");
-    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    var wasSeedSuccess = dataSeeder.Seed(seedProfile, adminUser);
-    if (!wasSeedSuccess)
-        return;
-
-    //Add "debug" session to cache (to be more gentle to the primirest api in development <3)
-    var sessionCache = scope.ServiceProvider.GetRequiredService<ISessionCache>();
-    await sessionCache.AddAsync("debug", adminUser);
-}
+app.UseInfrastructure(app.Environment, app.Configuration);
 
 app.UseOutputCache();
 app.UseHangfireDashboard(options: new DashboardOptions()

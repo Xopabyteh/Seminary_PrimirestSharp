@@ -36,4 +36,10 @@ public class AzurePhotoStorage : IPhotoStorage
 
         await container.DeleteBlobAsync(blobName);
     }
+
+    public async Task EnsureContainerExists()
+    {
+        var container = _blobServiceClient.GetBlobContainerClient(k_ContainerName);
+        await container.CreateIfNotExistsAsync();
+    }
 }
