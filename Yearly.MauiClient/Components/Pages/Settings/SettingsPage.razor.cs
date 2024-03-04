@@ -9,7 +9,7 @@ public partial class SettingsPage
     [Inject] private AuthService _authService { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
-    [Inject] private IndependentNotificationHubService _notificationHubService { get; set; } = null!;
+    //[Inject] private IndependentNotificationHubService _notificationHubService { get; set; } = null!;
     [Inject] private MyPhotosCacheService _myPhotosCacheService { get; set; } = null!;
 
     private decimal balance = 0;
@@ -24,7 +24,7 @@ public partial class SettingsPage
 
     protected override Task OnInitializedAsync()
     {
-        LoadActiveHubNotificationTags();
+        //LoadActiveHubNotificationTags();
 
         isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerPrefKey, false);
 
@@ -110,28 +110,28 @@ public partial class SettingsPage
         };
     }
 
-    #region HubNotifications
+    //#region HubNotifications
 
-    string[] loadedNotificationTags; //These tags are not updated!, they are only loaded on app init.
-    private bool isEnabled_PhaNewWaitingPhoto = false;
-    private void LoadActiveHubNotificationTags()
-    {
-        loadedNotificationTags = _notificationHubService.GetTags();
+    //string[] loadedNotificationTags; //These tags are not updated!, they are only loaded on app init.
+    //private bool isEnabled_PhaNewWaitingPhoto = false;
+    //private void LoadActiveHubNotificationTags()
+    //{
+    //    loadedNotificationTags = _notificationHubService.GetTags();
 
-        isEnabled_PhaNewWaitingPhoto = loadedNotificationTags.Contains("PhaNewWaitingPhoto");
-    }
+    //    isEnabled_PhaNewWaitingPhoto = loadedNotificationTags.Contains("PhaNewWaitingPhoto");
+    //}
 
-    private void OnPhaNewWaitingPhotoToggle(bool isChecked)
-    {
-        if (isChecked)
-        {
-            _notificationHubService.AddTag("PhaNewWaitingPhoto");
-        }
-        else
-        {
-            _notificationHubService.RemoveTag("PhaNewWaitingPhoto");
-        }
-    }
+    //private void OnPhaNewWaitingPhotoToggle(bool isChecked)
+    //{
+    //    if (isChecked)
+    //    {
+    //        _notificationHubService.AddTag("PhaNewWaitingPhoto");
+    //    }
+    //    else
+    //    {
+    //        _notificationHubService.RemoveTag("PhaNewWaitingPhoto");
+    //    }
+    //}
 
-    #endregion
+    //#endregion
 }

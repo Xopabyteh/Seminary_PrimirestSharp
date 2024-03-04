@@ -30,10 +30,9 @@ public class AuthService
     /// <summary>
     /// Returns true if a session cookie is set.
     /// </summary>
-    public bool IsLoggedIn => sessionCookie is not null;
+    public bool IsLoggedIn => UserDetails is not null;
 
     public event Action OnLogin = null!;
-    private Cookie? sessionCookie;
 
 
     /// <summary>
@@ -69,7 +68,6 @@ public class AuthService
     public void SetSession(LoginResponse loginResponse)
     {
         UserDetails = loginResponse.UserDetails;
-        //sessionCookie = _sharpAPIClient.SetSessionCookie(loginResponse.SessionCookieDetails);
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         OnLogin?.Invoke();
@@ -128,12 +126,6 @@ public class AuthService
         await _authenticationFacade.LogoutAsync();
 
         UserDetails = null;
-
-        if (sessionCookie is not null)
-        {
-            //_sharpAPIClient.RemoveCookie(sessionCookie);
-            sessionCookie = null;
-        }
 
         //Todo: move to event based
         _myPhotosCacheService.InvalidateCache();

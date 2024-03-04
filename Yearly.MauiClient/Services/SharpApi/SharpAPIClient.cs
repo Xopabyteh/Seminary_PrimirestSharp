@@ -1,7 +1,4 @@
-﻿using System.Net;
-using Yearly.Contracts.Authentication;
-
-namespace Yearly.MauiClient.Services.SharpApi;
+﻿namespace Yearly.MauiClient.Services.SharpApi;
 
 public class SharpAPIClient : IDisposable
 {
@@ -34,20 +31,6 @@ public class SharpAPIClient : IDisposable
     {
         HttpClientHandler.Dispose();
         HttpClient.Dispose();
-    }
-
-    public Cookie SetSessionCookie(SessionCookieDetails details)
-    {
-        var cookieContainer = HttpClientHandler.CookieContainer;
-        var cookie = new Cookie(SessionCookieDetails.Name, details.Value) {Expires = details.ExpirationDate.Date};
-        cookieContainer.Add(HttpClient.BaseAddress!, cookie);
-
-        return cookie;
-    }
-
-    public void RemoveCookie(Cookie cookie)
-    {
-        HttpClientHandler.CookieContainer.GetCookies(HttpClient.BaseAddress!).Remove(cookie);
     }
 }
 

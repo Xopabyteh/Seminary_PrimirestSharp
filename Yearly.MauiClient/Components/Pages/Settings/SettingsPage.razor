@@ -84,12 +84,12 @@
             <label class="fs-regular fw-regular color-secondary">Když mi schválí fotku</label>
             <ToggleSwitch/>
         </div>
-        <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
+@*         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Pha. Nová čekající fotka</label>
                 <ToggleSwitch Checked='isEnabled_PhaNewWaitingPhoto' CheckedChanged='OnPhaNewWaitingPhotoToggle'/>
             </div>
-        </Authorized>
+        </Authorized> *@
         <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Adm. Nový similarity record</label>
