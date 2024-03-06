@@ -181,6 +181,8 @@ a:not([class]) {
 a {
     text-decoration: none;
     color: var(--clr-primary);
+
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Make images easier to work with */
@@ -196,6 +198,8 @@ button,
 textarea,
 select {
     font: inherit;
+
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
