@@ -10,11 +10,8 @@ using AndroidX.Work;
 using Google.Common.Util.Concurrent;
 using Java.Lang;
 using Java.Util.Concurrent;
-using WindowsAzure.Messaging.NotificationHubs;
 using Yearly.MauiClient.Components.Common;
-using Yearly.MauiClient.Services;
 using Calendar = Android.Icu.Util.Calendar;
-using Debug = System.Diagnostics.Debug;
 using Locale = Java.Util.Locale;
 using NetworkType = AndroidX.Work.NetworkType;
 using TimeUnit = Java.Util.Concurrent.TimeUnit;
@@ -47,10 +44,6 @@ public class MainActivity : MauiAppCompatActivity
 
         //Xamarin essentials
         Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code, it may also be called: bundle
-
-        //Azure notification hub
-        NotificationHub.SetListener(new AzureNotificationsListener());
-        NotificationHub.Start(this.Application, AzureNotificationsListener.HubName, AzureNotificationsListener.ListenConnectionString);
     }
 
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
