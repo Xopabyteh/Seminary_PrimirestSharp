@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Shiny;
+using Shiny.Push;
 using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient.Components.Pages.Dev;
@@ -7,6 +9,7 @@ public partial class DevPage
 {
     protected override void OnInitialized()
     {
+        notificationsRegistrationToken = _pushManager.RegistrationToken;
     }
 
     #region Auth
@@ -49,5 +52,29 @@ public partial class DevPage
 
     #endregion
 
+    #region Notifications
+
+    [Inject] private IPushManager _pushManager { get; set; } = null!;
+    private string? notificationsRegistrationToken = null;
+    private AccessState notificationsPushAccessState = AccessState.Unknown;
+
+    private async Task Register()
+    {
+        var accessState = await _pushManager.RequestAccess();
+        notificationsRegistrationToken = accessState.RegistrationToken;
+        notificationsPushAccessState = accessState.Status;
+        
+        StateHasChanged();
+    }
+
+    private async Task Unregister()
+    {
+        await _pushManager.UnRegister();
+        notificationsPushAccessState = AccessState.Disabled;
+        
+        StateHasChanged();
+    }
+
+    #endregion
 
 }
