@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
   </ItemGroup>
 

@@ -6,7 +6,13 @@
 @code {
 
     [Parameter] public bool Checked { get; set; } = false;
+    [Parameter] public bool StartingState { get; set; } = false;
     [Parameter] public EventCallback<bool> CheckedChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Checked = StartingState;
+    }
 
     private void ChangeChecked()
     {

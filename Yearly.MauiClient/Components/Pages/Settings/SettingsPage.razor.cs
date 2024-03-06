@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Shiny.Push;
+using Yearly.Contracts.Notifications;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Services;
 
@@ -9,8 +11,10 @@ public partial class SettingsPage
     [Inject] private AuthService _authService { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
-    //[Inject] private IndependentNotificationHubService _notificationHubService { get; set; } = null!;
     [Inject] private MyPhotosCacheService _myPhotosCacheService { get; set; } = null!;
+#if ANDROID || IOS
+    [Inject] private IPushManager _pushNotificationsManager { get; set; } = null!;
+#endif
 
     private decimal balance = 0;
     private decimal orderedFor = 0;
@@ -24,8 +28,13 @@ public partial class SettingsPage
 
     protected override Task OnInitializedAsync()
     {
-        //LoadActiveHubNotificationTags();
-
+#if ANDROID || IOS
+        var loadedTags = _pushNotificationsManager.TryGetTags();
+        if (loadedTags is not null)
+        {
+            activeTags.AddRange(loadedTags);
+        }
+#endif
         isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerPrefKey, false);
 
         return Task.CompletedTask;
@@ -110,28 +119,39 @@ public partial class SettingsPage
         };
     }
 
-    //#region HubNotifications
+    #region HubNotifications
 
-    //string[] loadedNotificationTags; //These tags are not updated!, they are only loaded on app init.
-    //private bool isEnabled_PhaNewWaitingPhoto = false;
-    //private void LoadActiveHubNotificationTags()
-    //{
-    //    loadedNotificationTags = _notificationHubService.GetTags();
+    private List<string> activeTags = new (3);
 
-    //    isEnabled_PhaNewWaitingPhoto = loadedNotificationTags.Contains("PhaNewWaitingPhoto");
-    //}
+    private void SetNotificationTag(NotificationTagContract tag, bool shouldBeActive, bool isUserSpecific)
+    {
+        var tagValue = isUserSpecific
+            ? NotificationTagContract.AssembleUserSpecificTag(tag, _authService.UserDetailsLazy.UserId)
+            : tag.Value;
+        
+        if (shouldBeActive)
+        {
+            activeTags.Add(tagValue);
+#if ANDROID || IOS
+            _pushNotificationsManager.Tags?.AddTag(tagValue);
+#endif
+        }
+        else
+        {
+            activeTags.Remove(tagValue);
+#if ANDROID || IOS
+            _pushNotificationsManager.Tags?.RemoveTag(tagValue);
+#endif
+        }
 
-    //private void OnPhaNewWaitingPhotoToggle(bool isChecked)
-    //{
-    //    if (isChecked)
-    //    {
-    //        _notificationHubService.AddTag("PhaNewWaitingPhoto");
-    //    }
-    //    else
-    //    {
-    //        _notificationHubService.RemoveTag("PhaNewWaitingPhoto");
-    //    }
-    //}
+        StateHasChanged();
+    }
 
-    //#endregion
+    private bool IsLoadedTagActive(NotificationTagContract tag, bool isUserSpecific)
+        => activeTags.Contains(
+            isUserSpecific
+                ? NotificationTagContract.AssembleUserSpecificTag(tag, _authService.UserDetailsLazy.UserId)
+                : tag.Value);
+
+    #endregion
 }

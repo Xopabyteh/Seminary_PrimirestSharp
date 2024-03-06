@@ -20,8 +20,10 @@ public class AuthenticationMappings : IRegister
             .Map(dst => dst.Roles, src => src.Roles);
 
         config.NewConfig<LoginResult, LoginResponse>()
-            .Map(dst => dst.SessionCookieDetails, src => new SessionCookieDetails(src.SessionCookie, src.SessionExpirationTime))
-            .Map(dst => dst.UserDetails, src => src.User);
-
+            .Map(
+                dst => dst.SessionCookieDetails,
+                src => new SessionCookieDetails(src.SessionCookie, src.SessionExpirationTime))
+            .Map(dst => dst.UserDetails, src => src.User)
+            .Map(dst => dst.UserDetails.UserId, src => src.User.Id.Value);
     }
 }

@@ -17,7 +17,7 @@ public class AuthService
         private set
         {
             userDetailsField = value;
-            UserDetailsLazy = value ?? new(string.Empty, new(0));
+            UserDetailsLazy = value ?? new(string.Empty, 0, new(0));
         }
     }
 

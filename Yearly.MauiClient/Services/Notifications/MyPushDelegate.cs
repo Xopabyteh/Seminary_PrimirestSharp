@@ -1,5 +1,6 @@
 ﻿using Plugin.LocalNotification;
 using Shiny.Push;
+using Yearly.Contracts.Notifications;
 
 namespace Yearly.MauiClient.Services.Notifications;
 
@@ -18,10 +19,18 @@ public class MyPushDelegate : IPushDelegate
         // iOS: set content-available: 1  or this won't fire
         // Android: Set data portion of payload
 
+
+        var isIdPresent =
+            push.Data.TryGetValue(NotificationDataKeysContract.k_NotificationIdKey, out var notificationIdStr);
+
+        var notificationId = isIdPresent
+            ? int.Parse(notificationIdStr!)
+            : 1337; //Default notification id (shouldn't happen)
+        
         //Show notification
         var notification = new NotificationRequest
         {
-            NotificationId = 1337,
+            NotificationId = notificationId,
             Title = push.Notification?.Title!,
             Description = push.Notification?.Message!,
             Android =

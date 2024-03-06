@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Yearly.Application\Yearly.Application.csproj" />
+    <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
     <ProjectReference Include="..\Yearly.Queries\Yearly.Queries.csproj" />
   </ItemGroup>
@@ -18,6 +19,7 @@
     <Folder Include="Persistence\ModelConfigurations\Infrastructure\" />
     <Folder Include="Persistence\OutboxDomainEvents\" />
     <Folder Include="Persistence\Seeding\" />
+    <Folder Include="Services\Notifications\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +31,7 @@
     <PackageReference Include="ErrorOr" Version="1.10.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.11" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
+    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
       <PrivateAssets>all</PrivateAssets>
@@ -47,6 +50,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Shiny.Push.AzureNotificationHubs" Version="3.2.4" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.3" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.27" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">

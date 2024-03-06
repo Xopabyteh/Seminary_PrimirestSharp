@@ -46,7 +46,6 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFoodRepository _foodRepository;
 
-
     public PublishPhotoCommandHandler(IPhotoStorage photoStorage, IPhotoRepository photoRepository, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork, IFoodRepository foodRepository)
     {
         _photoStorage = photoStorage;
@@ -55,7 +54,6 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
         _unitOfWork = unitOfWork;
         _foodRepository = foodRepository;
     }
-
 
     public async Task<ErrorOr<Photo>> Handle(PublishPhotoCommand request, CancellationToken cancellationToken)
     {

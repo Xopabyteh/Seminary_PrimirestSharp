@@ -1,4 +1,5 @@
 ﻿@page "/settings";
+@using Yearly.Contracts.Notifications
 @layout NoMenuLayout
 
 <GoBackButton Text='Nastavení'/>
@@ -82,18 +83,24 @@
         </div> *@
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když mi schválí fotku</label>
-            <ToggleSwitch/>
+            <ToggleSwitch 
+                StartingState='@IsLoadedTagActive(NotificationTagContract.PhotoApproved, true)' 
+                CheckedChanged='active =>SetNotificationTag(NotificationTagContract.PhotoApproved, active, true)'/>
         </div>
-@*         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
+        <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Pha. Nová čekající fotka</label>
-                <ToggleSwitch Checked='isEnabled_PhaNewWaitingPhoto' CheckedChanged='OnPhaNewWaitingPhotoToggle'/>
+                <ToggleSwitch 
+                    StartingState='@IsLoadedTagActive(NotificationTagContract.NewWaitingPhoto, false)'
+                    CheckedChanged='active =>SetNotificationTag(NotificationTagContract.NewWaitingPhoto, active, false)' />
             </div>
-        </Authorized> *@
+        </Authorized>
         <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Adm. Nový similarity record</label>
-                <ToggleSwitch/>
+                <ToggleSwitch 
+                    StartingState='@IsLoadedTagActive(NotificationTagContract.NewSimilarityRecord, false)'
+                    CheckedChanged='active =>SetNotificationTag(NotificationTagContract.NewSimilarityRecord, active, false)' />
             </div>
         </Authorized>
     </div>

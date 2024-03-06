@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Foods;
 using Yearly.Infrastructure.Services.Menus;
+using Yearly.Infrastructure.Services.Notifications;
 using Yearly.Infrastructure.Services.Orders;
 using Yearly.Queries;
 
@@ -139,7 +141,10 @@ public static class DependencyInjection
                 builder.Configuration["Persistence:AzureStorageConnectionString:blob"]!,
                 preferMsi: builder.Environment.IsDevelopment());
         });
-
+        builder.Services.AddScoped<INotificationHubClient>(_ => NotificationHubClient.CreateClientFromConnectionString(
+            builder.Configuration.GetSection("NotificationHub")["FullAccessConnectionString"],
+            builder.Configuration.GetSection("NotificationHub")["HubName"]));
+        builder.Services.AddScoped<IUserNotificationService, AzureUserNotificationService>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
