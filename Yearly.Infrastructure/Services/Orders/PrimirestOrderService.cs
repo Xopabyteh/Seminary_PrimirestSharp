@@ -119,9 +119,13 @@ public class PrimirestOrderService : IPrimirestOrderService
 
         var message = new HttpRequestMessage(
             HttpMethod.Get,
-            @$"ajax/CS/boarding/3041/index?purchasePlaceID=24087276&menuID={id.Value}&menuViewType=FULL&_=0");
+            @$"ajax/CS/boarding/3041/index?purchasePlaceID={k_MensaPurchasePlaceId}&menuID={id.Value}&menuViewType=FULL&_=0");
 
         var response = await client.SendAsync(message);
+
+        //We get back 500 when we pass a wrong identifier (or primirest is down, let's hope it's not)
+        if (response.StatusCode == HttpStatusCode.InternalServerError)
+            return Application.Errors.Errors.Orders.InvalidWeeklyMenuId;
 
         if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;

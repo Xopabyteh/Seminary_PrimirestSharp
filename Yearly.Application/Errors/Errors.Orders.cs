@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using Yearly.Domain.Models.Common.ValueObjects;
 
 namespace Yearly.Application.Errors;
 
@@ -23,5 +24,8 @@ public static partial class Errors
 
         public static Error InvalidOrderIdentifier
             => Error.Validation("Orders.InvalidOrderIdentifier", "The order identifier does not exist");
+
+        public static Error InvalidWeeklyMenuId
+            => Error.Validation("Orders.InvalidWeeklyMenuId", "The weekly menu id does not exist");
     }
 }

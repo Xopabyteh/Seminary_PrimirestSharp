@@ -38,7 +38,7 @@ public class GetOrdersForWeekQueryHandler : IRequestHandler<GetOrdersForWeekQuer
         {
             if (!foods.TryGetValue(primirestOrderData.PrimirestFoodOrderIdentifier.FoodItemId, out var food))
             {
-                throw new IllegalStateException("There was no match for the ItemId from ordersResult in our repository. This means that the order has a different ItemId than the foods in our system.");
+                throw new IllegalStateException("There was no match for the ItemId from ordersResult in our repository. This means that the order has a different ItemId than any of the foods in sharp.");
             }
 
             orders.Add(new Order(food.Id, primirestOrderData));
