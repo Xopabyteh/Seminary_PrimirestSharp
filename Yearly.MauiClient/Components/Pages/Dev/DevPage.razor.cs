@@ -58,7 +58,7 @@ public partial class DevPage
     private string? notificationsRegistrationToken = null;
     private AccessState notificationsPushAccessState = AccessState.Unknown;
 
-    private async Task Register()
+    private async Task RegisterNotifications()
     {
         var accessState = await _pushManager.RequestAccess();
         notificationsRegistrationToken = accessState.RegistrationToken;
@@ -67,7 +67,7 @@ public partial class DevPage
         StateHasChanged();
     }
 
-    private async Task Unregister()
+    private async Task UnregisterNotifications()
     {
         await _pushManager.UnRegister();
         notificationsPushAccessState = AccessState.Disabled;

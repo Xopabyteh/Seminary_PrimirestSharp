@@ -1,6 +1,4 @@
-﻿using System.Net;
-using Yearly.Contracts.Authentication;
-using Yearly.MauiClient.Services.SharpApi;
+﻿using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;
@@ -47,15 +45,16 @@ public class AuthService
     public bool IsAutoLoginSetup => AutoLoginStoredCredentials is not null;
 
     private readonly AuthenticationFacade _authenticationFacade;
-    private readonly SharpAPIClient _sharpAPIClient;
     private readonly MenuAndOrderCacheService _menuAndOrderCacheService; //Todo: remove dependency
     private readonly MyPhotosCacheService _myPhotosCacheService; //Todo: remove dependency
     
 
-    public AuthService(AuthenticationFacade authenticationFacade, SharpAPIClient sharpAPIClient, MenuAndOrderCacheService menuAndOrderCacheService, MyPhotosCacheService myPhotosCacheService)
+    public AuthService(
+        AuthenticationFacade authenticationFacade,
+        MenuAndOrderCacheService menuAndOrderCacheService,
+        MyPhotosCacheService myPhotosCacheService)
     {
         _authenticationFacade = authenticationFacade;
-        _sharpAPIClient = sharpAPIClient;
         _menuAndOrderCacheService = menuAndOrderCacheService;
         _myPhotosCacheService = myPhotosCacheService;
     }

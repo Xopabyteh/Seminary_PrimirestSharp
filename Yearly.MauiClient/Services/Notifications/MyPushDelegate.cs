@@ -19,7 +19,6 @@ public class MyPushDelegate : IPushDelegate
         // iOS: set content-available: 1  or this won't fire
         // Android: Set data portion of payload
 
-
         var isIdPresent =
             push.Data.TryGetValue(NotificationDataKeysContract.k_NotificationIdKey, out var notificationIdStr);
 
@@ -45,7 +44,13 @@ public class MyPushDelegate : IPushDelegate
         await LocalNotificationCenter.Current.Show(notification);
     }
 
-    public Task OnTokenRefreshed(string token)
+    public Task OnNewToken(string token)
+    {
+        //NOOP
+        return Task.CompletedTask;
+    }
+
+    public Task OnUnRegistered(string token)
     {
         //NOOP
         return Task.CompletedTask;

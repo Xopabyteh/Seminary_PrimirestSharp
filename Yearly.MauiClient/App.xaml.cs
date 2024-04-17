@@ -1,5 +1,6 @@
 ﻿namespace Yearly.MauiClient;
 
+// ReSharper disable once RedundantExtendsListEntry
 public partial class App : Application
 {
     public App()

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Shiny.Jobs;
+using Shiny.Push;
 using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
@@ -12,6 +14,9 @@ public partial class LoginPage
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private AuthService AuthService { get; set; } = null!;
     [Inject] private ToastService ToastService { get; set; } = null!;
+
+    [Inject] private IPushManager PushManager { get; set; } = null!;
+    [Inject] private IJobManager JobManager { get; set; } = null!;
 
     [SupplyParameterFromForm] public string ModelUsername { get; set; } = string.Empty;
 
@@ -133,5 +138,26 @@ public partial class LoginPage
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// This is also the entry point to the application, try to request needed permissions
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        var jobAccess = await JobManager.RequestAccess();
+
+        try
+        {
+            var pushAccess = await PushManager.RequestAccess();
+        }
+        catch (Exception e)
+        {
+            // Hub is unavailable
+            // NOOP
+        }
     }
 }

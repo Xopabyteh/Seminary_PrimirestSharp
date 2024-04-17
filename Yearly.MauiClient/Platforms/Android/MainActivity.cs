@@ -11,6 +11,7 @@ using Google.Common.Util.Concurrent;
 using Java.Lang;
 using Java.Util.Concurrent;
 using Yearly.MauiClient.Components.Common;
+using Yearly.MauiClient.Services;
 using Calendar = Android.Icu.Util.Calendar;
 using Locale = Java.Util.Locale;
 using NetworkType = AndroidX.Work.NetworkType;
@@ -27,10 +28,10 @@ public class MainActivity : MauiAppCompatActivity
 {
     public static MainActivity Instance { get; private set; } = null!;
 
-    private const int k_NotificationsPermissionRequestCode = 136; //Random number
+    private const int NotificationsPermissionRequestCode = 136; //Random number
     private TaskCompletionSource<bool>? notificationsPermissionResult;
     
-    private const int k_OrderCheckerBatteryRequestCode = 137; //Random number
+    private const int OrderCheckerBatteryRequestCode = 137; //Random number
     private TaskCompletionSource? orderCheckerBatteryOptimizationResult;
 
     public MainActivity()
@@ -45,6 +46,23 @@ public class MainActivity : MauiAppCompatActivity
         //Xamarin essentials
         Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code, it may also be called: bundle
     }
+    
+    ///// <summary>
+    ///// Tries to remove auth session
+    ///// </summary>
+    ///// <inheritdoc/>
+    //protected override void OnDestroy()
+    //{
+    //    var authService = IPlatformApplication.Current!.Services.GetService<AuthService>();
+     
+    //    if (authService is null)
+    //        throw new ArgumentNullException(nameof(authService), "No auth service found");
+
+    //    if (!authService.IsLoggedIn)
+    //        return;
+
+    //    authService.RemoveSessionAsync().GetAwaiter().GetResult();
+    //}
 
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
     {
@@ -55,7 +73,7 @@ public class MainActivity : MauiAppCompatActivity
 
         switch (requestCode)
         {
-            case k_NotificationsPermissionRequestCode:
+            case NotificationsPermissionRequestCode:
                 if (notificationsPermissionResult is not null)
                 {
                     var result = false;
@@ -77,7 +95,7 @@ public class MainActivity : MauiAppCompatActivity
 
         switch (requestCode)
         {
-            case k_OrderCheckerBatteryRequestCode:
+            case OrderCheckerBatteryRequestCode:
                 if (orderCheckerBatteryOptimizationResult is not null)
                 {
                     orderCheckerBatteryOptimizationResult.SetResult();
@@ -105,7 +123,7 @@ public class MainActivity : MauiAppCompatActivity
         ActivityCompat.RequestPermissions(
             this,
             new[] { "android.permission.POST_NOTIFICATIONS" },
-            k_NotificationsPermissionRequestCode);
+            NotificationsPermissionRequestCode);
 
         var result = await notificationsPermissionResult.Task;
         return result;
@@ -135,7 +153,7 @@ public class MainActivity : MauiAppCompatActivity
                 var intent = new Intent();
                 intent.SetAction(Android.Provider.Settings.ActionRequestIgnoreBatteryOptimizations);
                 intent.SetData(Android.Net.Uri.Parse("package:" + packageName));
-                StartActivityForResult(intent, k_OrderCheckerBatteryRequestCode);
+                StartActivityForResult(intent, OrderCheckerBatteryRequestCode);
 
                 //Wait until accept or deny
                 await orderCheckerBatteryOptimizationResult.Task;

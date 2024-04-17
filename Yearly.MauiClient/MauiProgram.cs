@@ -5,6 +5,7 @@ using Yearly.MauiClient.Services.SharpApi;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
 using Shiny;
+using Shiny.Jobs;
 #if ANDROID || IOS
 using Plugin.LocalNotification;
 using Shiny.Push;
@@ -26,22 +27,9 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             });
-#if ANDROID || IOS
-        builder.UseLocalNotification();
-#endif
-        ////Config (add appsettings.json)
-        //builder.Configuration.AddJsonFile("appsettings.json", optional: false);
 
         builder.Services.AddMauiBlazorWebView();
 
-#if DEBUG
-        builder.Services.AddBlazorWebViewDeveloperTools();
-        builder.Services.AddLogging(c =>
-        {
-            c.AddDebug();
-        });
-
-#endif
         builder.Services.AddTransient<DateTimeProvider>();
 
         builder.Services.AddTransient<ToastService>();
@@ -61,8 +49,14 @@ public static class MauiProgram
         builder.Services.AddTransient<OrdersFacade>();
         builder.Services.AddTransient<PhotoFacade>();
         builder.Services.AddTransient<FoodFacade>();
-        //Notifications
+
+        // Jobs
 #if ANDROID || IOS
+        builder.Services.AddJobs();
+#endif
+        // Notifications
+#if ANDROID || IOS
+        builder.UseLocalNotification();
 #if ANDROID
             var firebaseCfg = new FirebaseConfig(
                 false,
@@ -81,27 +75,16 @@ public static class MauiProgram
 #endif
             );
 #endif
-        //#if ANDROID || IOS
-        //#if ANDROID
-        //            var cfg = builder.Configuration.GetSection("Firebase");
-        //            var firebaseCfg = new FirebaseConfig(
-        //                false,
-        //                cfg["AppId"],
-        //                cfg["SenderId"],
-        //                cfg["ProjectId"],
-        //                cfg["ApiKey"]
-        //            );
-        //#endif
 
-        //            var azureCfg = builder.Configuration.GetSection("AzureNotificationHubs");
-        //            builder.Services.AddPushAzureNotificationHubs<MyPushDelegate>(
-        //                azureCfg["ListenerConnectionString"]!,
-        //                azureCfg["HubName"]!
-        //#if ANDROID
-        //                , firebaseCfg
-        //#endif
-        //            );
-        //#endif
+
+#if DEBUG
+        builder.Services.AddBlazorWebViewDeveloperTools();
+        builder.Services.AddLogging(c =>
+        {
+            c.AddDebug();
+        });
+
+#endif
 
         return builder.Build();
     }
