@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models;
 using Yearly.Infrastructure.Persistence;
 using Yearly.Infrastructure.Persistence.OutboxDomainEvents;
@@ -23,14 +24,21 @@ public class FireOutboxDomainEventsJob
     private readonly IPublisher _mediator;
     private readonly ILogger<FireOutboxDomainEventsJob> _logger;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public FireOutboxDomainEventsJob(PrimirestSharpDbContext dbContext, IPublisher mediator, ILogger<FireOutboxDomainEventsJob> logger, IDateTimeProvider dateTimeProvider)
+    public FireOutboxDomainEventsJob(
+        PrimirestSharpDbContext dbContext,
+        IPublisher mediator,
+        ILogger<FireOutboxDomainEventsJob> logger,
+        IDateTimeProvider dateTimeProvider,
+        IUnitOfWork unitOfWork)
     {
         
         _dbContext = dbContext;
         _mediator = mediator;
         _logger = logger;
         _dateTimeProvider = dateTimeProvider;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task ExecuteAsync()
@@ -75,6 +83,6 @@ public class FireOutboxDomainEventsJob
             }
         }
 
-        await _dbContext.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 }

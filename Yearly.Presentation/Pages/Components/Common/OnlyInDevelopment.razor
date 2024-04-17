@@ -1,0 +1,20 @@
+﻿@if (IsInDevelopment())
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public required RenderFragment ChildContent { get; set; }
+
+    private bool IsInDevelopment()
+    {
+        #if DEBUG
+        return true;
+        #endif
+
+        // ReSharper disable once HeuristicUnreachableCode
+#pragma warning disable CS0162 // Unreachable code detected
+        return false;
+#pragma warning restore CS0162 // Unreachable code detected
+    }
+}

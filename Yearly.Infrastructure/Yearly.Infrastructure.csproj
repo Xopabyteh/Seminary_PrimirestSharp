@@ -64,4 +64,9 @@
     <ItemGroup>
 	    <InternalsVisibleTo Include="Yearly.Infrastructure.Tests" />
     </ItemGroup>
+    <ItemGroup>
+      <None Update="Services\Menus\SampleMenuMock.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

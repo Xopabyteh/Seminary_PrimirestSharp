@@ -1,10 +1,6 @@
 using Hangfire;
 using Yearly.Application;
-using Yearly.Application.Authentication;
-using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure;
-using Yearly.Infrastructure.Persistence.Seeding;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
 using Yearly.Queries;
@@ -34,24 +30,16 @@ app.UseHangfireDashboard(options: new DashboardOptions()
 app.UseAntiforgery();
 app.UseStaticFiles();
 
-//Add background jobs
+// Add background jobs
 {
+    Yearly.Infrastructure.DependencyInjection.AddInfrastructureJobs();
+
     RecurringJob.AddOrUpdate<PersistAvailableMenusJob>(
         "Persist available menus",
         x => x.ExecuteAsync(),
         @"0 8 * * FRI"); //Every friday at 8:00 - https://crontab.guru/#0_8_*_*_FRI
-
-    //This is to be thought about
-    //RecurringJob.AddOrUpdate<FireOutboxDomainEventsJob>(
-    //    nameof(FireOutboxDomainEventsJob),
-    //    x => x.ExecuteAsync(),
-    //    @"* * * * *"); //Every minute
 }
 
-
-//app
-//    .MapRazorComponents<App>()
-//    .AddInteractiveServerRenderMode();
 app.MapControllers();
 
 app.UseRouting();

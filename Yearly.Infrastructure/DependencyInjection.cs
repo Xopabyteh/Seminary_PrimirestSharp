@@ -1,4 +1,5 @@
 ﻿using Azure.Identity;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.NotificationHubs;
@@ -85,6 +86,25 @@ public static class DependencyInjection
 
         return services;
     }
+    public static IHost UseInfrastructure(this IHost app, IWebHostEnvironment environment, IConfiguration config)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+
+        EnsureServiceInitialization(services);
+
+        SeedCoreData(services);
+
+        return app;
+    }
+
+    public static void AddInfrastructureJobs()
+    {
+        RecurringJob.AddOrUpdate<FireOutboxDomainEventsJob>(
+            nameof(FireOutboxDomainEventsJob),
+            x => x.ExecuteAsync(),
+            @"* * * * *"); //Every minute
+    }
 
     private static void ReplaceServicesWithDevMocks(this IServiceCollection services, WebApplicationBuilder builder)
     {
@@ -110,17 +130,17 @@ public static class DependencyInjection
 
         services.AddTransient<ISqlConnectionFactory, SqlConnectionFactory>(); //Dapper
 
-        services.AddSingleton<DomainEventsToOutboxMessageDatabaseInterceptor>();
         services.AddDbContext<PrimirestSharpDbContext>((srp, options) =>
         {
-            var eventsToOutboxInterceptor = srp.GetService<DomainEventsToOutboxMessageDatabaseInterceptor>();
-
-            options.AddInterceptors(eventsToOutboxInterceptor!);
-
             options.UseSqlServer(
                 builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString")
                     .Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
         });
+        // Ensure Db exists
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PrimirestSharpDbContext>();
+        dbContext.Database.EnsureCreated();
+       
 
         services.AddScoped<WeeklyMenuRepository>();
         services.AddScoped<IWeeklyMenuRepository>(sp => sp.GetRequiredService<WeeklyMenuRepository>());
@@ -157,38 +177,16 @@ public static class DependencyInjection
         services.AddTransient<FireOutboxDomainEventsJob>();
     }
 
-    public static IHost UseInfrastructure(this IHost app, IWebHostEnvironment environment, IConfiguration config)
-    {
-        using var scope = app.Services.CreateScope();
-        var services = scope.ServiceProvider;
-        
-        EnsureServiceInitialization(services);
-
-        if (environment.IsDevelopment())
-        {
-            SeedData(services, config);
-        }
-
-        return app;
-    }
-
     private static void EnsureServiceInitialization(IServiceProvider services)
     {
         var azureStorage = services.GetRequiredService<AzurePhotoStorage>();
         azureStorage.EnsureContainerExists().Wait();
     }
 
-    private static void SeedData(IServiceProvider services, IConfiguration config)
+    private static void SeedCoreData(IServiceProvider services)
     {
         //Init admin user
-        var adminUser = new User(new UserId(26564871), @"Martin Fiala");
-        var admin = Admin.FromUser(adminUser);
-        admin.AddRole(UserRole.Admin, adminUser);
-
-        //Seed data (before hangfire initializes in the db)
-        //Use seed profile from args
-        var seedProfile = config.GetValue<string?>("seedProfile");
         var dataSeeder = services.GetRequiredService<DataSeeder>();
-        dataSeeder.Seed(seedProfile, adminUser);
+        dataSeeder.SeedCoreData();
     }
 }

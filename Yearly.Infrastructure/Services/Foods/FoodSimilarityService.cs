@@ -1,10 +1,10 @@
 ﻿using ErrorOr;
-using F23.StringSimilarity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg;
+using Yearly.Domain.Models.FoodAgg.DomainEvents;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Infrastructure.Persistence;
 
@@ -14,12 +14,15 @@ public class FoodSimilarityService : IFoodSimilarityService
 {
     private readonly PrimirestSharpDbContext _dbContext;
     private readonly FoodSimilarityServiceOptions _options;
+    private readonly IUnitOfWork _unitOfWork;
 
     public FoodSimilarityService(
         PrimirestSharpDbContext dbContext,
-        IOptions<FoodSimilarityServiceOptions> options)
+        IOptions<FoodSimilarityServiceOptions> options,
+        IUnitOfWork unitOfWork)
     {
         _dbContext = dbContext;
+        _unitOfWork = unitOfWork;
         _options = options.Value;
     }
 
@@ -50,8 +53,11 @@ public class FoodSimilarityService : IFoodSimilarityService
             .ToList();
 
         var similarityRecords = CreateFoodSimilarityRecords(newlyLearnedFoodViews, viewsFromDb);
+        if (similarityRecords.Count == 0)
+            return Unit.Value;
 
         await _dbContext.FoodSimilarityTable.AddRangeAsync(similarityRecords);
+        _unitOfWork.PublishDomainEvent(new NewFoodSimilarityRecordsDomainEvent());
 
         return Unit.Value;
     }

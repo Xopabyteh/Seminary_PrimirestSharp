@@ -60,7 +60,7 @@ public class User : AggregateRoot<UserId>
         photo.Approve();
 
         // Publish Domain events
-
+        PublishDomainEvent(new UserPublishedNewPhotoDomainEvent(this.Id, photo.Id));
     }
 
     internal void RejectPhoto(Photo photo)

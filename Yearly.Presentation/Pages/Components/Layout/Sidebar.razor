@@ -22,6 +22,9 @@
         <AuthorizedView RequiredRoles='new[] {UserRole.Admin}'>
             <HxSidebarItem Text="Hangfire dashboard" Href="/hangfire" Match="NavLinkMatch.All" Icon="BootstrapIcon.Fire"/>
         </AuthorizedView>
+        <OnlyInDevelopment>
+            <HxSidebarItem Text="Development" Href="/Development" Match="NavLinkMatch.All" Icon="BootstrapIcon.Tools"/>
+        </OnlyInDevelopment>
     </ItemsTemplate>
 
      <FooterTemplate>
