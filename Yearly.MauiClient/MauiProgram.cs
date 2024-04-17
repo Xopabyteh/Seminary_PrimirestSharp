@@ -1,13 +1,15 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using Plugin.LocalNotification;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
 using Shiny;
+#if ANDROID || IOS
+using Plugin.LocalNotification;
 using Shiny.Push;
 using Yearly.MauiClient.Services.Notifications;
+#endif
 
 namespace Yearly.MauiClient;
 
