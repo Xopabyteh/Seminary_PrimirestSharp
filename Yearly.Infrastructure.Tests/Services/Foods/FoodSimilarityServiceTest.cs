@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Moq;
+using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Infrastructure.Services.Foods;
 
@@ -17,6 +18,8 @@ public class FoodSimilarityServiceTest
             NameStringSimilarityThreshold = 0.8d
         });
 
+        var iUnitOfWorkMock = new Mock<IUnitOfWork>();
+
         var firstFoodId = new FoodId(Guid.NewGuid());
         var similarFoodFoodId = new FoodId(Guid.NewGuid());
         var newlyLearnedFoodsViews = new List<FoodSimilarityService.FoodView>()
@@ -29,7 +32,7 @@ public class FoodSimilarityServiceTest
         {
             new(new FoodId(Guid.NewGuid()), "Kuřecí stehno s rýží, ze včerejška"),
         };
-        var sut = new FoodSimilarityService(null!, iOptionsMock.Object);
+        var sut = new FoodSimilarityService(null!, iOptionsMock.Object, iUnitOfWorkMock.Object);
 
         // Act
         var result = sut.CreateFoodSimilarityRecords(newlyLearnedFoodsViews, foodsInDbViews);
@@ -51,6 +54,8 @@ public class FoodSimilarityServiceTest
         {
             NameStringSimilarityThreshold = 0.8d
         });
+        
+        var iUnitOfWorkMock = new Mock<IUnitOfWork>();
 
         var newFoodId = new FoodId(Guid.NewGuid());
         var alreadyLearnedFoodId = new FoodId(Guid.NewGuid());
@@ -62,7 +67,7 @@ public class FoodSimilarityServiceTest
         {
             new(alreadyLearnedFoodId, "Kuřecí stehno, s rýží"),
         };
-        var sut = new FoodSimilarityService(null!, iOptionsMock.Object);
+        var sut = new FoodSimilarityService(null!, iOptionsMock.Object, iUnitOfWorkMock.Object);
 
         // Act
         var result = sut.CreateFoodSimilarityRecords(newlyLearnedFoodsViews, foodsInDbViews);

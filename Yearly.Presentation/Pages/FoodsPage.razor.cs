@@ -3,21 +3,20 @@ using Havit.Blazor.Components.Web.Bootstrap;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Yearly.Application.Foods.Commands.FoodSimilarity;
+using Yearly.Application.Foods.Queries;
 using Yearly.Application.Menus.Commands;
 using Yearly.Contracts.Foods;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
-using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Pages;
 
 public partial class FoodsPage
 {
-    [Inject] private FoodDTORepository _foodDTORepository { get; set; } = null!;
     [Inject] private ISender _mediator { get; set; } = null!;
     [Inject] private IHxMessengerService _messenger { get; set; } = null!;
 
     private HxGrid<FoodWithContextDTO> grid = null!; // @ref
-    private FoodDTORepository.FoodsWithContextFilter filterModel = new(nameFilter: string.Empty);
+    private FoodsWithContextFilter filterModel = new(nameFilter: string.Empty);
 
     private HxOffcanvas offcanvasComponent = null!; // @ref
     private FoodWithContextDTO editSelectedFood = null!; //@bind
@@ -25,16 +24,15 @@ public partial class FoodsPage
 
     private async Task<GridDataProviderResult<FoodWithContextDTO>> GetGridData(GridDataProviderRequest<FoodWithContextDTO> request)
     {
+        var dataFragment = await _mediator.Send(new GetFoodWithContextDataFragmentQuery(
+            filterModel,
+            request.StartIndex,
+            request.Count!.Value));
+
         return new GridDataProviderResult<FoodWithContextDTO>()
         {
-            Data = await _foodDTORepository.GetFoodsWithContextAsync(
-                filterModel,
-                request.StartIndex,
-                request.Count!.Value,
-                request.CancellationToken),
-            TotalCount = await _foodDTORepository.GetTotalFoodsCountAsync(
-                filterModel,
-                request.CancellationToken)
+            Data = dataFragment.Data,
+            TotalCount = dataFragment.TotalCount
         };
     }
 

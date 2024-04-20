@@ -3,13 +3,11 @@ using Yearly.Application;
 using Yearly.Infrastructure;
 using Yearly.Presentation;
 using Yearly.Presentation.BackgroundJobs;
-using Yearly.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddPresentation(builder)
-    .AddQueries(builder.Configuration)
     .AddInfrastructure(builder)
     .AddApplication();
 
@@ -24,7 +22,7 @@ app.UseHangfireDashboard(options: new DashboardOptions()
     {
         new PrimirestSharpAdminHangfireDashboardAuthorizationFilter()
     },
-    StatsPollingInterval = 120_000 //Poll once per two minutes (to not burn our DB with auth requests)
+    StatsPollingInterval = 120_000 // Poll once per two minutes
 });
 
 app.UseAntiforgery();

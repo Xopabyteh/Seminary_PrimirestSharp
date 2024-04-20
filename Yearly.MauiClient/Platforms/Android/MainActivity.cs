@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Icu.Util;
 using Android.OS;
+using Android.Util;
 using Android.Views;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
@@ -47,23 +48,6 @@ public class MainActivity : MauiAppCompatActivity
         Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code, it may also be called: bundle
     }
     
-    ///// <summary>
-    ///// Tries to remove auth session
-    ///// </summary>
-    ///// <inheritdoc/>
-    //protected override void OnDestroy()
-    //{
-    //    var authService = IPlatformApplication.Current!.Services.GetService<AuthService>();
-     
-    //    if (authService is null)
-    //        throw new ArgumentNullException(nameof(authService), "No auth service found");
-
-    //    if (!authService.IsLoggedIn)
-    //        return;
-
-    //    authService.RemoveSessionAsync().GetAwaiter().GetResult();
-    //}
-
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
     {
         //Xamarin essentials
@@ -258,6 +242,9 @@ public class MainActivity : MauiAppCompatActivity
         }
     }
 
+    /// <summary>
+    /// Reroutes the Back key to navigate back in history
+    /// </summary>
     public override bool DispatchKeyEvent(KeyEvent? e)
     {
         if (e is {KeyCode: Keycode.Back, Action: KeyEventActions.Down})
@@ -268,5 +255,30 @@ public class MainActivity : MauiAppCompatActivity
             return true;
         }
         return base.DispatchKeyEvent(e);
+    }
+
+    protected override void OnDestroy()
+    {
+        Log.Debug(nameof(MainActivity), "PSHARP OnDestroy");
+
+        var authService = IPlatformApplication.Current!.Services.GetService<AuthService>();
+
+        if (authService is null)
+        {
+            base.OnDestroy();
+            throw new ArgumentNullException(nameof(authService), "No auth service found");
+        }
+
+        if (!authService.IsLoggedIn)
+        {
+            base.OnDestroy();
+            return;
+        }
+
+        authService.RemoveSessionAsync().GetAwaiter().GetResult();
+
+        Log.Debug(nameof(MainActivity), "PSHARP Cleared Session");
+
+        base.OnDestroy();
     }
 }

@@ -1,19 +1,22 @@
 ﻿using Dapper;
+using MediatR;
+using Yearly.Application.Menus.Queries;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Menu;
 
-namespace Yearly.Queries.DTORepositories;
+namespace Yearly.Infrastructure.Persistence.Queries.Menus;
 
-public class WeeklyMenuDTORepository
+public class GetAvailableMenuDTOsQueryHandler
+    : IRequestHandler<GetAvailableMenuDTOsQuery, List<WeeklyMenuDTO>>
 {
-    private readonly ISqlConnectionFactory _connectionFactory;
+    private SqlConnectionFactory _connection;
 
-    public WeeklyMenuDTORepository(ISqlConnectionFactory connectionFactory)
+    public GetAvailableMenuDTOsQueryHandler(SqlConnectionFactory connection)
     {
-        this._connectionFactory = connectionFactory;
+        _connection = connection;
     }
 
-    public async Task<AvailableMenusResponse> GetAvailableMenus()
+    public async Task<List<WeeklyMenuDTO>> Handle(GetAvailableMenuDTOsQuery request, CancellationToken cancellationToken)
     {
         var sql = """
                   SELECT
@@ -44,7 +47,7 @@ public class WeeklyMenuDTORepository
         var dailyMenuVms = new Dictionary<int, DailyMenuVm>();
         var foodVms = new Dictionary<Guid, FoodVm>();
 
-        await using var connection = _connectionFactory.Create();
+        await using var connection = _connection.Create();
         await connection.QueryAsync<WeeklyMenuVm, DailyMenuVm, FoodVm, PhotoVm?, WeeklyMenuVm>(
             sql,
             (weeklyMenu, dailyMenu, food, photo) =>
@@ -87,14 +90,37 @@ public class WeeklyMenuDTORepository
                         fVm.FoodAllergens,
                         fVm.PhotoLinks,
                         fVm.FoodId,
-                        new(
-                            fVm.PrimirestMenuId,
-                            fVm.PrimirestDayId,
-                            fVm.PrimirestItemId)
-                        )).ToList())).ToList(), vm.PrimirestMenuId)).ToList();
+                        new(fVm.PrimirestMenuId, fVm.PrimirestDayId, fVm.PrimirestItemId)))
+                    .ToList()))
+                    .ToList(), vm.PrimirestMenuId))
+            .ToList();
 
-        return new AvailableMenusResponse(weeklyMenus);
+        return weeklyMenus;
     }
 
+    // For simpler mapping of primirest identifier
+    private sealed record FoodVm(
+        Guid FoodId,
+        string FoodAllergens,
+        string FoodName,
+        int PrimirestDayId,
+        int PrimirestItemId,
+        int PrimirestMenuId)
+    {
+        public List<PhotoLinkDTO> PhotoLinks { get; set; } = new();
+    }
 
+    private record PhotoVm(
+        string ResourceLink,
+        string ThumbnailResourceLink);
+
+    private record DailyMenuVm(int DailyMenuId, DateTime Date)
+    {
+        public List<FoodVm> Foods { get; set; } = new();
+    }
+
+    private record WeeklyMenuVm(int PrimirestMenuId)
+    {
+        public List<DailyMenuVm> DailyMenus { get; set; } = new();
+    }
 }

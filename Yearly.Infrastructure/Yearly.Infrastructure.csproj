@@ -11,13 +11,16 @@
     <ProjectReference Include="..\Yearly.Application\Yearly.Application.csproj" />
     <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     <ProjectReference Include="..\Yearly.Domain\Yearly.Domain.csproj" />
-    <ProjectReference Include="..\Yearly.Queries\Yearly.Queries.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Http\" />
     <Folder Include="Persistence\ModelConfigurations\Infrastructure\" />
     <Folder Include="Persistence\OutboxDomainEvents\" />
+    <Folder Include="Persistence\Queries\Foods\" />
+    <Folder Include="Persistence\Queries\FoodSimilarityTable\" />
+    <Folder Include="Persistence\Queries\Menus\" />
+    <Folder Include="Persistence\Queries\Users\" />
     <Folder Include="Persistence\Seeding\" />
     <Folder Include="Services\Notifications\" />
   </ItemGroup>
@@ -28,6 +31,7 @@
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.6.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
     <PackageReference Include="Azure.Storage.Queues" Version="12.17.1" />
+    <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="ErrorOr" Version="1.10.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.11" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />

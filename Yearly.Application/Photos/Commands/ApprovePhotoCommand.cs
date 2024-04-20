@@ -14,13 +14,11 @@ public class ApprovePhotoCommandHandler : IRequestHandler<ApprovePhotoCommand, E
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserNotificationService _notificationService; //Todo: consider using events
 
-    public ApprovePhotoCommandHandler(IPhotoRepository photoRepository, IUnitOfWork unitOfWork, IUserNotificationService notificationService)
+    public ApprovePhotoCommandHandler(IPhotoRepository photoRepository, IUnitOfWork unitOfWork)
     {
         _photoRepository = photoRepository;
         _unitOfWork = unitOfWork;
-        _notificationService = notificationService;
     }
 
     public async Task<ErrorOr<Unit>> Handle(ApprovePhotoCommand request, CancellationToken cancellationToken)
@@ -34,12 +32,6 @@ public class ApprovePhotoCommandHandler : IRequestHandler<ApprovePhotoCommand, E
 
         await _photoRepository.UpdatePhotoAsync(photo);
         await _unitOfWork.SaveChangesAsync();
-
-        await _notificationService.SendPushNotificationAsync(
-            "Úspěch",
-            "Vaše fotka byla schválena",
-            photo.PublisherId, 
-            NotificationTagContract.PhotoApproved);
 
         return Unit.Value;
     }

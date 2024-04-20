@@ -1,21 +1,20 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Photos.Commands;
+using Yearly.Application.Photos.Queries;
+using Yearly.Contracts.Photos;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
-using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
 [Route("api/photo")]
 public class PhotoController : ApiController
 {
-    private readonly PhotosDTORepository _photosDTORepository;
-    public PhotoController(ISender mediator, PhotosDTORepository photosDTORepository)
+    public PhotoController(ISender mediator)
         : base(mediator)
     {
-        _photosDTORepository = photosDTORepository;
     }
 
     [HttpPost("publish")]
@@ -68,17 +67,19 @@ public class PhotoController : ApiController
     [HttpGet("waiting")]
     public async Task<IActionResult> GetWaitingPhotos()
     {
-        var response = await _photosDTORepository.GetWaitingPhotosAsync();
-        return Ok(response);
+        var waitingPhotos = await _mediator.Send(new GetWaitingPhotoDTOsQuery());
+        return Ok(new WaitingPhotosResponse(waitingPhotos));
     }
 
     [HttpGet("my-photos")]
     public Task<IActionResult> GetMyPhotos()
     {
-        return PerformAuthenticatedActionAsync(async issuer => 
+        return PerformAuthenticatedActionAsync(async issuer =>
         {
-            var userPhotos = await _photosDTORepository.GetUsersPhotosAsync(issuer.User.Id.Value);
-            return Ok(userPhotos);
+            var userPhotos = await _mediator.Send(new GetUsersPhotosDataFragmentQuery(issuer.User.Id));
+
+            var response = new MyPhotosResponse(userPhotos.Data.ToList(), userPhotos.TotalCount);
+            return Ok(response);
         });
     }
 }

@@ -10,13 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
-using Yearly.Domain.Models.UserAgg;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Http;
 using Yearly.Infrastructure.Persistence;
-using Yearly.Infrastructure.Persistence.OutboxDomainEvents;
 using Yearly.Infrastructure.Persistence.PhotosStorage;
 using Yearly.Infrastructure.Persistence.Repositories;
 using Yearly.Infrastructure.Persistence.Seeding;
@@ -26,7 +23,6 @@ using Yearly.Infrastructure.Services.Foods;
 using Yearly.Infrastructure.Services.Menus;
 using Yearly.Infrastructure.Services.Notifications;
 using Yearly.Infrastructure.Services.Orders;
-using Yearly.Queries;
 
 namespace Yearly.Infrastructure;
 
@@ -74,6 +70,7 @@ public static class DependencyInjection
 
         services.AddPersistence(builder);
         services.AddBackgroundJobs();
+        services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection)));
 
         if (builder.Environment.IsDevelopment())
         {
@@ -128,7 +125,7 @@ public static class DependencyInjection
             builder.Configuration.GetSection(DatabaseConnectionOptions
                 .SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
 
-        services.AddTransient<ISqlConnectionFactory, SqlConnectionFactory>(); //Dapper
+        services.AddTransient<SqlConnectionFactory>(); //Dapper
 
         services.AddDbContext<PrimirestSharpDbContext>((srp, options) =>
         {
@@ -169,6 +166,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddTransient<DataSeeder>();
+
     }
 
 

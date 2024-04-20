@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Yearly.Application.Menus.Commands;
+using Yearly.Application.Menus.Queries;
+using Yearly.Contracts.Menu;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Presentation.OutputCaching;
-using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
@@ -12,20 +13,19 @@ namespace Yearly.Presentation.Controllers;
 public class MenuController : ApiController
 {
     private readonly IOutputCacheStore _outputCacheStore;
-    private readonly WeeklyMenuDTORepository _weeklyMenuDtoRepository;
-    public MenuController(ISender mediator, IOutputCacheStore outputCacheStore, WeeklyMenuDTORepository weeklyMenuDtoRepository) 
+    public MenuController(ISender mediator, IOutputCacheStore outputCacheStore) 
         : base(mediator)
     {
         _outputCacheStore = outputCacheStore;
-        _weeklyMenuDtoRepository = weeklyMenuDtoRepository;
     }
 
     [HttpGet("available")]
     [OutputCache(PolicyName = OutputCachePolicyName.GetAvailableMenus)]
     public async Task<IActionResult> GetAvailableMenus()
     {
-        var response = await _weeklyMenuDtoRepository.GetAvailableMenus();
-        
+        var result = await _mediator.Send(new GetAvailableMenuDTOsQuery());
+
+        var response = new AvailableMenusResponse(result);
         return Ok(response);
     }
 

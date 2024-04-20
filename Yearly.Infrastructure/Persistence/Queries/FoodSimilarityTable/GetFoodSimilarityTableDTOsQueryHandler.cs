@@ -1,21 +1,23 @@
 ﻿using Dapper;
+using MediatR;
+using Yearly.Application.FoodSimilarityTable.Queries;
 using Yearly.Contracts.Foods;
 
-namespace Yearly.Queries.DTORepositories;
+namespace Yearly.Infrastructure.Persistence.Queries.FoodSimilarityTable;
 
-public class FoodSimilarityTableDTORepository
+public class GetFoodSimilarityTableDTOsQueryHandler : IRequestHandler<GetFoodSimilarityTableDTOsQuery, List<FoodSimilarityRecordDTO>>
 {
-    private readonly ISqlConnectionFactory _connectionFactory;
+    private readonly SqlConnectionFactory _connection;
 
-    public FoodSimilarityTableDTORepository(ISqlConnectionFactory connectionFactory)
+    public GetFoodSimilarityTableDTOsQueryHandler(SqlConnectionFactory connection)
     {
-        this._connectionFactory = connectionFactory;
+        _connection = connection;
     }
 
-    public async Task<List<FoodSimilarityRecordDTO>> GetFoodSimilarityTableAsync()
+    public async Task<List<FoodSimilarityRecordDTO>> Handle(GetFoodSimilarityTableDTOsQuery request, CancellationToken cancellationToken)
     {
         var sql = """
-                  SELECT 
+                  SELECT
                   	NF.Id AS Id,
                   	NF.Name AS Name,
                   	PAOF.Id AS Id,
@@ -26,14 +28,13 @@ public class FoodSimilarityTableDTORepository
                   JOIN Domain.Foods PAOF ON PAOF.Id = S.PotentialAliasOriginId;
                   """;
 
-        await using var connection = _connectionFactory.Create();
+        await using var connection = _connection.Create();
         var foodSimilarityRecords = await connection
             .QueryAsync<FoodSimilarityRecordSliceDTO, FoodSimilarityRecordSliceDTO, double, FoodSimilarityRecordDTO>(
                 sql,
                 (newlyPersisted, potentialAlias, similarity) =>
                     new FoodSimilarityRecordDTO(newlyPersisted, potentialAlias, similarity),
-                splitOn: "Id, Similarity"
-            );
+                splitOn: "Id, Similarity");
 
         return foodSimilarityRecords.ToList();
     }

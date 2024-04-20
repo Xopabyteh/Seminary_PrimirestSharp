@@ -1,28 +1,26 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Yearly.Application.Foods.Commands.FoodSimilarity;
+using Yearly.Application.FoodSimilarityTable.Queries;
 using Yearly.Contracts.Foods;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
-using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Controllers;
 
 [Route("api/food")]
 public class FoodController : ApiController
 {
-    private readonly FoodSimilarityTableDTORepository _foodSimilarityTableDtoRepository;
-
-    public FoodController(ISender mediator, FoodSimilarityTableDTORepository foodSimilarityTableDtoRepository)
+    public FoodController(ISender mediator)
         : base(mediator)
     {
-        _foodSimilarityTableDtoRepository = foodSimilarityTableDtoRepository;
+
     }
 
     [HttpGet("similarity-table")]
     public async Task<IActionResult> GetSimilarityTable()
     {
-        var records = await _foodSimilarityTableDtoRepository.GetFoodSimilarityTableAsync();
+        var records = await _mediator.Send(new GetFoodSimilarityTableDTOsQuery());
 
         return Ok(new FoodSimilarityTableResponse(records));
     }

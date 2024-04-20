@@ -3,22 +3,22 @@ using Havit.Blazor.Components.Web.Bootstrap;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Yearly.Application.Authentication.Commands;
+using Yearly.Application.Users.Queries;
 using Yearly.Contracts.Authentication;
+using Yearly.Contracts.Users;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Presentation.Pages.Services;
-using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Pages;
 
 public partial class UsersPage
 {
-    [Inject] private UserDTORepository _userDTORepository { get; set; } = null!;
     [Inject] private ISender _mediator { get; set; } = null!;
     [Inject] private SessionDetailsService _sessionDetails { get; set; } = null!;
     [Inject] private IHxMessengerService _messenger { get; set; } = null!;
 
     private HxGrid<UserWithContextDTO> grid = null!; // @ref
-    private UserDTORepository.UsersWithContextFilter filterModel = new(usernameFilter: string.Empty);
+    private UsersWithContextFilter filterModel = new(usernameFilter: string.Empty);
 
     private HxOffcanvas offcanvasComponent = null!; // @ref
     private UserWithContextDTO editSelectedUser;
@@ -26,16 +26,17 @@ public partial class UsersPage
 
     private async Task<GridDataProviderResult<UserWithContextDTO>> GetGridData(GridDataProviderRequest<UserWithContextDTO> request)
     {
+        var dataFragment = await _mediator.Send(
+            new GetUsersWithContextDataFragmentQuery(
+                filterModel,
+                request.StartIndex,
+                request.Count!.Value), 
+            request.CancellationToken);
+
         return new GridDataProviderResult<UserWithContextDTO>()
         {
-            Data = await _userDTORepository.GetUsersWithContextAsync(
-                filterModel, 
-                request.StartIndex,
-                request.Count!.Value,
-                request.CancellationToken),
-            TotalCount = await _userDTORepository.GetTotalUsersCountAsync(
-                filterModel,
-                request.CancellationToken)
+            Data = dataFragment.Data,
+            TotalCount = dataFragment.TotalCount
         };
     }
 

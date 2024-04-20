@@ -3,16 +3,15 @@ using Havit.Blazor.Components.Web.Bootstrap;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Yearly.Application.Photos.Commands;
+using Yearly.Application.Photos.Queries;
 using Yearly.Contracts.Photos;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Presentation.Pages.Services;
-using Yearly.Queries.DTORepositories;
 
 namespace Yearly.Presentation.Pages;
 
 public partial class PhotosPage
 {
-    [Inject] private PhotosDTORepository _photosDTORepository { get; set; } = null!;
     [Inject] private SessionDetailsService _sessionDetails { get; set; } = null!;
     [Inject] private ISender _mediator { get; set; } = null!;
     [Inject] private IHxMessengerService _messenger { get; set; } = null!;
@@ -21,13 +20,15 @@ public partial class PhotosPage
 
     private async Task<GridDataProviderResult<PhotoWithContextDTO>> GetGridData(GridDataProviderRequest<PhotoWithContextDTO> request)
     {
+        var dataFragment =
+            await _mediator.Send(new GetPhotosWithContextDataFragmentQuery(
+                request.StartIndex, 
+                request.Count!.Value));
+
         return new GridDataProviderResult<PhotoWithContextDTO>()
         {
-            Data = await _photosDTORepository.GetPhotosWithContextAsync(
-                request.StartIndex,
-                request.Count!.Value, 
-                request.CancellationToken),
-            TotalCount = await _photosDTORepository.GetTotalPhotosCountAsync(request.CancellationToken)
+            Data = dataFragment.Data,
+            TotalCount = dataFragment.TotalCount
         };
     }
 

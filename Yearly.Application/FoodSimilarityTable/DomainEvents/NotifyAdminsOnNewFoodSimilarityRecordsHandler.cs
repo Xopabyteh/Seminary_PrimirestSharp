@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Yearly.Domain.Models.FoodAgg.DomainEvents;
 
-namespace Yearly.Application.Foods.DomainEvents;
+namespace Yearly.Application.FoodSimilarityTable.DomainEvents;
 
 public class NotifyAdminsOnNewFoodSimilarityRecordsHandler : INotificationHandler<NewFoodSimilarityRecordsDomainEvent>
 {

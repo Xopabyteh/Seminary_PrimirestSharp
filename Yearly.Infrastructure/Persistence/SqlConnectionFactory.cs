@@ -1,10 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using Yearly.Queries;
 
 namespace Yearly.Infrastructure.Persistence;
 
-public class SqlConnectionFactory : ISqlConnectionFactory
+public class SqlConnectionFactory
 {
     private readonly DatabaseConnectionOptions _dbConnectionOptions;
 
