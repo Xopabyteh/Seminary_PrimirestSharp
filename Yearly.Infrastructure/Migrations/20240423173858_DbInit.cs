@@ -6,13 +6,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Yearly.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDb : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "Domain");
+
+            migrationBuilder.EnsureSchema(
+                name: "Infrastructure");
 
             migrationBuilder.CreateTable(
                 name: "Foods",
@@ -23,9 +26,9 @@ namespace Yearly.Infrastructure.Migrations
                     AliasForFoodId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Allergens = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    PrimirestMenuId = table.Column<int>(type: "int", nullable: false),
-                    PrimirestDayId = table.Column<int>(type: "int", nullable: false),
-                    PrimirestItemId = table.Column<int>(type: "int", nullable: false)
+                    PrimirestFoodIdentifier_DayId = table.Column<int>(type: "int", nullable: false),
+                    PrimirestFoodIdentifier_ItemId = table.Column<int>(type: "int", nullable: false),
+                    PrimirestFoodIdentifier_MenuId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,16 +50,33 @@ namespace Yearly.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OutboxMessages",
+                schema: "Infrastructure",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContentJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OccurredOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Photos",
                 schema: "Domain",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PublisherId = table.Column<int>(type: "int", nullable: false),
                     PublishDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FoodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Link = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    IsApproved = table.Column<bool>(type: "bit", nullable: false)
+                    ResourceLink = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    ThumbnailResourceLink = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    FoodId_Value = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PublisherId_Value = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,12 +155,14 @@ namespace Yearly.Infrastructure.Migrations
                 schema: "Domain",
                 columns: table => new
                 {
-                    RoleCode = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleCode = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => x.RoleCode);
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.Id });
                     table.ForeignKey(
                         name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
@@ -204,12 +226,6 @@ namespace Yearly.Infrastructure.Migrations
                 schema: "Domain",
                 table: "MenuFoodIds",
                 columns: new[] { "DailyMenuWeeklyMenuId", "DailyMenuId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_UserId",
-                schema: "Domain",
-                table: "UserRoles",
-                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -226,6 +242,10 @@ namespace Yearly.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "MenuFoodIds",
                 schema: "Domain");
+
+            migrationBuilder.DropTable(
+                name: "OutboxMessages",
+                schema: "Infrastructure");
 
             migrationBuilder.DropTable(
                 name: "Photos",

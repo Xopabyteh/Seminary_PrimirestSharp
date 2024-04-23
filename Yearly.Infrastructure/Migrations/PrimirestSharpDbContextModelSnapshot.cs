@@ -18,7 +18,7 @@ namespace Yearly.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -84,13 +84,18 @@ namespace Yearly.Infrastructure.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Link")
+                    b.Property<DateTime>("PublishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResourceLink")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<DateTime>("PublishDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("ThumbnailResourceLink")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.ComplexProperty<Dictionary<string, object>>("FoodId", "Yearly.Domain.Models.PhotoAgg.Photo.FoodId#FoodId", b1 =>
                         {
@@ -212,16 +217,21 @@ namespace Yearly.Infrastructure.Migrations
 
                     b.OwnsMany("Yearly.Domain.Models.UserAgg.ValueObjects.UserRole", "Roles", b1 =>
                         {
-                            b1.Property<string>("RoleCode")
-                                .HasMaxLength(3)
-                                .HasColumnType("nvarchar(3)");
-
                             b1.Property<int>("UserId")
                                 .HasColumnType("int");
 
-                            b1.HasKey("RoleCode");
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                            b1.HasIndex("UserId");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<string>("RoleCode")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("nvarchar(3)");
+
+                            b1.HasKey("UserId", "Id");
 
                             b1.ToTable("UserRoles", "Domain");
 

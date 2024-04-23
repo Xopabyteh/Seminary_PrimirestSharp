@@ -89,7 +89,8 @@ public static class DependencyInjection
         var services = scope.ServiceProvider;
 
         EnsureServiceInitialization(services);
-
+        
+        MigrateDb(services);
         SeedCoreData(services);
 
         return app;
@@ -133,21 +134,14 @@ public static class DependencyInjection
                 builder.Configuration.GetSection("Persistence").GetSection("DbConnectionString")
                     .Value); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
         });
-        // Ensure Db exists
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<PrimirestSharpDbContext>();
-        dbContext.Database.EnsureCreated();
-       
 
         services.AddScoped<WeeklyMenuRepository>();
         services.AddScoped<IWeeklyMenuRepository>(sp => sp.GetRequiredService<WeeklyMenuRepository>());
         services.AddScoped<FoodRepository>();
-        //services.AddScoped<IFoodRepository, FoodRepository>();
         services.AddScoped<IFoodRepository>(sp => sp.GetRequiredService<FoodRepository>());
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IPhotoRepository, PhotoRepository>();
-        //services.AddScoped<ISoupRepository, SoupRepository>();
 
         services.AddScoped<AzurePhotoStorage>();
         services.AddScoped<IPhotoStorage, AzurePhotoStorage>(sp => sp.GetRequiredService<AzurePhotoStorage>());
@@ -179,6 +173,18 @@ public static class DependencyInjection
     {
         var azureStorage = services.GetRequiredService<AzurePhotoStorage>();
         azureStorage.EnsureContainerExists().Wait();
+    }
+
+    private static void MigrateDb(IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PrimirestSharpDbContext>();
+
+        var anyPendingMigrations = dbContext.Database.GetPendingMigrations().Any();
+        if(anyPendingMigrations)
+        {
+            dbContext.Database.Migrate();
+        }
     }
 
     private static void SeedCoreData(IServiceProvider services)
