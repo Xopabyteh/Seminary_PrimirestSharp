@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "storage1": {
+      "ignored": "true",
+      "type": "storage",
+      "connectionId": "Persistence:AzureStorageConnectionString"
+    },
+    "signalr1": {
+      "ignored": "true",
+      "type": "signalr"
+    }
+  }
+}
