@@ -89,7 +89,7 @@ public class PrimirestMenuProvider : IPrimirestMenuProvider
                     //Construct menu per day here
 
                     var foods = new List<PrimirestFood>(3);
-                    var menuDate = day.Date.AddHours(1); //Primirest stores in cz, we parse in utc, so we add 1 to go back to cz
+                    var menuDate = day.Date.AddHours(2); //Primirest stores in cz, we parse in utc, so we add 2 to go back to cz
 
                     var rawFoodNames = new List<string>(3); //Foods with soup name in them
                     foreach (var item in day.Items)
