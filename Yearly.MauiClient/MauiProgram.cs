@@ -1,14 +1,13 @@
 ﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
 using Shiny;
-using Shiny.Jobs;
 #if ANDROID || IOS
 using Plugin.LocalNotification;
 using Shiny.Push;
+using Shiny.Jobs;
 using Yearly.MauiClient.Services.Notifications;
 #endif
 
@@ -68,7 +67,7 @@ public static class MauiProgram
 #endif
 
             builder.Services.AddPushAzureNotificationHubs<MyPushDelegate>(
-                "Endpoint=sb://PrimirestSharpNotificationHubNS.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=jbGQazmRlrCHqKOyIO+/UoA5YeY0PcfCiKx0xqBA6Ys=",
+                "Endpoint=sb://PrimirestSharpNS.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=S1EiLQf9Ai0X5t7SCkWlfq1grCCOlO57mGtEgsOp3/0=",
                 "PrimirestSharpNH"
 #if ANDROID
                 , firebaseCfg

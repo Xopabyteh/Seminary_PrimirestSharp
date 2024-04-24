@@ -20,7 +20,7 @@ public class SharpAPIClient : IDisposable
 #if DEBUG
         const string baseAddress = "https://ntg29zg8-7217.euw.devtunnels.ms";
 #elif RELEASE
-       const string baseAddress = "https://primirest-sharp-webapp.azurewebsites.net";
+       const string baseAddress = "https://primirestsharp.azurewebsites.net";
 #endif
         httpClient.BaseAddress = new Uri(baseAddress);
 

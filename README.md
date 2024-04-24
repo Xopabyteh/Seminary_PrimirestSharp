@@ -19,6 +19,13 @@ The project is built with clean architecture and some DDD concepts in mind.
 But i am the only one working on the project and i am my own domain expert,
 so i'm just using portions of DDD.
 
+### Features
+ - [x] Ordering through primirest 🥓
+ - [x] User published photos 📷
+ - [x] Notifications when you forgot to order 📩
+ - [x] Food aliasing for photo reusability ♻
+ - [x] Slick client app 🔥
+
 ## Docs
 Most of the docs are made with figma available at the links below. Some docs can be found in project folders specific to that layer of the application.
 
@@ -39,31 +46,21 @@ User secrets should look like this
 ```json
   "Persistence:AzureStorageConnectionString:blob": "Connection string",
   "Persistence:DbConnectionString": "MS SQL Server Connection string",
-  // "Persistence:RedisConnectionString": "Connection string", //Note, curently not in use
 
   //These refer to a Primirest account used to store foods from Primirest to P#
   "PrimirestAuthentication:AdminPassword": "Password to your primirest account",
   "PrimirestAuthentication:AdminUsername": "Name of your primirest account"
+
+  "NotificationHub:FullAccessConnectionString": "Connection string"
 ```
 
 ##### Azure storage
-In the Azure storage account there must be a **Blob container** called **food-photos**, into which the photos are saved.
+In the Azure storage account there must be a **Blob container** called **food-photos**. 
+The app will create the container if not present on startup.
 
-For local development i am locally hosting Azure storage and Redis images inside of docker.
+For local development i am locally hosting an Azure storage image inside of docker.
 
 #### Cmd
-Without seeding:
 ```bash
 $ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https
 ```
-With admin user seeding:
-```bash
-$ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https seedProfile=adminuser
-```
-With dev mocks: (primirest API mocks, to avoid hitting their endpoints. Great in development)
-```bash
-$ dotnet run --project ~PathToPresentationProject~\Yearly.Presentation.csproj --launch-profile https useMock=true
-```
-##### Arguments
-* seedProfile - the profile to seed the database with, if not provided, the database will not be seeded
-	* There are various profiles, the profiles and the way they work can be found in the `Yearly.Infrastructure` project in `Persistence\Seeding\DataSeeder.cs`
