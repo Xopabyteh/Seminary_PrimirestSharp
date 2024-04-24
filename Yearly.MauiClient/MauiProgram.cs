@@ -1,4 +1,7 @@
 ﻿using CommunityToolkit.Maui;
+#if DEBUG
+using Microsoft.Extensions.Logging;
+#endif
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi;
 using Yearly.MauiClient.Services.SharpApi.Facades;
@@ -59,7 +62,7 @@ public static class MauiProgram
 #if ANDROID
             var firebaseCfg = new FirebaseConfig(
                 false,
-                "1:32637295511:android:77db4b6fdcd37",
+                "1:32637295511:android:77db4b6fdcd37a706e42d2",
                 "32637295511",
                 "primirest-sharp-fb",
                 "AIzaSyAG4HEPPOnup-0SvazStty9nKFkrOwqgR0"
