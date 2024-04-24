@@ -44,13 +44,13 @@ public class User : AggregateRoot<UserId>
 
         _photoIds.Add(photoId);
 
+        PublishDomainEvent(new UserPublishedNewPhotoDomainEvent(this.Id, photo.Id));
+
         //Automatically approve photo if user is a photo verifier
         if (this.Roles.Contains(UserRole.PhotoApprover))
         {
             photo.Approve();
         }
-
-        PublishDomainEvent(new UserPublishedNewPhotoDomainEvent(this.Id, photo.Id));
 
         return photo;
     }
