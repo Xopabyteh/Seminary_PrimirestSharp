@@ -22,9 +22,18 @@ using TimeZone = Android.Icu.Util.TimeZone;
 namespace Yearly.MauiClient;
 
 [Activity(
+    LaunchMode = LaunchMode.SingleTop,
     Theme = "@style/Maui.SplashTheme",
     MainLauncher = true,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+[IntentFilter(
+    new[] {
+        Shiny.ShinyNotificationIntents.NotificationClickAction
+    },
+    Categories = new[] {
+        "android.intent.category.DEFAULT"
+    }
+)]
 public class MainActivity : MauiAppCompatActivity
 {
     public static MainActivity Instance { get; private set; } = null!;

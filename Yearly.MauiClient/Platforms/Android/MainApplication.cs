@@ -8,14 +8,6 @@ namespace Yearly.MauiClient
 #else
     [Application]
 #endif
-    [IntentFilter(
-        new[] {
-            Shiny.ShinyPushIntents.NotificationClickAction
-        },
-        Categories = new[] {
-            "android.intent.category.DEFAULT"
-        }
-    )]
     public class MainApplication : MauiApplication
     {
         public MainApplication(IntPtr handle, JniHandleOwnership ownership)
