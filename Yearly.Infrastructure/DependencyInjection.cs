@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
+using Yearly.Application.Orders;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Http;
@@ -60,6 +61,7 @@ public static class DependencyInjection
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
 
         services.AddScoped<IPrimirestOrderService, PrimirestOrderService>();
+        services.AddScoped<IPrimirestFinanceService, PrimirestFinanceService>();
         services.AddScoped<IFoodSimilarityService, FoodSimilarityService>();
         services.Configure<FoodSimilarityServiceOptions>(
             builder.Configuration.GetSection(FoodSimilarityServiceOptions.SectionName));

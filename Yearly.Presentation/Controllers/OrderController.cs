@@ -76,10 +76,10 @@ public class OrderController : ApiController
         return PerformAuthenticatedActionAsync(async issuer =>
         {
             var balanceResult =
-                await _mediator.Send(new GetBalanceOfUserWithoutOrdersAccountedQuery(issuer.SessionCookie, issuer.User.Id));
+                await _mediator.Send(new GetUserFinanceDetailsQuery(issuer.SessionCookie));
 
             return balanceResult.Match(
-                value => Ok(new MyBalanceResponse(value.Value)),
+                value => Ok(new MyBalanceResponse(value.AccountBalance.Value, value.OrderedFor.Value)),
                 Problem);
         });
     }

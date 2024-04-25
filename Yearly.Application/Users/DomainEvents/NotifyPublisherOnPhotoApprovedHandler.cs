@@ -20,7 +20,7 @@ public class NotifyPublisherOnPhotoApprovedHandler : INotificationHandler<UserAp
     public async Task Handle(UserApprovedPhotoDomainEvent request, CancellationToken cancellationToken)
     {
         var photo = await _photoRepository.GetAsync(request.PhotoId);
-        
+
         if (photo is null)
             return; // The photo could've been deleted before the event was handled
 

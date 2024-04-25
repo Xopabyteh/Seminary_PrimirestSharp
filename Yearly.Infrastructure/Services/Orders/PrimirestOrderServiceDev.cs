@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using ErrorOr;
 using MediatR;
-using Yearly.Application.Common.Interfaces;
+using Yearly.Application.Orders;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;

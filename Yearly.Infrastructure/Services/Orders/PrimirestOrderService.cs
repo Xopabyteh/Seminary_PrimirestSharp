@@ -3,7 +3,7 @@ using ErrorOr;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Yearly.Application.Common.Interfaces;
+using Yearly.Application.Orders;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.MenuAgg.ValueObjects;
@@ -160,32 +160,5 @@ public class PrimirestOrderService : IPrimirestOrderService
         }
 
         return foodOrders;
-    }
-
-    public async Task<ErrorOr<MoneyCzechCrowns>> GetBalanceOfUserWithoutOrdersAccountedAsync(string sessionCookie, UserId userId)
-    {
-        //https://www.mujprimirest.cz/ajax/cs/account/26564871/balance?month=12&year=2023&_=1703936122412
-        
-        //Not that it really matters, but i am using CzechNow, instead of UTCNow, because Primirest also uses Czech Now
-        var monthNumber = _dateTimeProvider.CzechNow.Month;
-        var yearNumber = _dateTimeProvider.CzechNow.Year;
-
-        var requestUrl = @$"ajax/cs/account/{userId.Value}/balance?month={monthNumber}&year={yearNumber}&_=0";
-        var message = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-        message.Headers.Add("Cookie", sessionCookie);
-
-        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
-
-        var response = await client.SendAsync(message);
-
-        if (response.GotRoutedToLogin())
-            return Application.Errors.Errors.Authentication.CookieNotSigned;
-        
-        var responseJson = await response.Content.ReadAsStringAsync();
-        var balanceRoot = JsonConvert.DeserializeObject<BalanceResponseRoot>(responseJson)
-            ?? throw new InvalidPrimirestContractException("Primirest changed their Balance retrieval contract");
-
-        var balanceOfUserWithoutOrdersAccounted = balanceRoot.Rows2[0].ClosingBalance;
-        return new MoneyCzechCrowns(balanceOfUserWithoutOrdersAccounted);
     }
 }
