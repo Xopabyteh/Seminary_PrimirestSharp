@@ -30,7 +30,8 @@ public partial class DevPage
     private void StartOrderChecker()
     {
 #if ANDROID
-        MainActivity.Instance.TryStartOrderCheckerAsync(orderCheckerStartDelayMillis);
+        Task.Run(
+            async () => await MainActivity.Instance.TryStartOrderCheckerAsync(orderCheckerStartDelayMillis));
 #endif
     }
     private void StopOrderChecker()
@@ -40,12 +41,11 @@ public partial class DevPage
 #endif
     }
 
-    private async Task UpdateStatusOrderChecker()
+    private void UpdateStatusOrderChecker()
     {
 #if ANDROID
         var status = MainActivity.Instance.GetIsOrderCheckerBackgroundWorkerScheduled();
         orderCheckerStatus = status ? "Scheduled/Running" : "Not scheduled";
-        await Task.CompletedTask;
 #endif
         StateHasChanged();
     }

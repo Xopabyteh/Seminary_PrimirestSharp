@@ -22,48 +22,11 @@ public class MenuAndOrderCacheService
 
     public event Action? OnOrderedForChanged;
 
-    //public Task<IReadOnlyList<WeeklyMenuDTO>> CachedMenusAsync() => menusLoadedTcs.Task;
-    //public Task<IReadOnlyDictionary<int, List<OrderDTO>>> CachedOrdersForWeeksAsync() => ordersLoadedTcs.Task;
-
-
     public MenuAndOrderCacheService(OrdersFacade ordersFacade, MenusFacade menusFacade)
     {
         _ordersFacade = ordersFacade;
         _menusFacade = menusFacade;
     }
-
-    //private void _authService_OnLogin()
-    //{
-    //    //Load menus and orders into cache
-    //    Task.Run(LoadIntoCacheAsync);
-    //}
-
-    ///// <summary>
-    ///// Loads data into both <see cref="cachedAvailableMenus"/> and <see cref="cachedOrdersForWeeks"/>
-    ///// from the data from the facade. Requires the client to be authenticated.
-    ///// </summary>
-    ///// <returns></returns>
-    //public async Task LoadIntoCacheAsync()
-    //{
-    //    // AvailableMenus
-    //    var menuResponse = await _menusFacade.GetAvailableMenusAsync();
-    //    cachedAvailableMenus = menuResponse.WeeklyMenus;
-    //    menusLoadedTcs.SetResult(cachedAvailableMenus.AsReadOnly());
-
-    //    //Orders
-    //    var fillOrdersTasks = cachedAvailableMenus.Select(m => Task.Run(async () =>
-    //    {
-    //        var ordersForWeekResponse = await _ordersFacade.GetMyOrdersForWeekAsync(m.PrimirestMenuId);
-    //        cachedOrdersForWeeks.TryAdd(m.PrimirestMenuId, ordersForWeekResponse.Orders);
-    //    }));
-
-    //    await Task.WhenAll(fillOrdersTasks);
-    //    ordersLoadedTcs.SetResult(cachedOrdersForWeeks.AsReadOnly());
-
-    //    await LoadBalanceAsync();
-    //    ReCalculateOrderedFor();
-    //    orderedForLoadedTcs.SetResult(true); //Signal that orders are loaded
-    //}
 
     public void NewOrderCreated(int forWeekId, OrderDTO newOrder)
     {

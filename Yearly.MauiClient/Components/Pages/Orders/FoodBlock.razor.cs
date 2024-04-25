@@ -43,7 +43,7 @@ public partial class FoodBlock
         await _js.InvokeVoidAsync("FoodBlock.initializeImagesSlider", imagesReference, imagesControlsReference);
     }
 
-    private async Task Handle_AddPhotoClicked(FoodDTO forFood)
+    private void Handle_AddPhotoClicked(FoodDTO forFood)
     {
         _navigationManager.NavigateTo($"/photo?selectedFoodId={forFood.FoodId}");
     }

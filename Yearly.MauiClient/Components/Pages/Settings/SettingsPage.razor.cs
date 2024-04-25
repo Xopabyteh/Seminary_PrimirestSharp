@@ -40,7 +40,9 @@ public partial class SettingsPage
         return Task.CompletedTask;
     }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     private async Task OnOrderCheckerToggle(bool isChecked)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
 #if ANDROID
         if (isChecked)

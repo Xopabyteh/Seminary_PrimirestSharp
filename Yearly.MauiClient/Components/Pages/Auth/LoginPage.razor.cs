@@ -123,7 +123,7 @@ public partial class LoginPage
         _authService.SetSession(loginResult.AsT0);
         _navigationManager.NavigateTo("/orders");
 
-        // No need to reset isLoggingIn anymore..
+        // No need to reset isLoggingIn anymore...
     }
 
     private async Task<bool> ValidateModel()
@@ -146,9 +146,12 @@ public partial class LoginPage
     /// <summary>
     /// This is also the entry point to the application, try to request needed permissions
     /// </summary>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     protected override async Task OnAfterRenderAsync(bool firstRender)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         if (!firstRender)
+            // ReSharper disable once RedundantJumpStatement
             return;
 
 #if ANDROID || IOS
@@ -159,7 +162,7 @@ public partial class LoginPage
         {
             var pushAccess = await _pushManager.RequestAccess();
         }
-        catch (Exception e)
+        catch
         {
             // Hub is unavailable
             // NOOP
