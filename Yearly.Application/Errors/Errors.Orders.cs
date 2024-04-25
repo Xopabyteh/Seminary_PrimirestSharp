@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Yearly.Domain.Models.Common.ValueObjects;
 
 namespace Yearly.Application.Errors;
 

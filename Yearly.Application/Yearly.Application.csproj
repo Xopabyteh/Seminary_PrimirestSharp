@@ -28,8 +28,6 @@
   <ItemGroup>
     <Folder Include="FoodSimilarityTable\Queries\" />
     <Folder Include="Menus\Queries\" />
-    <Folder Include="Orders\Queries\" />
-    <Folder Include="Users\Queries\" />
   </ItemGroup>
 
 </Project>

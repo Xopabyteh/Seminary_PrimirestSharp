@@ -62,7 +62,8 @@ public partial class PhotoPage
         // Get todays daily menu
         var today = _dateTimeProvider.Today;
 
-        var availableMenus = await _menuAndOrderCacheService.CachedMenusAsync();
+        await _menuAndOrderCacheService.EnsureMenusLoadedAsync();
+        var availableMenus = _menuAndOrderCacheService.GetAvailableMenus();
 
         var todayWeeklyMenu = availableMenus.FirstOrDefault(m => m.DailyMenus.Any(d => d.Date == today));
         if (todayWeeklyMenu == default)
@@ -85,8 +86,9 @@ public partial class PhotoPage
         }
 
         //Try to select food that we have ordered
-        var ordersForWeeks = await _menuAndOrderCacheService.CachedOrdersForWeeksAsync();
-        var orders = ordersForWeeks[todayWeeklyMenu.PrimirestMenuId];
+        await _menuAndOrderCacheService.EnsureOrdersLoadedAsync(todayWeeklyMenu.PrimirestMenuId);
+        var orders = _menuAndOrderCacheService.GetOrdersForWeek(todayWeeklyMenu.PrimirestMenuId);
+
         var todayOrder = orders.FirstOrDefault(o => selectedMenu.Foods.Any(f => f.FoodId == o.SharpFoodId));
 
         if (todayOrder is not null)
@@ -102,7 +104,8 @@ public partial class PhotoPage
     private async Task SelectBasedOnQuery()
     {
         //selectedFoodId is filled from query here
-        var availableMenus = await _menuAndOrderCacheService.CachedMenusAsync();
+        await _menuAndOrderCacheService.EnsureMenusLoadedAsync();
+        var availableMenus = _menuAndOrderCacheService.GetAvailableMenus();
         selectedMenu = availableMenus
             .SelectMany(m => m.DailyMenus)
             .Single(d => d.Foods.Any(f => f.FoodId == selectedFoodId));

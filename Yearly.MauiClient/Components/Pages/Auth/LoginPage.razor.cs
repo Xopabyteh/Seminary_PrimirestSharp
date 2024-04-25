@@ -12,14 +12,14 @@ namespace Yearly.MauiClient.Components.Pages.Auth;
 
 public partial class LoginPage
 {
-    [Inject] private AuthenticationFacade AuthenticationFacade { get; set; } = null!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] private AuthService AuthService { get; set; } = null!;
-    [Inject] private ToastService ToastService { get; set; } = null!;
+    [Inject] private AuthenticationFacade _authenticationFacade { get; set; } = null!;
+    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
+    [Inject] private AuthService _authService { get; set; } = null!;
+    [Inject] private ToastService _toastService { get; set; } = null!;
 
 #if ANDROID || IOS
-    [Inject] private IPushManager PushManager { get; set; } = null!;
-    [Inject] private IJobManager JobManager { get; set; } = null!;
+    [Inject] private IPushManager _pushManager { get; set; } = null!;
+    [Inject] private IJobManager _jobManager { get; set; } = null!;
 #endif
     [SupplyParameterFromForm] public string ModelUsername { get; set; } = string.Empty;
 
@@ -37,42 +37,42 @@ public partial class LoginPage
     {
         //Make sure auto login is loaded
         //(don't care if active, but loaded, so we know the state of it)
-        await AuthService.EnsureAutoLoginStateLoadedAsync();
+        await _authService.EnsureAutoLoginStateLoadedAsync();
 
         //Are we setting up autologin?
-        var pageUri = NavigationManager.Uri;
+        var pageUri = _navigationManager.Uri;
         isSettingUpAutoLogin = pageUri.Contains("setupAutoLogin");
 
         if (isSettingUpAutoLogin)
         {
             autoLoginChecked = true; //Check the auto login box
-            await ToastService.ShowInformationAsync("Pøihlaš se znovu pro nastavení Auto Loginu",  durationMillis: -1);
+            await _toastService.ShowInformationAsync("Pøihlaš se znovu pro nastavení Auto Loginu",  durationMillis: -1);
             return; //We don't want to try to autologin,
                     // but wait for user typed login, so we can setup Auto Login
         }
 
         //1. Try get stored credentials
-        if (AuthService.AutoLoginStoredCredentials is not null)
+        if (_authService.AutoLoginStoredCredentials is not null)
         {
             autoLoginChecked = true;
             isLoggingIn = true;
             StateHasChanged();
 
             //Try to Auto Login
-            var loginResult = await AuthenticationFacade.LoginAsync(AuthService.AutoLoginStoredCredentials);
+            var loginResult = await _authenticationFacade.LoginAsync(_authService.AutoLoginStoredCredentials);
             if (loginResult.IsT1)
             {
                 //Problem
                 isLoggingIn = false;
                 StateHasChanged();
 
-                await ToastService.ShowErrorAsync("Auto login se nezdaøil, mìnil/a jste si heslo?");
+                await _toastService.ShowErrorAsync("Auto login se nezdaøil, mìnil/a jste si heslo?");
                 return;
             }
             // -> Successful login
 
-            AuthService.SetSession(loginResult.AsT0);
-            NavigationManager.NavigateTo("/orders");
+            _authService.SetSession(loginResult.AsT0);
+            _navigationManager.NavigateTo("/orders");
         }
 
         //2. Try get credentials from user ...
@@ -93,14 +93,14 @@ public partial class LoginPage
 
         var request = new LoginRequest(ModelUsername, ModelPassword);
 
-        var loginResult = await AuthenticationFacade.LoginAsync(request);
+        var loginResult = await _authenticationFacade.LoginAsync(request);
         if (loginResult.IsT1)
         {
             //Problem
             isLoggingIn = false;
             StateHasChanged();
 
-            await ToastService.ShowErrorAsync(loginResult.AsT1.Title);
+            await _toastService.ShowErrorAsync(loginResult.AsT1.Title);
             return;
         }
         // -> Successful login
@@ -108,20 +108,20 @@ public partial class LoginPage
         if (isSettingUpAutoLogin)
         {
             //We are setting up autologin, so we don't want to login the user, but just store the credentials
-            await ToastService.ShowSuccessAsync("Auto Login nastaven!");
-            await AuthService.SetupAutoLoginAsync(request);
-            NavigationManager.NavigateTo("/orders");
+            await _toastService.ShowSuccessAsync("Auto Login nastaven!");
+            await _authService.SetupAutoLoginAsync(request);
+            _navigationManager.NavigateTo("/orders");
             return;
         }
 
         if (autoLoginChecked)
         {
             //We want to setup auto login with these credentials
-            await AuthService.SetupAutoLoginAsync(request);
+            await _authService.SetupAutoLoginAsync(request);
         }
 
-        AuthService.SetSession(loginResult.AsT0);
-        NavigationManager.NavigateTo("/orders");
+        _authService.SetSession(loginResult.AsT0);
+        _navigationManager.NavigateTo("/orders");
 
         // No need to reset isLoggingIn anymore..
     }
@@ -130,13 +130,13 @@ public partial class LoginPage
     {
         if (string.IsNullOrWhiteSpace(ModelUsername))
         {
-            await ToastService.ShowErrorAsync("Vyplòte uživatelské jméno");
+            await _toastService.ShowErrorAsync("Vyplòte uživatelské jméno");
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(ModelPassword))
         {
-            await ToastService.ShowErrorAsync("Vyplòte heslo");
+            await _toastService.ShowErrorAsync("Vyplòte heslo");
             return false;
         }
 
@@ -153,11 +153,11 @@ public partial class LoginPage
 
 #if ANDROID || IOS
 
-        var jobAccess = await JobManager.RequestAccess();
+        var jobAccess = await _jobManager.RequestAccess();
 
         try
         {
-            var pushAccess = await PushManager.RequestAccess();
+            var pushAccess = await _pushManager.RequestAccess();
         }
         catch (Exception e)
         {

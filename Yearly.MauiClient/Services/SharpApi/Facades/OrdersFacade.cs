@@ -64,7 +64,7 @@ public class OrdersFacade
         return problem;
     }
 
-    public async Task<decimal> GetMyBalanceWithoutOrdersAccounted()
+    public async Task<MyBalanceResponse> GetBalance()
     {
         //Post to {{host}}/order/my-balance
         var response = await _sharpAPIClient.HttpClient.GetAsync("/api/order/my-balance");
@@ -72,6 +72,6 @@ public class OrdersFacade
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<MyBalanceResponse>();
-        return result.BalanceCrowns;
+        return result;
     }
 }

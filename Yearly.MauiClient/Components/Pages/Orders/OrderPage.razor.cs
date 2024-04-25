@@ -26,7 +26,9 @@ public partial class OrderPage
             return;
 
         //Get weekly menus
-        weeklyMenus = await _menuAndOrderCacheService.CachedMenusAsync();
+        await _menuAndOrderCacheService.EnsureMenusLoadedAsync();
+        weeklyMenus = _menuAndOrderCacheService.GetAvailableMenus();
+
         for (int i = 0; i < weeklyMenus.Count; i++)
         {
             WeeklyMenuDTO weeklyMenuDTO = weeklyMenus[i];
