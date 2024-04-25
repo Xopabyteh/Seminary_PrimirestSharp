@@ -70,8 +70,6 @@ public class AuthService
 
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         OnLogin?.Invoke();
-
-        Task.Run(_menuAndOrderCacheService.LoadIntoCacheAsync); //Todo: move to event based
     }
 
     private const string k_AutoLoginUsernameKey = "autologinusername";

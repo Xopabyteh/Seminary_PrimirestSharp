@@ -6,24 +6,30 @@ namespace Yearly.MauiClient.Components.Layout;
 
 public partial class NavigationBar : IDisposable
 {
-    [Inject] protected MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
-    [Inject] protected OrdersFacade OrdersFacade { get; set; } = null!;
+    [Inject] protected MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
+    [Inject] protected OrdersFacade _ordersFacade { get; set; } = null!;
 
     private bool isBalanceLoaded = false;
     private decimal balance = 0;
-
-    private bool isOrderedForLoaded = false;
     private decimal orderedFor = 0;
 
     protected override void OnInitialized()
     {
-        MenuAndOrderCacheService.OnOrderedForChanged += ReloadOrderedFor;
+        _menuAndOrderCacheService.OnOrderedForChanged += ReloadBalance;
     }
 
-    private void ReloadOrderedFor()
+    private void ReloadBalance()
     {
-        orderedFor = MenuAndOrderCacheService.OrderedFor;
+        LoadBalance();
         StateHasChanged();
+    }
+
+    private void LoadBalance()
+    {
+        var balanceDetails = _menuAndOrderCacheService.GetBalanceDetails();
+        balance = balanceDetails.BalanceCrowns;
+        orderedFor = balanceDetails.OrderedForCrowns;
+        isBalanceLoaded = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -31,19 +37,14 @@ public partial class NavigationBar : IDisposable
         if (!firstRender)
             return;
 
-        await MenuAndOrderCacheService.WaitUntilBalanceLoaded();
-        balance = MenuAndOrderCacheService.Balance;
-        isBalanceLoaded = true;
-
-        await MenuAndOrderCacheService.WaitUntilOrderedForLoaded();
-        orderedFor = MenuAndOrderCacheService.OrderedFor;
-        isOrderedForLoaded = true;
+        await _menuAndOrderCacheService.EnsureBalanceLoadedAsync();
+        LoadBalance();
 
         StateHasChanged();
     }
 
     public void Dispose()
     {
-        MenuAndOrderCacheService.OnOrderedForChanged -= ReloadOrderedFor;
+        _menuAndOrderCacheService.OnOrderedForChanged -= ReloadBalance;
     }
 }

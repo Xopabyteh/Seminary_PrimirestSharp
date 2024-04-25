@@ -16,9 +16,9 @@ public partial class DailyMenu
     [Parameter] public IReadOnlyList<OrderDTO> WeekOrders { get; set; } = null!;
     [Parameter] public bool WeekOrdersLoaded { get; set; } = false;
 
-    [Inject] private OrdersFacade OrdersFacade { get; set; } = null!;
-    [Inject] private MenuAndOrderCacheService MenuAndOrderCacheService { get; set; } = null!;
-    [Inject] private ToastService ToastService { get; set; } = null!;
+    [Inject] private OrdersFacade _ordersFacade { get; set; } = null!;
+    [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
+    [Inject] private ToastService _toastService { get; set; } = null!;
 
     private OrderDTO? order;
 
@@ -42,7 +42,7 @@ public partial class DailyMenu
                 if (!didCancel)
                     return; //Error
 
-                MenuAndOrderCacheService.OrderCanceled(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
+                _menuAndOrderCacheService.OrderCanceled(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
                 order = null;
             }
             else
@@ -55,13 +55,13 @@ public partial class DailyMenu
                     return; //error, return
 
                 //Cancel old food from cache
-                MenuAndOrderCacheService.OrderCanceled(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
+                _menuAndOrderCacheService.OrderCanceled(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
 
                 //Set new order
                 order = new OrderDTO(obj.Food.FoodId, newOrderIdentifier);
 
                 //Add new food to cache
-                MenuAndOrderCacheService.NewOrderCreated(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
+                _menuAndOrderCacheService.NewOrderCreated(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
             }
         }
         else
@@ -76,7 +76,7 @@ public partial class DailyMenu
             order = new OrderDTO(obj.Food.FoodId, newOrderIdentifier);
 
             //Add new food to cache
-            MenuAndOrderCacheService.NewOrderCreated(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
+            _menuAndOrderCacheService.NewOrderCreated(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
         }
 
         StateHasChanged();
@@ -85,7 +85,7 @@ public partial class DailyMenu
     ///<returns>The new order identifier if success, null if error</returns>
     private async Task<PrimirestOrderDataDTO?> NewOrderAsync(FoodDTO foodToOrder)
     {
-        var newOrderResult = await OrdersFacade.NewOrderAsync(foodToOrder.PrimirestFoodIdentifier);
+        var newOrderResult = await _ordersFacade.NewOrderAsync(foodToOrder.PrimirestFoodIdentifier);
         if (newOrderResult.IsT0)
         {
             //Success
@@ -98,7 +98,7 @@ public partial class DailyMenu
             //Error
 
             var problem = newOrderResult.AsT1;
-            await ToastService.ShowErrorAsync(problem.Title);
+            await _toastService.ShowErrorAsync(problem.Title);
             return null;
         }
 
@@ -108,7 +108,7 @@ public partial class DailyMenu
     /// <returns>True if canceled successfully, False if error</returns>
     private async Task<bool> CancelOrder(PrimirestOrderDataDTO orderData)
     {
-        var response = await OrdersFacade.CancelOrderAsync(orderData.PrimirestOrderIdentifier);
+        var response = await _ordersFacade.CancelOrderAsync(orderData.PrimirestOrderIdentifier);
         if (response is null)
         {
             //No error
@@ -116,7 +116,7 @@ public partial class DailyMenu
         }
         else
         {
-            await ToastService.ShowErrorAsync(response.Value.Title);
+            await _toastService.ShowErrorAsync(response.Value.Title);
             return false;
         }
     }

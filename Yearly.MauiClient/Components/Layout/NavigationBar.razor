@@ -5,7 +5,7 @@
             <span class='title'>Stav konta</span>
         </div>
         <div class='money-block titled'>
-            <span class='value @(isOrderedForLoaded ? string.Empty : "placeholder-glow")'>@(isOrderedForLoaded ? orderedFor.ToString("F1") : "    ")<sup>Kč</sup></span>
+            <span class='value @(isBalanceLoaded ? string.Empty : "placeholder-glow")'>@(isBalanceLoaded ? orderedFor.ToString("F1") : "    ")<sup>Kč</sup></span>
             <span class='title'>Objednáno</span>
         </div>
     </div>

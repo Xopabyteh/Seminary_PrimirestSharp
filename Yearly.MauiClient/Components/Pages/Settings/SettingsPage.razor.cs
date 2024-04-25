@@ -96,11 +96,12 @@ public partial class SettingsPage
         if (!firstRender)
             return;
 
-        await _menuAndOrderCacheService.WaitUntilBalanceLoaded();
-        await _menuAndOrderCacheService.WaitUntilOrderedForLoaded();
+        await _menuAndOrderCacheService.EnsureBalanceLoadedAsync();
 
-        balance = _menuAndOrderCacheService.Balance;
-        orderedFor = _menuAndOrderCacheService.OrderedFor;
+        var balanceDetails = _menuAndOrderCacheService.GetBalanceDetails();
+        balance = balanceDetails.BalanceCrowns;
+        orderedFor = balanceDetails.OrderedForCrowns;
+
         isMoneyLoaded = true;
         StateHasChanged();
 
