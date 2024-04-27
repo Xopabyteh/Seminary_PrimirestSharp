@@ -18,7 +18,6 @@ public partial class LoginPage
     [Inject] private ToastService _toastService { get; set; } = null!;
 
 #if ANDROID || IOS
-    [Inject] private IPushManager _pushManager { get; set; } = null!;
     [Inject] private IJobManager _jobManager { get; set; } = null!;
 #endif
     [SupplyParameterFromForm] public string ModelUsername { get; set; } = string.Empty;
@@ -157,16 +156,6 @@ public partial class LoginPage
 #if ANDROID || IOS
 
         var jobAccess = await _jobManager.RequestAccess();
-
-        try
-        {
-            var pushAccess = await _pushManager.RequestAccess();
-        }
-        catch
-        {
-            // Hub is unavailable
-            // NOOP
-        }
 #endif
     }
 }

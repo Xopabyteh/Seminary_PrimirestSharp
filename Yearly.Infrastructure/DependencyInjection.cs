@@ -111,6 +111,7 @@ public static class DependencyInjection
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProviderDev>();
         services.AddScoped<IPrimirestAdminLoggedSessionRunner, PrimirestAdminLoggedSessionRunnerDev>();
         services.AddScoped<IPrimirestOrderService, PrimirestOrderServiceDev>();
+        services.AddScoped<IPrimirestFinanceService, PrimirestFinanceServiceDev>();
         services.AddScoped<IAuthService, AuthServiceDev>();
     }
 
