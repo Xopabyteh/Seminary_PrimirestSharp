@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using HtmlAgilityPack;
+using System.Globalization;
 using Yearly.Application.Orders;
 using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Infrastructure.Errors;
@@ -47,11 +48,19 @@ public class PrimirestFinanceService : IPrimirestFinanceService
         var orderedForStr = orderedForNode.InnerText;
         var balanceStr = balanceNode.InnerText;
 
-        var didParse = decimal.TryParse(orderedForStr, out var orderedFor);
+        var didParse = decimal.TryParse(
+            orderedForStr, 
+            new CultureInfo("cs-CZ"),
+            out var orderedFor);
+
         if (!didParse)
             throw new InvalidPrimirestContractException("Could not parse ordered for value");
 
-        didParse = decimal.TryParse(balanceStr, out var balance);
+        didParse = decimal.TryParse(
+            balanceStr,
+            new CultureInfo("cs-CZ"),
+            out var balance);
+
         if (!didParse)
             throw new InvalidPrimirestContractException("Could not parse balance value");
 
