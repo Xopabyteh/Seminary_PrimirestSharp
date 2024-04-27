@@ -5,40 +5,42 @@
 
 <LeaveIfNotAuthorized RequiredRoles='new [] {UserRole.Admin}' />
 
-<HxGrid @ref="grid"
-        TItem="FoodWithContextDTO"
-        DataProvider="GetGridData"
-        PageSize="8"
-        Responsive="true">
-    <Columns>
-        <HxGridColumn HeaderText="Id" ItemTextSelector="f => f.Id.ToString()"/>
-        <HxGridColumn HeaderText="Name" ItemTextSelector="f => f.Name">
-            <HeaderTemplate>
-                <HxInputText @bind-Value="filterModel.NameFilter" BindEvent="BindEvent.OnInput" @bind-Value:after="grid.RefreshDataAsync" Placeholder="Type to search Name" InputSize="InputSize.Small" />
-            </HeaderTemplate>
-        </HxGridColumn>
-        <HxGridColumn HeaderText="AliasForFoodId" ItemTextSelector="@(f => f.AliasForFoodId?.ToString() ?? "-")" />
-        <HxGridColumn HeaderText="AliasOriginName" ItemTextSelector="@(f => f.AliasOriginName ?? "-")"/>
-        <HxContextMenuGridColumn Context="item">
-            <HxContextMenu>
-                <HxContextMenuItem Text="Edit" Icon="BootstrapIcon.Pencil" OnClick="async () => await HandleEditUserClick(item)" />
-            </HxContextMenu>
-        </HxContextMenuGridColumn>
-    </Columns>
-</HxGrid>
+<AuthorizedView RequiredRoles='new UserRole[] {UserRole.Admin}'>
+    <HxGrid @ref="grid"
+            TItem="FoodWithContextDTO"
+            DataProvider="GetGridData"
+            PageSize="8"
+            Responsive="true">
+        <Columns>
+            <HxGridColumn HeaderText="Id" ItemTextSelector="f => f.Id.ToString()"/>
+            <HxGridColumn HeaderText="Name" ItemTextSelector="f => f.Name">
+                <HeaderTemplate>
+                    <HxInputText @bind-Value="filterModel.NameFilter" BindEvent="BindEvent.OnInput" @bind-Value:after="grid.RefreshDataAsync" Placeholder="Type to search Name" InputSize="InputSize.Small" />
+                </HeaderTemplate>
+            </HxGridColumn>
+            <HxGridColumn HeaderText="AliasForFoodId" ItemTextSelector="@(f => f.AliasForFoodId?.ToString() ?? "-")" />
+            <HxGridColumn HeaderText="AliasOriginName" ItemTextSelector="@(f => f.AliasOriginName ?? "-")"/>
+            <HxContextMenuGridColumn Context="item">
+                <HxContextMenu>
+                    <HxContextMenuItem Text="Edit" Icon="BootstrapIcon.Pencil" OnClick="async () => await HandleEditUserClick(item)" />
+                </HxContextMenu>
+            </HxContextMenuGridColumn>
+        </Columns>
+    </HxGrid>
 
-<HxOffcanvas @ref="offcanvasComponent"
-             Title="Editting"
-             CloseButtonIcon="BootstrapIcon.X">
-    <HeaderTemplate>
-        <h3>@(editSelectedFood.Name.Length < 10 ? editSelectedFood.Name : $"{editSelectedFood.Name.Substring(0,8)}..")</h3>
-    </HeaderTemplate>
-    <BodyTemplate>
-        <HxInputText Label='Alias For Food Id' Placeholder='Enter custom alias id' Type='InputType.Text' InputMode='InputMode.Text' @bind-Value='editInputAliasForFoodId'>
-            <InputGroupEndTemplate>
-                <HxButton OnClick='HandleSetAliasClick' Text="Set alias" Icon="BootstrapIcon.FileArrowUp" Color="ThemeColor.Primary" />
-            </InputGroupEndTemplate>
-        </HxInputText>
-    </BodyTemplate>
-</HxOffcanvas>
-<HxButton Color='ThemeColor.Danger' Text='Force persist' Icon='BootstrapIcon.CloudDownload' OnClick='HandleForcePersistClick' Tooltip='Stáhne meny z primirestu a uloží je do sharpu. Tohle je opravdu výkonově náročná operace. Volání jentak zatěžuje jako 🐷'/>
+    <HxOffcanvas @ref="offcanvasComponent"
+                 Title="Editting"
+                 CloseButtonIcon="BootstrapIcon.X">
+        <HeaderTemplate>
+            <h3>@(editSelectedFood.Name.Length < 10 ? editSelectedFood.Name : $"{editSelectedFood.Name.Substring(0,8)}..")</h3>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <HxInputText Label='Alias For Food Id' Placeholder='Enter custom alias id' Type='InputType.Text' InputMode='InputMode.Text' @bind-Value='editInputAliasForFoodId'>
+                <InputGroupEndTemplate>
+                    <HxButton OnClick='HandleSetAliasClick' Text="Set alias" Icon="BootstrapIcon.FileArrowUp" Color="ThemeColor.Primary" />
+                </InputGroupEndTemplate>
+            </HxInputText>
+        </BodyTemplate>
+    </HxOffcanvas>
+    <HxButton Color='ThemeColor.Danger' Text='Force persist' Icon='BootstrapIcon.CloudDownload' OnClick='HandleForcePersistClick' Tooltip='Stáhne meny z primirestu a uloží je do sharpu. Tohle je opravdu výkonově náročná operace. Volání jentak zatěžuje jako 🐷'/>
+</AuthorizedView>
