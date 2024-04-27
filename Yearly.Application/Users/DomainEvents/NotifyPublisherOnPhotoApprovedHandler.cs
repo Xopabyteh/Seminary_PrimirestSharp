@@ -25,9 +25,8 @@ public class NotifyPublisherOnPhotoApprovedHandler : INotificationHandler<UserAp
             return; // The photo could've been deleted before the event was handled
 
         await _notificationService.SendPushNotificationAsync(
-            "Úspěch",
+            "Díky",
             "Vaše fotka byla schválena",
-            photo.PublisherId,
-            NotificationTagContract.PhotoApproved);
+            NotificationTagContract.PhotoApproved(photo.PublisherId.Value));
     }
 }

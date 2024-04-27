@@ -98,12 +98,20 @@ public static class DependencyInjection
         return app;
     }
 
-    public static void AddInfrastructureJobs()
+    public static void AddInfrastructureJobs(IWebHostEnvironment environment)
     {
         RecurringJob.AddOrUpdate<FireOutboxDomainEventsJob>(
             nameof(FireOutboxDomainEventsJob),
             x => x.ExecuteAsync(),
             @"* * * * *"); //Every minute
+
+        if (environment.IsDevelopment())
+        {
+            RecurringJob.AddOrUpdate<FireOutboxDomainEventsJob>(
+                nameof(FireOutboxDomainEventsJob),
+                x => x.ExecuteAsync(),
+                @"*/10 * * * * *"); // Every 10 seconds
+        }
     }
 
     private static void ReplaceServicesWithDevMocks(this IServiceCollection services, WebApplicationBuilder builder)

@@ -30,7 +30,7 @@ app.UseStaticFiles();
 
 // Add background jobs
 {
-    Yearly.Infrastructure.DependencyInjection.AddInfrastructureJobs();
+    Yearly.Infrastructure.DependencyInjection.AddInfrastructureJobs(app.Environment);
 
     RecurringJob.AddOrUpdate<PersistAvailableMenusJob>(
         "Persist available menus",

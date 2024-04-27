@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
+using Shiny;
 using Shiny.Push;
 using Yearly.Contracts.Notifications;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Services;
+using Yearly.MauiClient.Services.Toast;
 
 namespace Yearly.MauiClient.Components.Pages.Settings;
 
@@ -12,6 +14,8 @@ public partial class SettingsPage
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
     [Inject] private MyPhotosCacheService _myPhotosCacheService { get; set; } = null!;
+    [Inject] private ToastService _toastService { get; set; } = null!;
+
 #if ANDROID || IOS
     [Inject] private IPushManager _pushNotificationsManager { get; set; } = null!;
 #endif
@@ -41,17 +45,17 @@ public partial class SettingsPage
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    private async Task OnOrderCheckerToggle(bool isChecked)
+    private async Task<bool> OnOrderCheckerToggle(bool newState)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
 #if ANDROID
-        if (isChecked)
+        if (newState)
         {
             //Try Enable
             var didStart = await MainActivity.Instance.TryStartOrderCheckerAsync();
             if (didStart)
             {
-                isOrderCheckerEnabled = isChecked;
+                isOrderCheckerEnabled = newState;
             }
             else
             {
@@ -64,12 +68,11 @@ public partial class SettingsPage
         {
             //Disable
             MainActivity.Instance.StopOrderChecker();
-            isOrderCheckerEnabled = isChecked;
+            isOrderCheckerEnabled = newState;
         }
 #endif
         Preferences.Set(k_OrderCheckerPrefKey, isOrderCheckerEnabled);
-
-        StateHasChanged();
+        return newState;
     }
 
     private async Task Logout()
@@ -77,20 +80,6 @@ public partial class SettingsPage
         await _authService.LogoutAsync();
         
         _navigationManager.NavigateTo("/login");
-    }
-
-    private Task RemoveAutoLogin()
-    {
-        //Display alert
-        //Todo:
-
-        //Remove
-        _authService.RemoveAutoLogin();
-
-        //Refresh page
-        _navigationManager.Refresh(true);
-
-        return Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -126,35 +115,38 @@ public partial class SettingsPage
 
     private List<string> activeTags = new (3);
 
-    private void SetNotificationTag(NotificationTagContract tag, bool shouldBeActive, bool isUserSpecific)
+    /// <returns>True if tag was set successfully</returns>
+    private async Task<bool> SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
     {
-        var tagValue = isUserSpecific
-            ? NotificationTagContract.AssembleUserSpecificTag(tag, _authService.UserDetailsLazy.UserId)
-            : tag.Value;
-        
+        //Todo: toggles slowly for some reason - fix
+#if ANDROID || IOS
+        var pushAccess = await _pushNotificationsManager.RequestAccess();
+        if (pushAccess.Status != AccessState.Available)
+        {
+            await _toastService.ShowErrorAsync("Musíte povolit notifikace, aby je aplikace mohla zoobrazit.");
+            return false;
+        }
+#endif
+
         if (shouldBeActive)
         {
-            activeTags.Add(tagValue);
+            activeTags.Add(tag.Value);
 #if ANDROID || IOS
-            _pushNotificationsManager.Tags?.AddTag(tagValue);
+            _pushNotificationsManager.Tags?.AddTag(tag.Value);
 #endif
         }
         else
         {
-            activeTags.Remove(tagValue);
+            activeTags.Remove(tag.Value);
 #if ANDROID || IOS
-            _pushNotificationsManager.Tags?.RemoveTag(tagValue);
+            _pushNotificationsManager.Tags?.RemoveTag(tag.Value);
 #endif
         }
 
-        StateHasChanged();
+        return true;
     }
 
-    private bool IsLoadedTagActive(NotificationTagContract tag, bool isUserSpecific)
-        => activeTags.Contains(
-            isUserSpecific
-                ? NotificationTagContract.AssembleUserSpecificTag(tag, _authService.UserDetailsLazy.UserId)
-                : tag.Value);
-
-    #endregion
+    private bool IsLoadedTagActive(NotificationTagContract tag)
+        => activeTags.Contains(tag.Value);
+#endregion
 }

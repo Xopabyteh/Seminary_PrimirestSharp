@@ -136,8 +136,8 @@ public partial class PhotoPage
 
         takingPhotoLoading = true;
         StateHasChanged();
-#if DEBUG || WINDOWS
-        //Take a mock image from documents if on windows and in debug
+#if WINDOWS
+        //Take a mock image from documents if on windows
         //So we don't have to deal with camera stuff on windows
 
         //Mock image from documents
@@ -171,7 +171,7 @@ public partial class PhotoPage
         }
 
 #endif
-#if DEBUG || WINDOWS
+#if WINDOWS
     skipPhotoTake:
 #endif
 

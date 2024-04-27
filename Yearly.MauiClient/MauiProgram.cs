@@ -10,8 +10,8 @@ using Shiny;
 #if ANDROID || IOS
 using Plugin.LocalNotification;
 using Shiny.Push;
-using Shiny.Jobs;
 using Yearly.MauiClient.Services.Notifications;
+using Android.App;
 #endif
 
 namespace Yearly.MauiClient;
@@ -21,15 +21,23 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder
+        return builder
             .UseMauiApp<App>()
             .UseShiny()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            });
+            })
+            .RegisterServices()
+#if ANDROID || IOS
+            .RegisterNotifications()
+#endif
+            .Build();
+    }
 
+    public static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
+    {
         builder.Services.AddMauiBlazorWebView();
 
         builder.Services.AddTransient<DateTimeProvider>();
@@ -41,7 +49,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<MenuAndOrderCacheService>();
         builder.Services.AddSingleton<MyPhotosCacheService>();
 
-        //Sharp API
+        // Sharp API
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SharpAPIClient>();
         builder.Services.AddSingleton<WebRequestProblemService>();
@@ -52,42 +60,55 @@ public static class MauiProgram
         builder.Services.AddTransient<PhotoFacade>();
         builder.Services.AddTransient<FoodFacade>();
 
-        // Jobs
-#if ANDROID || IOS
-        builder.Services.AddJobs();
-#endif
-        // Notifications
-#if ANDROID || IOS
-        builder.UseLocalNotification();
-#if ANDROID
-            var firebaseCfg = new FirebaseConfig(
-                false,
-                "1:32637295511:android:77db4b6fdcd37a706e42d2",
-                "32637295511",
-                "primirest-sharp-fb",
-                "AIzaSyAG4HEPPOnup-0SvazStty9nKFkrOwqgR0"
-            );
-#endif
-
-            builder.Services.AddPushAzureNotificationHubs<MyPushDelegate>(
-                "Endpoint=sb://PrimirestSharpNS.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=S1EiLQf9Ai0X5t7SCkWlfq1grCCOlO57mGtEgsOp3/0=",
-                "PrimirestSharpNH"
-#if ANDROID
-                , firebaseCfg
-#endif
-            );
-#endif
-
-
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Services.AddLogging(c =>
         {
             c.AddDebug();
         });
-
 #endif
 
-        return builder.Build();
+        // Jobs
+#if ANDROID || IOS
+        builder.Services.AddJobs();
+#endif
+
+        return builder;
     }
+
+#if ANDROID || IOS
+    public static MauiAppBuilder RegisterNotifications(this MauiAppBuilder builder)
+    {
+        builder.UseLocalNotification();
+        
+#if ANDROID
+        NotificationChannel defaultChannel = new(
+            "default_channel",
+            "Default Channel",
+            NotificationImportance.Default)
+        {
+            LockscreenVisibility = NotificationVisibility.Private
+        };
+        
+        var firebaseCfg = new FirebaseConfig(
+            false,
+            "1:32637295511:android:77db4b6fdcd37a706e42d2",
+            "32637295511",
+            "primirest-sharp-fb",
+            "AIzaSyAG4HEPPOnup-0SvazStty9nKFkrOwqgR0",
+            defaultChannel
+        );
+#endif
+
+        builder.Services.AddPushAzureNotificationHubs<MyPushDelegate>(
+            "Endpoint=sb://PrimirestSharpNS.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=S1EiLQf9Ai0X5t7SCkWlfq1grCCOlO57mGtEgsOp3/0=",
+            "PrimirestSharpNH"
+#if ANDROID
+            , firebaseCfg
+#endif
+        );
+
+        return builder;
+    }
+#endif
 }

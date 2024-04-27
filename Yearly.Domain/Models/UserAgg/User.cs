@@ -49,7 +49,7 @@ public class User : AggregateRoot<UserId>
         //Automatically approve photo if user is a photo verifier
         if (this.Roles.Contains(UserRole.PhotoApprover))
         {
-            photo.Approve();
+            this.ApprovePhoto(photo);
         }
 
         return photo;
@@ -60,7 +60,7 @@ public class User : AggregateRoot<UserId>
         photo.Approve();
 
         // Publish Domain events
-        PublishDomainEvent(new UserPublishedNewPhotoDomainEvent(this.Id, photo.Id));
+        PublishDomainEvent(new UserApprovedPhotoDomainEvent(this.Id, photo.Id));
     }
 
     internal void RejectPhoto(Photo photo)

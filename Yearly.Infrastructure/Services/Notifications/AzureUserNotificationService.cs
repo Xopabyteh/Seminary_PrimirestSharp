@@ -1,9 +1,9 @@
-﻿using Microsoft.Azure.NotificationHubs;
+﻿using System.Globalization;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Contracts.Notifications;
-using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Services.Notifications;
 
@@ -15,54 +15,93 @@ public class AzureUserNotificationService : IUserNotificationService
     {
         _client = client;
     }
+
     public Task SendPushNotificationAsync(
         string title,
         string message,
-        UserId toUserId,
         NotificationTagContract notificationTag,
         IDictionary<string, object>? customData = null)
     {
-        //Todo: deal with apple (IOS)
-        return SendPushNotificationToAndroidAsync(title, message, toUserId, notificationTag, customData);
+        // Todo: deal with IOS
+
+        return SendPushNotificationToAndroidAsync(
+            title,
+            message,
+            notificationTag.Value,
+            notificationTag.NotificationId,
+            customData);
     }
+
+    /// <summary>
+    /// Converts a dictionary, with quotation marks around numbers
+    /// </summary>
+    private static string DataToFcmV1Json(IDictionary<string, object> data)
+    {
+        // TODO: maybe not the best way to do it? allocating a whole extra dictionary just for this?
+        object NumberToStringOrValue(object value)
+            => value switch
+            {
+                int intValue => intValue.ToString(),
+                long longValue => longValue.ToString(),
+                float floatValue => floatValue.ToString(CultureInfo.InvariantCulture),
+                double doubleValue => doubleValue.ToString(CultureInfo.InvariantCulture),
+                decimal decimalValue => decimalValue.ToString(CultureInfo.InvariantCulture),
+                _ => value
+            };
+
+        // We only have to put quotation marks around numbers
+        var dataJson = JsonConvert.SerializeObject(
+            data.Select(p =>
+                    new KeyValuePair<string, object>(p.Key, NumberToStringOrValue(p.Value)))
+                .ToDictionary());
+
+        return dataJson;
+    }
+
+    /// <summary>
+    /// Note: this isn't safe and anyone can listen to this notification.
+    /// In case of sending sensitive content, something more secure must be created. 
+    /// </summary>
     private Task SendPushNotificationToAndroidAsync(
         string title,
         string message,
-        UserId toUserId,
-        NotificationTagContract notificationTag,
+        string notificationTag,
+        int notificationId,
         IDictionary<string, object>? customData = null)
     {
         // Sample:
-        /*{
-              "notification":{
-                  "title":"Notification Hub Test Notification",
-                  "body":"This is a sample notification delivered by Azure Notification Hubs."
-          
-              },
-              "data":{
-                  "property1":"value1",
-                  "property2":42
-          
-              }
-          }*/
+        /*
+                {
+                  "message": {
+                    "notification": {
+                      "title": "Breaking News",
+                      "body": "New news story available."
+                    },
+                    "data": {
+                      "notification-id": "13"
+                    }
+                  }
+                }
+          */
 
         //Add notification id to data
         customData ??= new Dictionary<string, object>(1);
-        customData.Add(NotificationDataKeysContract.k_NotificationIdKey, notificationTag.NotificationId);
+        customData.Add(NotificationDataKeysContract.k_NotificationIdKey, notificationId);
 
-        var payload = new
-        {
-            notification = new
-            {
-                title,
-                body = message
-            },
-            data = customData
-        };
-        var payloadJson = JsonConvert.SerializeObject(payload);
+        var payloadJson = $$"""
+                            {
+                              "message": {
+                                "notification": {
+                                  "title": "{{title}}",
+                                  "body": "{{message}}"
+                                },
+                                "data": {{DataToFcmV1Json(customData)}}
+                              }
+                            }
+                            """;
 
         return _client.SendNotificationAsync(
-            new FcmNotification(payloadJson),
-            NotificationTagContract.AssembleUserSpecificTag(notificationTag, toUserId.Value));
+            new FcmV1Notification(payloadJson),
+            notificationTag);
     }
 }
