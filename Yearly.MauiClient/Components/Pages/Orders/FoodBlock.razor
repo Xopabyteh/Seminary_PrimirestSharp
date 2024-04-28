@@ -5,7 +5,10 @@
             <p>@foodPrice Kč</p>
             <p>@(string.IsNullOrEmpty(Food.Allergens) ? "-" : Food.Allergens)</p>
         </div>
-        <button @onclick='RaiseOnOrderClickedEvent' class='button bg-primary @(!IsLoaded ? "placeholder placeholder-glow" : string.Empty) @(IsOrdered ? "accent" : string.Empty)'>
+        <button
+            @onclick='RaiseOnOrderClickedEvent'
+            class='button bg-primary @(!isInteractable ? "placeholder placeholder-glow" : string.Empty) @(IsOrdered ? "accent" : string.Empty)'
+            disabled='@(!isInteractable)'>
             @if (IsOrdered)
             {
                 <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">

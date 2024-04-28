@@ -5,13 +5,6 @@
             <ChildContent>
                 <RouteView RouteData="@routeData" DefaultLayout="@typeof(Components.Layout.MainLayout)"/>
             </ChildContent>
-            <ErrorContent>
-                <div style="background-color: yellow; border: 2px dashed black; white-space: pre; font-family: consolas, monospace;">
-                    <div style="background-color: rgba(255,255,255,0.3); margin: 0.5rem; padding: 0.5rem; user-select: text">
-                        @context.Message
-                    </div>
-                </div>
-            </ErrorContent>
         </ComponentExceptionHandler>
     </Found>
     <NotFound>

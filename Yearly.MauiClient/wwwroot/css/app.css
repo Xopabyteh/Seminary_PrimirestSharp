@@ -400,8 +400,8 @@ nav a {
 
 .placeholder-glow {
     background: var(--clr-secondary);
-
-    border-radius: 1rem;
+    
+    border-radius: 0.25rem;
 
     animation: placeholder-glow 1.5s ease-in-out infinite;
 }

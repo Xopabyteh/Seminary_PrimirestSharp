@@ -12,9 +12,11 @@ public partial class FoodBlock
     [Parameter] public FoodDTO Food { get; set; } = null!;
     [Parameter] public bool IsOrdered { get; set; }
     /// <summary>
-    /// True when the food block knows about it's final state: that it is either ordered or unordered
+    /// True when the food block knows about its final state: that it is either ordered or unordered
     /// </summary>
     [Parameter] public bool IsLoaded { get; set; } = false;
+    [Parameter] public bool IsOrdering { get; set; } = false;
+    protected bool isInteractable => IsLoaded && !IsOrdering;
 
     [Parameter] public EventCallback<FoodBlock> OnOrderClicked { get; set; }
 
@@ -24,7 +26,7 @@ public partial class FoodBlock
     private ElementReference imagesControlsReference;
 
     private string foodPrice = "53~55";
-    private async void RaiseOnOrderClickedEvent()
+    private async Task RaiseOnOrderClickedEvent()
     {
         await OnOrderClicked.InvokeAsync(this);
     }

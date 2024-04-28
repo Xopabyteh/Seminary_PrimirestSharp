@@ -80,24 +80,21 @@
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když mi schválí fotku</label>
             <ToggleSwitch 
-                StartingState='@IsLoadedTagActive(NotificationTagContract.PhotoApproved(_authService.UserDetailsLazy.UserId))' 
-                OnTryCheckedChange='async active => await SetNotificationTag(NotificationTagContract.PhotoApproved(_authService.UserDetailsLazy.UserId), active)'/>
-
+                Checked='@IsLoadedTagActive(NotificationTagContract.PhotoApproved(_authService.UserDetailsLazy.UserId))' 
+                OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.PhotoApproved(_authService.UserDetailsLazy.UserId), active)'/>
             </div>
         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Pha. Nová čekající fotka</label>
-                <ToggleSwitch 
-                    StartingState='@IsLoadedTagActive(NotificationTagContract.NewWaitingPhoto())'
-                    OnTryCheckedChange='active => SetNotificationTag(NotificationTagContract.NewWaitingPhoto(), active)' />
+                <ToggleSwitch Checked='@IsLoadedTagActive(NotificationTagContract.NewWaitingPhoto())'
+                              OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.NewWaitingPhoto(), active)' />
             </div>
         </Authorized>
         <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Adm. Nový similarity record</label>
-                <ToggleSwitch 
-                    StartingState='@IsLoadedTagActive(NotificationTagContract.NewSimilarityRecord())'
-                    OnTryCheckedChange='active => SetNotificationTag(NotificationTagContract.NewSimilarityRecord(), active)' />
+                <ToggleSwitch Checked='@IsLoadedTagActive(NotificationTagContract.NewSimilarityRecord())'
+                              OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.NewSimilarityRecord(), active)' />
             </div>
         </Authorized>
     </div>
@@ -129,7 +126,7 @@
     <div class='notification-toggles mh-100' style='@(_authService.IsAutoLoginSetup ? "" : "filter: opacity(0.45)")'>
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Notifikace když nemám objednáno</label>
-            <ToggleSwitch StartingState='isOrderCheckerEnabled' OnTryCheckedChange='OnOrderCheckerToggle'/>
+            <ToggleSwitch Checked='isOrderCheckerEnabled' OnCheckedChanged='async active => await OnOrderCheckerToggle(active)'/>
         </div>
 @*         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Auto Login</label>

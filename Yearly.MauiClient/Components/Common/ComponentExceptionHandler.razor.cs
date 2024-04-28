@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using Yearly.MauiClient.Services.SharpApi;
 
 namespace Yearly.MauiClient.Components.Common;
@@ -15,22 +16,21 @@ public class ComponentExceptionHandlerBase : ErrorBoundary
 {
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private WebRequestProblemService _webRequestProblemService { get; set; } = null!;
-
-    //protected bool RenderChildContent { get; private set; } = true;
+    [Inject] private IJSRuntime _js { get; set; } = null!;
     protected bool DidProcessException { get; private set; } = false;
-    protected override async Task OnErrorAsync(Exception exception)
+    protected override Task OnErrorAsync(Exception exception)
     {
         if (exception is HttpRequestException httpRequestException)
         {
             _webRequestProblemService.HttpRequestException = httpRequestException;
             _navigationManager.NavigateTo("/webRequestProblem", true);
-            return;
+            return Task.CompletedTask;
         }
 
-        if (exception is SafeConnectionAwareHttpClientHandler.NoInternetAccessException noInternetAccessException)
+        if (exception is SafeConnectionAwareHttpClientHandler.NoInternetAccessException)
         {
             _navigationManager.NavigateTo("/noInternet", true);
-            return;
+            return Task.CompletedTask;
         }
 
         DidProcessException = true;
@@ -39,5 +39,12 @@ public class ComponentExceptionHandlerBase : ErrorBoundary
 #if DEBUG
         throw exception;
 #endif
+
+        return Task.CompletedTask;
+    }
+
+    protected async Task Retry()
+    {
+        await _js.InvokeVoidAsync("history.back");
     }
 }

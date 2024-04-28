@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Components;
+#if ANDROID || IOS
 using Shiny;
 using Shiny.Push;
+using Yearly.MauiClient.Services.Toast;
+#endif
 using Yearly.Contracts.Notifications;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.Toast;
 
 namespace Yearly.MauiClient.Components.Pages.Settings;
 
@@ -14,9 +16,9 @@ public partial class SettingsPage
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
     [Inject] private MyPhotosCacheService _myPhotosCacheService { get; set; } = null!;
-    [Inject] private ToastService _toastService { get; set; } = null!;
 
 #if ANDROID || IOS
+    [Inject] private ToastService _toastService { get; set; } = null!;
     [Inject] private IPushManager _pushNotificationsManager { get; set; } = null!;
 #endif
 
@@ -45,7 +47,8 @@ public partial class SettingsPage
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    private async Task<bool> OnOrderCheckerToggle(bool newState)
+    // ReSharper disable once UnusedParameter.Local
+    private async Task OnOrderCheckerToggle(bool newState)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
 #if ANDROID
@@ -72,7 +75,6 @@ public partial class SettingsPage
         }
 #endif
         Preferences.Set(k_OrderCheckerPrefKey, isOrderCheckerEnabled);
-        return newState;
     }
 
     private async Task Logout()
@@ -116,34 +118,37 @@ public partial class SettingsPage
     private List<string> activeTags = new (3);
 
     /// <returns>True if tag was set successfully</returns>
-    private async Task<bool> SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
+#pragma warning disable CS1998 // Only here due to windows dev build 
+    private async Task SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
+#pragma warning restore CS1998
     {
-        //Todo: toggles slowly for some reason - fix
 #if ANDROID || IOS
         var pushAccess = await _pushNotificationsManager.RequestAccess();
         if (pushAccess.Status != AccessState.Available)
         {
             await _toastService.ShowErrorAsync("Musíte povolit notifikace, aby je aplikace mohla zoobrazit.");
-            return false;
         }
 #endif
-
         if (shouldBeActive)
         {
             activeTags.Add(tag.Value);
+
+            // Todo: move to background task
 #if ANDROID || IOS
-            _pushNotificationsManager.Tags?.AddTag(tag.Value);
+            await _pushNotificationsManager.Tags?.AddTag(tag.Value)!;
 #endif
         }
         else
         {
             activeTags.Remove(tag.Value);
+
+            // Todo: move to background task
 #if ANDROID || IOS
-            _pushNotificationsManager.Tags?.RemoveTag(tag.Value);
+            await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
 #endif
         }
 
-        return true;
+        StateHasChanged();
     }
 
     private bool IsLoadedTagActive(NotificationTagContract tag)

@@ -6,6 +6,7 @@
         Food='@food'
         IsOrdered='@(order?.SharpFoodId == food.FoodId)'
         IsLoaded='@WeekOrdersLoaded'
+        IsOrdering='@foodIdsInvolvedInOrdering.Contains(food.FoodId)'
         OnOrderClicked='HandleFoodOnOrderClicked'/>
 
     //Don't show br for the last one

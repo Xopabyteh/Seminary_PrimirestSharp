@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Shiny;
+#if ANDROID || IOS
 using Shiny.Push;
+#endif
 using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient.Components.Pages.Dev;
@@ -9,7 +11,9 @@ public partial class DevPage
 {
     protected override void OnInitialized()
     {
+#if ANDROID || IOS
         notificationsRegistrationToken = _pushManager.RegistrationToken;
+#endif
     }
 
     #region Auth
@@ -52,29 +56,35 @@ public partial class DevPage
 
     #endregion
 
-    #region Notifications
+#region Notifications
 
+#if ANDROID || IOS
     [Inject] private IPushManager _pushManager { get; set; } = null!;
+#endif
     private string? notificationsRegistrationToken = null;
     private AccessState notificationsPushAccessState = AccessState.Unknown;
 
     private async Task RegisterNotifications()
     {
+#if ANDROID || IOS
         var accessState = await _pushManager.RequestAccess();
         notificationsRegistrationToken = accessState.RegistrationToken;
         notificationsPushAccessState = accessState.Status;
         
         StateHasChanged();
+#endif
     }
 
     private async Task UnregisterNotifications()
     {
+#if ANDROID || IOS
         await _pushManager.UnRegister();
         notificationsPushAccessState = AccessState.Disabled;
         
         StateHasChanged();
+#endif
     }
 
-    #endregion
+#endregion
 
 }
