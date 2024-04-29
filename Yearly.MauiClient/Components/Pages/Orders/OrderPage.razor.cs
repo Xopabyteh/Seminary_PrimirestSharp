@@ -103,7 +103,7 @@ public partial class OrderPage
         }
 
         //Select fallback first
-        selectedWeeklyMenu = weeklyMenus[0];
+        selectedWeeklyMenu ??= weeklyMenus[0];
         selectedDailyMenu ??= selectedWeeklyMenu.Value.DailyMenus.FirstOrDefault(); //I hope it never comes to the day, where there is a weekly menu with 0 daily menus,
                                                                                     //but oh lord, it's primirest, so anything can happen
     }
