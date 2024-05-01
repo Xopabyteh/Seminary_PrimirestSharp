@@ -76,7 +76,7 @@ public class OrderController : ApiController
         return PerformAuthenticatedActionAsync(async issuer =>
         {
             var balanceResult =
-                await _mediator.Send(new GetUserFinanceDetailsQuery(issuer.SessionCookie));
+                await _mediator.Send(new GetUserFinanceDetailsQuery(issuer.SessionCookie, issuer.User));
 
             return balanceResult.Match(
                 value => Ok(new MyBalanceResponse(value.AccountBalance.Value, value.OrderedFor.Value)),

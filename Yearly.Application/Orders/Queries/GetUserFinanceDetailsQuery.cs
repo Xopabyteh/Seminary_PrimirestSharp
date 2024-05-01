@@ -1,10 +1,13 @@
 ﻿using ErrorOr;
 using MediatR;
 using Yearly.Domain.Models.Common.ValueObjects;
+using Yearly.Domain.Models.UserAgg;
 
 namespace Yearly.Application.Orders.Queries;
 
-public record GetUserFinanceDetailsQuery(string sessionCookie)
+public record GetUserFinanceDetailsQuery(
+    string SessionCookie,
+    User OfUser)
     : IRequest<ErrorOr<UserFinanceDetails>>;
 
 public class GetUserFinanceDetailsQueryHandler : IRequestHandler<GetUserFinanceDetailsQuery, ErrorOr<UserFinanceDetails>>
@@ -18,6 +21,6 @@ public class GetUserFinanceDetailsQueryHandler : IRequestHandler<GetUserFinanceD
 
     public Task<ErrorOr<UserFinanceDetails>> Handle(GetUserFinanceDetailsQuery request, CancellationToken cancellationToken)
     {
-        return _primirestFinanceService.GetFinanceDetailsForUser(request.sessionCookie);
+        return _primirestFinanceService.GetFinanceDetailsForUser(request.SessionCookie, request.OfUser);
     }
 }

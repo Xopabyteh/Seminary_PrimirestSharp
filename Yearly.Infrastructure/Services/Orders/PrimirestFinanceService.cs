@@ -1,70 +1,112 @@
-﻿using ErrorOr;
-using HtmlAgilityPack;
-using System.Globalization;
+﻿using System.Globalization;
+using System.Net.Http.Json;
+using ErrorOr;
 using Yearly.Application.Orders;
 using Yearly.Domain.Models.Common.ValueObjects;
+using Yearly.Domain.Models.UserAgg;
 using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Http;
+using Yearly.Infrastructure.Services.Orders.ResponseModels;
 
 namespace Yearly.Infrastructure.Services.Orders;
 
 public class PrimirestFinanceService : IPrimirestFinanceService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public PrimirestFinanceService(IHttpClientFactory httpClientFactory)
+    public PrimirestFinanceService(IHttpClientFactory httpClientFactory, IDateTimeProvider dateTimeProvider)
     {
         _httpClientFactory = httpClientFactory;
+        _dateTimeProvider = dateTimeProvider;
     }
 
-    public async Task<ErrorOr<UserFinanceDetails>> GetFinanceDetailsForUser(string sessionCookie)
+    public async Task<ErrorOr<UserFinanceDetails>> GetFinanceDetailsForUser(string sessionCookie, User ofUser)
     {
-        // 1. Load balance page (https://www.mujprimirest.cz/CS/account/balance)
-        //   because it's the smallest fetch size
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
         client.DefaultRequestHeaders.Add("Cookie", sessionCookie);
 
-        var response = await client.GetAsync("https://www.mujprimirest.cz/CS/account/balance");
+        var getOrderedForTask = GetUserOrderedFor(client, ofUser);
+        var getBalanceTask = GetUserBalance(client, ofUser);
+
+        await Task.WhenAll(getOrderedForTask, getBalanceTask);
+
+        var orderedFor = getOrderedForTask.Result;
+        var balance = getBalanceTask.Result;
+
+        if(orderedFor.IsError || balance.IsError)
+            return orderedFor.ErrorsOrEmptyList.Concat(balance.ErrorsOrEmptyList).ToArray();
+
+        return new UserFinanceDetails(balance.Value, orderedFor.Value);
+    }
+
+    private async Task<ErrorOr<MoneyCzechCrowns>> GetUserOrderedFor(
+        HttpClient loggedClient,
+        User ofUser)
+    {
+        // Load https://www.mujprimirest.cz/ajax/cs/ordersummary/{UserId}/index?id={UserId}&from=1.5.2024&to=31.05.2024&stateCodes=INACTIVE,ACTIVE,COMPLETED&dispenseState=0&_=0
+
+        //First day of this month in format "dd.mm.yyyy"
+        var from = new DateTime(
+                _dateTimeProvider.CzechNow.Year,
+                _dateTimeProvider.CzechNow.Month, 
+                1)
+            .ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
+
+        //Last day of this month in format "dd.mm.yyyy"
+        var to = new DateTime(
+            _dateTimeProvider.CzechNow.Year,
+            _dateTimeProvider.CzechNow.Month,
+            DateTime.DaysInMonth(_dateTimeProvider.CzechNow.Year, _dateTimeProvider.CzechNow.Month))
+            .ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
+
+
+        var request = $"https://www.mujprimirest.cz/ajax/cs/ordersummary/{ofUser.Id.Value}/index" +
+                      $"?id={ofUser.Id.Value}" +
+                      $"&from={from}" +
+                      $"&to={to}" +
+                      $"&stateCodes=INACTIVE,ACTIVE,COMPLETED" +
+                      $"&dispenseState=0" +
+                      $"&_={((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds()}";
+
+        var response = await loggedClient.GetAsync(request);
 
         if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
-        // 2. Scrape from sidebar
-        // Load document
-        var stringContent = await response.Content.ReadAsStringAsync();
-        var htmlDocument = new HtmlDocument();
-        htmlDocument.LoadHtml(stringContent);
+        var result = await response.Content.ReadFromJsonAsync<PrimirestOrderSummaryResponseRoot>();
+        if(result is null)
+            throw new InvalidPrimirestContractException("PrimirestOrderSummaryResponseRoot is null");
 
-        // Load nodes
-        var orderedForXPath = "/html/body/div[1]/div[2]/div[3]/span[2]/a";
-        var balanceXPath = "/html/body/div[1]/div[2]/div[3]/a[1]";
-        var orderedForNode = htmlDocument.DocumentNode.SelectSingleNode(orderedForXPath);
-        var balanceNode = htmlDocument.DocumentNode.SelectSingleNode(balanceXPath);
+        var orderedPrice = result.Rows.Sum(x => x.UnitPrice);
+        return new MoneyCzechCrowns(orderedPrice);
+    }
 
-        if (orderedForNode == null || balanceNode == null)
-            throw new InvalidPrimirestContractException("Could not scrape balance from sidebar");
+    private async Task<ErrorOr<MoneyCzechCrowns>> GetUserBalance(
+        HttpClient loggedClient,
+        User ofUser)
+    {
+        // https://www.mujprimirest.cz/ajax/cs/account/{AccountId}/balance?month=5&year=2024&_=1714563024737
 
-        // Parse finance details
-        var orderedForStr = orderedForNode.InnerText;
-        var balanceStr = balanceNode.InnerText;
+        var request = $"https://www.mujprimirest.cz/ajax/cs/account/{ofUser.Id.Value}/balance" +
+                      $"?month={_dateTimeProvider.CzechNow.Month}" +
+                      $"&year={_dateTimeProvider.CzechNow.Year}" +
+                      $"&_={((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds()}";
+        
+        var response = await loggedClient.GetAsync(request);
 
-        var didParse = decimal.TryParse(
-            orderedForStr, 
-            new CultureInfo("cs-CZ"),
-            out var orderedFor);
+        if (response.GotRoutedToLogin())
+            return Application.Errors.Errors.Authentication.CookieNotSigned;
 
-        if (!didParse)
-            throw new InvalidPrimirestContractException("Could not parse ordered for value");
+        var result = await response.Content.ReadFromJsonAsync<BalanceResponseRoot>();
+        if(result is null)
+            throw new InvalidPrimirestContractException("BalanceResponseRoot is null");
 
-        didParse = decimal.TryParse(
-            balanceStr,
-            new CultureInfo("cs-CZ"),
-            out var balance);
-
-        if (!didParse)
-            throw new InvalidPrimirestContractException("Could not parse balance value");
-
-        // Return
-        return new UserFinanceDetails(new(balance), new(orderedFor));
+        var balanceRow = result.Rows2.SingleOrDefault();
+        if(balanceRow is null)
+            throw new InvalidPrimirestContractException("BalanceResponseRoot.Rows2 is null (There should always be one)");
+        
+        var balance = balanceRow.ClosingBalance;
+        return new MoneyCzechCrowns(balance);
     }
 }

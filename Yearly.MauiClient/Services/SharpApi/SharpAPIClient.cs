@@ -16,7 +16,6 @@ public class SharpAPIClient : IDisposable
     {
         var handler = new SafeConnectionAwareHttpClientHandler() { UseCookies = true };
         var httpClient = new HttpClient(handler);
-
 #if DEBUG
         //const string baseAddress = "https://primirestsharp.azurewebsites.net";
         const string baseAddress = "https://ntg29zg8-7217.euw.devtunnels.ms";
