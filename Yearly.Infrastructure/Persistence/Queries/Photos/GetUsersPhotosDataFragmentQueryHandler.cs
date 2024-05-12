@@ -22,7 +22,10 @@ public class GetUsersPhotosDataFragmentQueryHandler
                   ResourceLink,
                   ThumbnailResourceLink
                   FROM [Domain].[Photos]
-                  WHERE PublisherId_Value = @UserId;
+                  WHERE PublisherId_Value = @UserId
+                  ORDER BY Id
+                  OFFSET @PageOffset ROWS
+                  FETCH NEXT @PageSize ROWS ONLY;
 
                   SELECT COUNT(*)
                   FROM [Domain].[Photos]
@@ -32,7 +35,12 @@ public class GetUsersPhotosDataFragmentQueryHandler
         await using var connection = _connection.Create();
         var gridReader = await connection.QueryMultipleAsync(
             sql,
-            param: new { UserId = request.UserId.Value });
+            param: new
+            {
+                UserId = request.UserId.Value,
+                PageOffset = request.PageOffset,
+                PageSize = request.PageSize
+            });
 
         var photoLinks = await gridReader.ReadAsync<PhotoLinkDTO>();
         var totalPhotoCount = await gridReader.ReadSingleAsync<int>();

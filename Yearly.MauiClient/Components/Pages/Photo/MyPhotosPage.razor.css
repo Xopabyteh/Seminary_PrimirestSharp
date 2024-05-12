@@ -2,10 +2,17 @@
     align-self: center;
     text-align: center;
 
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow: hidden;
 }
 
 .photos-grid {
+    max-height: 100%;
+
+    overflow-y: scroll;
+
     display: grid;
     grid-template-columns: repeat(
                                  min(var(--photos-count), 3),

@@ -72,13 +72,17 @@ public class PhotoController : ApiController
     }
 
     [HttpGet("my-photos")]
-    public Task<IActionResult> GetMyPhotos()
+    public Task<IActionResult> GetMyPhotos([FromQuery] int pageOffset)
     {
         return PerformAuthenticatedActionAsync(async issuer =>
         {
-            var userPhotos = await _mediator.Send(new GetUsersPhotosDataFragmentQuery(issuer.User.Id));
+            // Fixed 20 page size, don't let user choose... (so they don't load a gazillion photos into memory lol)
+            var query = new GetUsersPhotosDataFragmentQuery(
+                issuer.User.Id,
+                pageOffset, 
+                PageSize: 20);
+            var response = await _mediator.Send(query);
 
-            var response = new MyPhotosResponse(userPhotos.Data.ToList(), userPhotos.TotalCount);
             return Ok(response);
         });
     }

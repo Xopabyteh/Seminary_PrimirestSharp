@@ -1,4 +1,4 @@
-﻿using Yearly.Contracts.Photos;
+﻿using Yearly.Contracts.Common;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;
@@ -6,22 +6,26 @@ namespace Yearly.MauiClient.Services;
 public class MyPhotosCacheService
 {
     private readonly PhotoFacade _photoFacade;
-    private MyPhotosResponse? myPhotos = null;
+    
+    /// <summary>
+    /// Key: PageOffset, Value: DataFragmentDTO<PhotoLinkDTO>
+    /// </summary>
+    private Dictionary<int, DataFragmentDTO<PhotoLinkDTO>> myPhotos = new(4);
 
     /// <summary>
     /// Lazily gets my photos using photoFacade and caches result
     /// </summary>
     /// <returns></returns>
-    public async ValueTask<MyPhotosResponse> GetMyPhotosCachedAsync()
+    public async ValueTask<DataFragmentDTO<PhotoLinkDTO>> GetMyPhotosCachedAsync(int pageOffset)
     {
-        if (myPhotos is not null)
-            return myPhotos.Value;
+        if (myPhotos.TryGetValue(pageOffset, out var photosFragment))
+            return photosFragment;
 
         //Cache miss
-        var result = await _photoFacade.GetMyPhotosAsync();
-        myPhotos = result;
+        var result = await _photoFacade.GetMyPhotosAsync(pageOffset);
+        myPhotos.Add(pageOffset, result);
 
-        return myPhotos.Value;
+        return result;
     }
 
     public MyPhotosCacheService(PhotoFacade photoFacade)
@@ -31,6 +35,6 @@ public class MyPhotosCacheService
 
     public void InvalidateCache()
     {
-        myPhotos = null;
+        myPhotos.Clear();
     }
 }

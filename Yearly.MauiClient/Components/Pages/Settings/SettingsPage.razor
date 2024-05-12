@@ -11,9 +11,9 @@
     <div id='user-details' class='mh-100'>
         <div class='fw-regular fs-regular'>
             <div>
-                @if (myPhotosLoaded)
+                @if (firstMyPhotosFragmentLoaded)
                 {
-                    @if (myPhotos.TotalPhotoCount > 0)
+                    @if (firstMyPhotosFragment.TotalCount > 0)
                     {
                         <a class='color-primary' href='/my-photos'>
                             @PhotosTextWithGrammar()

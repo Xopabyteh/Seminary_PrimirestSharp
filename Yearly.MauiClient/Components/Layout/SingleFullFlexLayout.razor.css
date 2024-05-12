@@ -12,4 +12,5 @@ main {
     padding: 1rem;
 
     min-height: 100%;
+    max-height: 100%;
 }

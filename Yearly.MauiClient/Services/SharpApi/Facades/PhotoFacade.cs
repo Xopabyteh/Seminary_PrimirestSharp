@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Yearly.Contracts.Common;
 using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Exceptions;
 
@@ -98,12 +99,12 @@ public class PhotoFacade
         return problem;
     }
 
-    public async Task<MyPhotosResponse> GetMyPhotosAsync()
+    public async Task<DataFragmentDTO<PhotoLinkDTO>> GetMyPhotosAsync(int pageOffset)
     {
-        var response = await _sharpAPIClient.HttpClient.GetAsync("/api/photo/my-photos");
+        var response = await _sharpAPIClient.HttpClient.GetAsync($"/api/photo/my-photos?pageOffset={pageOffset}");
         response.EnsureSuccessStatusCode();
 
-        var myPhotos = await response.Content.ReadFromJsonAsync<MyPhotosResponse>();
-        return myPhotos;
+        var myPhotosFragment = await response.Content.ReadFromJsonAsync<DataFragmentDTO<PhotoLinkDTO>>();
+        return myPhotosFragment!;
     }
 }

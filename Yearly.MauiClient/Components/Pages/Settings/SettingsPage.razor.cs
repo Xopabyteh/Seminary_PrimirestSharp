@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Yearly.Contracts.Common;
 #if ANDROID || IOS
 using Shiny;
 using Shiny.Push;
 using Yearly.MauiClient.Services.Toast;
 #endif
 using Yearly.Contracts.Notifications;
-using Yearly.Contracts.Photos;
 using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient.Components.Pages.Settings;
@@ -26,13 +26,13 @@ public partial class SettingsPage
     private decimal orderedFor = 0;
     private bool isMoneyLoaded = false;
 
-    private MyPhotosResponse myPhotos;
-    private bool myPhotosLoaded = false;
+    private DataFragmentDTO<PhotoLinkDTO> firstMyPhotosFragment;
+    private bool firstMyPhotosFragmentLoaded = false;
 
     private bool isOrderCheckerEnabled;
     private const string k_OrderCheckerPrefKey = "ordercheckerenabled";
 
-    protected override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
 #if ANDROID || IOS
         var loadedTags = _pushNotificationsManager.TryGetTags();
@@ -42,8 +42,22 @@ public partial class SettingsPage
         }
 #endif
         isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerPrefKey, false);
+    }
 
-        return Task.CompletedTask;
+    protected override async Task OnInitializedAsync()
+    {
+        await _menuAndOrderCacheService.EnsureBalanceLoadedAsync();
+
+        var balanceDetails = _menuAndOrderCacheService.GetBalanceDetails();
+        balance = balanceDetails.BalanceCrowns;
+        orderedFor = balanceDetails.OrderedForCrowns;
+
+        isMoneyLoaded = true;
+        StateHasChanged();
+
+        firstMyPhotosFragment = await _myPhotosCacheService.GetMyPhotosCachedAsync(0);
+        firstMyPhotosFragmentLoaded = true;
+        StateHasChanged();
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -84,32 +98,13 @@ public partial class SettingsPage
         _navigationManager.NavigateTo("/login");
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-            return;
-
-        await _menuAndOrderCacheService.EnsureBalanceLoadedAsync();
-
-        var balanceDetails = _menuAndOrderCacheService.GetBalanceDetails();
-        balance = balanceDetails.BalanceCrowns;
-        orderedFor = balanceDetails.OrderedForCrowns;
-
-        isMoneyLoaded = true;
-        StateHasChanged();
-
-        myPhotos = await _myPhotosCacheService.GetMyPhotosCachedAsync();
-        myPhotosLoaded = true;
-        StateHasChanged();
-    }
-
     private string PhotosTextWithGrammar()
     {
-        return myPhotos.TotalPhotoCount switch
+        return firstMyPhotosFragment.TotalCount switch
         {
             1 => "1 Sdílená fotka",
-            < 5 => $"{myPhotos.TotalPhotoCount} Sdílené fotky",
-            _ => $"{myPhotos.TotalPhotoCount} Sdílených fotek"
+            < 5 => $"{firstMyPhotosFragment.TotalCount} Sdílené fotky",
+            _ => $"{firstMyPhotosFragment.TotalCount} Sdílených fotek"
         };
     }
 
