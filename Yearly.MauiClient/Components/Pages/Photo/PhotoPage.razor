@@ -50,7 +50,25 @@
                     </InputRadioGroup>
                 }
             </div>
-            <button class='button bg-success' @onclick="TryPublishPhoto" disabled='@(!didCapturePhoto || selectedFoodId == default || isPublishingPhoto)'>Poslat</button>
+            <button
+                class='button bg-success'
+                @onclick="TryPublishPhoto" 
+                disabled='@(!didCapturePhoto || selectedFoodId == default || isPublishingPhoto)'>
+                @if (showSuccessModal)
+                {
+                    <span>Super!</span>
+                }
+                else
+                {
+                    <span>Poslat</span>
+                    @if (isPublishingPhoto)
+                    {
+                        <span class='mw-100'>
+                            <Loader DotColor='var(--clr-white)'/>
+                        </span>
+                    }
+                }
+            </button>
         </div>
         <div class='success-overlay' data-active='@(showSuccessModal)' data-fade='@(fadeModalAway)'>
             <div class='success-modal' data-active='@(showSuccessModal)' data-fade='@(fadeModalAway)'>

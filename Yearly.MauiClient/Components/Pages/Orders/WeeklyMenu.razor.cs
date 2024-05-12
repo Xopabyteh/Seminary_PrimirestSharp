@@ -9,7 +9,7 @@ namespace Yearly.MauiClient.Components.Pages.Orders;
 public partial class WeeklyMenu
 {
     [Parameter] public required WeeklyMenuDTO WeeklyMenuDTO { get; set; }
-    private WeeklyMenuDTO previousWeeklyMenuDTO = new(); // Used to check if this parameter changed
+    private WeeklyMenuDTO? previousWeeklyMenuDTO; // Used to check if this parameter changed
     [Parameter] public required DailyMenuDTO? SelectedDailyMenu { get; set; }
 
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;

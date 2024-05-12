@@ -53,7 +53,7 @@ public partial class OrderPage
 
     /// <summary>
     /// Sets the selected weekly and daily menu for when the user first comes in
-    /// based on what i think are good UX rules.
+    /// based on what I think are good UX rules.
     /// </summary>
     private void InitialSelectWeeklyAndDailyMenu()
     {
@@ -104,7 +104,7 @@ public partial class OrderPage
 
         //Select fallback first
         selectedWeeklyMenu ??= weeklyMenus[0];
-        selectedDailyMenu ??= selectedWeeklyMenu.Value.DailyMenus.FirstOrDefault(); //I hope it never comes to the day, where there is a weekly menu with 0 daily menus,
+        selectedDailyMenu ??= selectedWeeklyMenu?.DailyMenus.FirstOrDefault(); //I hope it never comes to the day, where there is a weekly menu with 0 daily menus,
                                                                                     //but oh lord, it's primirest, so anything can happen
     }
 

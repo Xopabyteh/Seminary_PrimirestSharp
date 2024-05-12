@@ -3,15 +3,11 @@ using Microsoft.AspNetCore.Components;
 using Plugin.Media;
 #endif
 using Plugin.Media.Abstractions;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
 using Yearly.Contracts.Menu;
 using Yearly.MauiClient.Components.Common;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
-using Image = SixLabors.ImageSharp.Image;
 
 namespace Yearly.MauiClient.Components.Pages.Photo;
 
@@ -28,8 +24,7 @@ public partial class PhotoPage
     private Guid selectedFoodId = default;
 
     private MediaFile? capturedPhotoRaw;
-    private MemoryStream? processedPhotoStream;
-    private bool didCapturePhoto => processedPhotoStream is not null;
+    private bool didCapturePhoto => capturedPhotoRaw is not null;
     private string? capturedPhotoDisplayData = "";
 
     private bool showSuccessModal = false;
@@ -121,10 +116,6 @@ public partial class PhotoPage
         StateHasChanged();
     }
 
-    /// <summary>
-    /// Set the <see cref="processedPhotoStream"/> to the photo taken by the user along with <see cref="capturedPhotoDisplayData"/> and call state has changed
-    /// </summary>
-    /// <returns></returns>
     private async Task CapturePhoto()
     {
         async Task<string> DisplayDataFrom(Stream photoStream)
@@ -142,11 +133,10 @@ public partial class PhotoPage
 
         //Mock image from documents
         var mockImagePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "mock.jpg");
-        var stream = File.OpenRead(mockImagePath);
 
         var newPhoto = new MediaFile(
             mockImagePath,
-            () => stream,
+            () => File.OpenRead(mockImagePath),
             originalFilename: "mock.jpg");
 
         // ReSharper disable once RedundantJumpStatement [rev: only applies to windows debug scope]
@@ -158,8 +148,7 @@ public partial class PhotoPage
         {
             AllowCropping = true,
             DefaultCamera = CameraDevice.Front,
-            PhotoSize = PhotoSize.MaxWidthHeight,
-            MaxWidthHeight = 1024,
+            PhotoSize = PhotoSize.Full,
             Name = "photo.jpg",
         });
 
@@ -178,33 +167,8 @@ public partial class PhotoPage
         //Set new photo
         capturedPhotoRaw = newPhoto;
 
-        //Crop photo from sides so it's 1:1 aspect ratio
-
-        //Load to stream
-        var rawPhotoReadStream = newPhoto.GetStreamWithImageRotatedForExternalStorage();
-        using var photoStreamForMutation = new MemoryStream();
-        await rawPhotoReadStream.CopyToAsync(photoStreamForMutation);
-        photoStreamForMutation.Position = 0; //Set for reading
-
-        //Mutate
-        var image = await Image.LoadAsync(photoStreamForMutation);
-        var minDimension = Math.Min(image.Width, image.Height);
-        var cropRectangle = new Rectangle(
-            (image.Width - minDimension) / 2,
-            (image.Height - minDimension) / 2,
-            minDimension,
-            minDimension);
-
-        image.Mutate(x => x.Crop(cropRectangle));
-
-        //Save
-        processedPhotoStream = new();
-        var imageEncoder = new JpegEncoder();
-        await image.SaveAsync(processedPhotoStream , imageEncoder);
-
         //Display data
-        processedPhotoStream.Position = 0; //Set for reading
-        capturedPhotoDisplayData = await DisplayDataFrom(processedPhotoStream);
+        capturedPhotoDisplayData = await DisplayDataFrom(capturedPhotoRaw.GetStream());
 
         takingPhotoLoading = false;
         StateHasChanged();
@@ -214,38 +178,34 @@ public partial class PhotoPage
     {
         if (isPublishingPhoto)
             return;
-        if (!await ValidateModel())
-            return;
 
         isPublishingPhoto = true;
+        StateHasChanged();
 
-        //Initialize stream of data to send
-        processedPhotoStream!.Position = 0; //Set for reading
-        var sendStream = new MemoryStream();
-        await processedPhotoStream.CopyToAsync(sendStream);
+        if (!await ValidateModel())
+        {
+            isPublishingPhoto = true;
+            return;
+        }
 
-        // Show thank you modal assuming publish will result in success
+
+        var result = await _photoFacade.PublishPhotoAsync(
+            selectedFoodId,
+            capturedPhotoRaw!.GetStream(),
+            capturedPhotoRaw.OriginalFilename);
+
+        if (result is not null)
+        {
+            //Error, show it
+            isPublishingPhoto = false;
+            await _toastService.ShowErrorAsync(result.Value.Title);
+            return;
+        }
+
+        // -> Success
         showSuccessModal = true;
         fadeModalAway = false;
         StateHasChanged();
-
-        //Publish in background, hoping it goes right (it should [lol])
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        Task.Run(async () =>
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        {
-            sendStream!.Position = 0; //Set for reading
-            var result = await _photoFacade.PublishPhotoAsync(
-                selectedFoodId,
-                sendStream,
-                capturedPhotoRaw!.OriginalFilename);
-
-            if (result is not null)
-            {
-                //Error, show it
-                await _toastService.ShowErrorAsync(result.Value.Title);
-            }
-        });
     }
 
     /// <summary>
@@ -255,7 +215,7 @@ public partial class PhotoPage
     private async Task<bool> ValidateModel()
     {
         //Validation
-        if (processedPhotoStream is null)
+        if (capturedPhotoRaw is null)
         {
             //No photo
             await _toastService.ShowErrorAsync("Nejdøív udìlej fotku");
@@ -278,7 +238,6 @@ public partial class PhotoPage
         fadeModalAway = true;
 
         capturedPhotoRaw = null;
-        processedPhotoStream = null;
         capturedPhotoDisplayData = null;
         
         selectedFoodId = default;

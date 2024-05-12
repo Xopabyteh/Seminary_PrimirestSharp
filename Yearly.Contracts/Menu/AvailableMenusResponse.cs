@@ -4,10 +4,9 @@ namespace Yearly.Contracts.Menu;
 
 public record AvailableMenusResponse(List<WeeklyMenuDTO> WeeklyMenus);
 
-public record struct WeeklyMenuDTO(
+public record WeeklyMenuDTO(
     List<DailyMenuDTO> DailyMenus,
     int PrimirestMenuId);
 public record DailyMenuDTO(
     DateTime Date, 
-    List<FoodDTO> Foods
-    );
+    List<FoodDTO> Foods);
