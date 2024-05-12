@@ -116,7 +116,7 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
                     // and we will get duplicate primirest foods in our db. That is bad
                     if (foodsWithAlreadyExistingIdentifiers.Contains(primirestFood.PrimirestFoodIdentifier))
                     {
-                        _logger.LogError("Food with primirest identifier {identifier} already exists in our db. Skipping it.", primirestFood.PrimirestFoodIdentifier);
+                        _logger.LogError("Food with primirest identifier {identifier} already exists in our db. Skipping it.", primirestFood.PrimirestFoodIdentifier.ToString());
                         continue;
                     }
 

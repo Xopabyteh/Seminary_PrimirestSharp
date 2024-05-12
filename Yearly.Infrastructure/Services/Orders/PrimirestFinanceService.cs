@@ -44,29 +44,28 @@ public class PrimirestFinanceService : IPrimirestFinanceService
         HttpClient loggedClient,
         User ofUser)
     {
-        // Load https://www.mujprimirest.cz/ajax/cs/ordersummary/{UserId}/index?id={UserId}&from=1.5.2024&to=31.05.2024&stateCodes=INACTIVE,ACTIVE,COMPLETED&dispenseState=0&_=0
+        // Load https://www.mujprimirest.cz/ajax/cs/ordersummary/{UserId}/index?id={UserId}&from=1.5.2024&to=31.05.2024&stateCodes=INACTIVE,ACTIVE,COMPLETED&dispenseState=-1&_=0
 
-        //First day of this month in format "dd.mm.yyyy"
+        // Today in format "dd.mm.yyyy"
         var from = new DateTime(
                 _dateTimeProvider.CzechNow.Year,
                 _dateTimeProvider.CzechNow.Month, 
-                1)
+                _dateTimeProvider.CzechNow.Day)
             .ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
 
-        //Last day of this month in format "dd.mm.yyyy"
+        // Last day of this month in format "dd.mm.yyyy"
         var to = new DateTime(
             _dateTimeProvider.CzechNow.Year,
             _dateTimeProvider.CzechNow.Month,
             DateTime.DaysInMonth(_dateTimeProvider.CzechNow.Year, _dateTimeProvider.CzechNow.Month))
             .ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
 
-
         var request = $"https://www.mujprimirest.cz/ajax/cs/ordersummary/{ofUser.Id.Value}/index" +
                       $"?id={ofUser.Id.Value}" +
                       $"&from={from}" +
                       $"&to={to}" +
                       $"&stateCodes=INACTIVE,ACTIVE,COMPLETED" +
-                      $"&dispenseState=0" +
+                      $"&dispenseState=-1" +
                       $"&_={((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds()}";
 
         var response = await loggedClient.GetAsync(request);
