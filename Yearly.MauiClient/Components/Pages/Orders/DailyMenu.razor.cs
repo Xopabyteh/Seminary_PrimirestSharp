@@ -33,7 +33,7 @@ public partial class DailyMenu
         order = WeekOrders.FirstOrDefault(o => DailyMenuDTO.Foods.Any(f => f.FoodId == o.SharpFoodId));
     }
 
-    private async void HandleFoodOnOrderClicked(FoodBlock obj)
+    private async Task HandleFoodOnOrderClicked(FoodBlock obj)
     {
         if (order is not null)
         {
@@ -49,7 +49,12 @@ public partial class DailyMenu
 
                 var didCancel = await CancelOrder(order.PrimirestOrderData);
                 if (!didCancel)
-                    return; //Error
+                {
+                    //error, return
+                    foodIdsInvolvedInOrdering.Clear();
+                    StateHasChanged();
+                    return; 
+                }
 
                 _menuAndOrderCacheService.OrderCanceled(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
                 order = null;
@@ -65,7 +70,12 @@ public partial class DailyMenu
                 var newOrderIdentifier = await NewOrderAsync(obj.Food);
 
                 if (newOrderIdentifier is null)
-                    return; //error, return
+                {
+                    //error, return
+                    foodIdsInvolvedInOrdering.Clear();
+                    StateHasChanged();
+                    return; 
+                }
 
                 //Cancel old food from cache
                 _menuAndOrderCacheService.OrderCanceled(Parent.WeeklyMenuDTO.PrimirestMenuId, order);
@@ -87,7 +97,12 @@ public partial class DailyMenu
             var newOrderIdentifier = await NewOrderAsync(obj.Food);
 
             if (newOrderIdentifier is null)
-                return; //error, return
+            {
+                //error, return
+                foodIdsInvolvedInOrdering.Clear();
+                StateHasChanged();
+                return; 
+            }
 
             //Set new order
             order = new OrderDTO(obj.Food.FoodId, newOrderIdentifier);
