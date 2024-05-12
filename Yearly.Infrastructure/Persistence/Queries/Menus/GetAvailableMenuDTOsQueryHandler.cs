@@ -40,7 +40,10 @@ public class GetAvailableMenuDTOsQueryHandler
                   JOIN
                     Domain.Foods F ON MFI.FoodId = F.Id
                   LEFT JOIN
-                    Domain.Photos P ON (P.IsApproved = 1) AND ((P.FoodId_Value = F.Id) OR (P.FoodId_Value = F.AliasForFoodId));
+                    Domain.Photos P
+                  ON (P.IsApproved = 1) 
+                  AND (P.ThumbnailResourceLink IS NOT NULL) 
+                  AND ((P.FoodId_Value = F.Id) OR (P.FoodId_Value = F.AliasForFoodId));
                   """;
 
         var weeklyMenuVms = new Dictionary<int, WeeklyMenuVm>();

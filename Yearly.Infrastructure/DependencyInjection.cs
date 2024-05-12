@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Orders;
+using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Http;
@@ -67,8 +68,10 @@ public static class DependencyInjection
             builder.Configuration.GetSection(FoodSimilarityServiceOptions.SectionName));
 
         services.Configure<PrimirestAdminCredentialsOptions>(
-            builder.Configuration.GetSection(PrimirestAdminCredentialsOptions
-                .SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+            builder.Configuration.GetSection(PrimirestAdminCredentialsOptions.SectionName)); // The section must be in appsettings or secrets.json or somewhere where the presentation layer can grab them...
+
+        services.Configure<PhotoOptions>(
+            builder.Configuration.GetSection(PhotoOptions.SectionName));
 
         services.AddPersistence(builder);
         services.AddBackgroundJobs();

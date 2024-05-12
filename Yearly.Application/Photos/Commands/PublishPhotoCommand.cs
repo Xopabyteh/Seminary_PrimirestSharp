@@ -2,6 +2,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
@@ -45,14 +46,16 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFoodRepository _foodRepository;
+    private readonly IOptions<PhotoOptions> _photoOptions;
 
-    public PublishPhotoCommandHandler(IPhotoStorage photoStorage, IPhotoRepository photoRepository, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork, IFoodRepository foodRepository)
+    public PublishPhotoCommandHandler(IPhotoStorage photoStorage, IPhotoRepository photoRepository, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork, IFoodRepository foodRepository, IOptions<PhotoOptions> photoOptions)
     {
         _photoStorage = photoStorage;
         _photoRepository = photoRepository;
         _dateTimeProvider = dateTimeProvider;
         _unitOfWork = unitOfWork;
         _foodRepository = foodRepository;
+        _photoOptions = photoOptions;
     }
 
     public async Task<ErrorOr<Photo>> Handle(PublishPhotoCommand request, CancellationToken cancellationToken)
@@ -62,8 +65,9 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
         if (food is null)
             return Errors.Errors.Food.FoodNotFound(request.FoodId);
 
-        var photoData = await Photo.CreateImageDataFromFileAsync(
+        var photoData = await Photo.CreateImageFromFileDataAsync(
             request.File.OpenReadStream(),
+            _photoOptions.Value,
             cancellationToken);
 
         if (photoData.IsError)
@@ -74,28 +78,17 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
         try // try-finally Scope, so that we can dispose photo data streams
         {
             //Publish photos
-            var imageLinkResult = await _photoStorage.UploadPhotoAsync(
-                photoData.Value.RegularPhotoData,
+            var imageLink = await _photoStorage.UploadPhotoAsync(
+                photoData.Value,
                 Photo.NameFrom(photoId, food),
-                Photo.PhotoFileExtension);
-
-            if (imageLinkResult.IsError)
-                return imageLinkResult.Errors;
-
-            var thumbnailLinkResult = await _photoStorage.UploadPhotoAsync(
-                photoData.Value.ThumbnailPhotoData,
-                Photo.ThumbnailNameFrom(photoId, food),
-                Photo.PhotoFileExtension);
-
-            if (thumbnailLinkResult.IsError)
-                return thumbnailLinkResult.Errors;
+                Photo.PhotoFileExtension,
+                cancellationToken);
 
             var photo = request.Publisher.PublishPhoto(
                 photoId,
                 _dateTimeProvider.UtcNow,
                 request.FoodId,
-                imageLinkResult.Value,
-                thumbnailLinkResult.Value);
+                imageLink);
 
             await _photoRepository.AddAsync(photo);
             _unitOfWork.AddForUpdate(request.Publisher);
@@ -105,8 +98,7 @@ public class PublishPhotoCommandHandler : IRequestHandler<PublishPhotoCommand, E
         }
         finally
         {
-            await photoData.Value.RegularPhotoData.DisposeAsync();
-            await photoData.Value.ThumbnailPhotoData.DisposeAsync();
+            await photoData.Value.DisposeAsync();
         }
     }
 }

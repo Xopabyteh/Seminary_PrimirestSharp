@@ -47,11 +47,9 @@ public class UserTests
         var publisher = new User(new UserId(0), "some publisher");
         var someFoodId = new FoodId(Guid.NewGuid());
         var someResourceLink = "some resource link";
-        var someThumbnailResourceLink = "some thumbnail link";
 
         //Act
-        var photo = publisher.PublishPhoto(new PhotoId(Guid.NewGuid()), DateTime.UtcNow, someFoodId, someResourceLink,
-            someThumbnailResourceLink);
+        var photo = publisher.PublishPhoto(new PhotoId(Guid.NewGuid()), DateTime.UtcNow, someFoodId, someResourceLink);
 
         // Assert
         Assert.Contains(photo.Id, publisher.PhotoIds);
@@ -66,8 +64,7 @@ public class UserTests
             new PhotoId(Guid.NewGuid()),
             DateTime.UtcNow,
             new FoodId(Guid.NewGuid()),
-                       "some resource link",
-            "some thumbnail resource link");
+                       "some resource link");
 
         var approver = PhotoApprover.FromUser(new User(new UserId(1), "some approver"));
         approver.ApprovePhoto(photo);

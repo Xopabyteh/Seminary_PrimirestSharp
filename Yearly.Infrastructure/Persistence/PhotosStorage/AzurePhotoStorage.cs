@@ -1,5 +1,4 @@
 ﻿using Azure.Storage.Blobs;
-using ErrorOr;
 using Yearly.Application.Common.Interfaces;
 
 namespace Yearly.Infrastructure.Persistence.PhotosStorage;
@@ -15,13 +14,17 @@ public class AzurePhotoStorage : IPhotoStorage
         _blobServiceClient = blobServiceClient;
     }
 
-    public async Task<ErrorOr<string>> UploadPhotoAsync(Stream imageData, string name, string fileExtension)
+    public async Task<string> UploadPhotoAsync(
+        Stream imageData, 
+        string name,
+        string fileExtension,
+        CancellationToken cancellationToken = default)
     {
         var container = _blobServiceClient.GetBlobContainerClient(k_ContainerName);
-
+        
         var resourceName = $"{name}.{fileExtension}";
 
-        await container.UploadBlobAsync(resourceName, imageData);
+        await container.UploadBlobAsync(resourceName, imageData, cancellationToken);
 
         //Return link of uploaded photo
         return new Uri(Path.Combine(container.Uri.AbsoluteUri, resourceName)).AbsoluteUri;

@@ -1,23 +1,24 @@
 ﻿using MediatR;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Contracts.Notifications;
+using Yearly.Domain.Models.PhotoAgg.DomainEvents;
 using Yearly.Domain.Models.UserAgg.DomainEvents;
 using Yearly.Domain.Repositories;
 
 namespace Yearly.Application.Users.DomainEvents;
 
-internal sealed class NotifyPhotoApproversOnUserPublishedPhotoHandler : INotificationHandler<UserPublishedNewPhotoDomainEvent>
+internal sealed class NotifyPhotoApproversOnNewPhotoProcessed : INotificationHandler<PhotoThumbnailWasSet>
 {
     private readonly IUserNotificationService _notificationService;
     private readonly IPhotoRepository _photoRepository;
 
-    public NotifyPhotoApproversOnUserPublishedPhotoHandler(IUserNotificationService notificationService, IPhotoRepository photoRepository)
+    public NotifyPhotoApproversOnNewPhotoProcessed(IUserNotificationService notificationService, IPhotoRepository photoRepository)
     {
         _notificationService = notificationService;
         _photoRepository = photoRepository;
     }
 
-    public async Task Handle(UserPublishedNewPhotoDomainEvent request, CancellationToken cancellationToken)
+    public async Task Handle(PhotoThumbnailWasSet request, CancellationToken cancellationToken)
     {
         var photo = await _photoRepository.GetAsync(request.PhotoId);
 

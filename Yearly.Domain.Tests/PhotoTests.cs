@@ -16,8 +16,7 @@ public class PhotoTests
                 Guid.NewGuid()),
                 DateTime.UtcNow,
                 new FoodId(Guid.NewGuid()),
-                "some resource link",
-                "some thumbnail resource link");
+                "some resource link");
 
         var someApproverUser = new User(new UserId(1), "some approver");
         var someApprover = PhotoApprover.FromUser(someApproverUser);
@@ -42,8 +41,7 @@ public class PhotoTests
                 Guid.NewGuid()),
                 DateTime.UtcNow,
                 new FoodId(Guid.NewGuid()),
-                "some resource link",
-                "some thumbnail resource link");
+                "some resource link");
 
         // Assert
         Assert.True(photo.IsApproved);

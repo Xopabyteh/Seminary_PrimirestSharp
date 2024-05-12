@@ -31,16 +31,14 @@ public class User : AggregateRoot<UserId>
         PhotoId photoId,
         DateTime publishDate,
         FoodId forFoodId,
-        string photoResourceLink,
-        string photoThumbnailResourceLink)
+        string photoResourceLink)
     {
         var photo = new Photo(
             photoId,
             this.Id,
             publishDate,
             forFoodId,
-            photoResourceLink,
-            photoThumbnailResourceLink);
+            photoResourceLink);
 
         _photoIds.Add(photoId);
 

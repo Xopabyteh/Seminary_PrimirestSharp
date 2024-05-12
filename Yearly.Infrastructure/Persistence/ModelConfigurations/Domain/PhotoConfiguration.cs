@@ -33,7 +33,7 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
         builder
             .Property(p => p.ThumbnailResourceLink)
             .HasMaxLength(300)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(p => p.IsApproved);
     }
