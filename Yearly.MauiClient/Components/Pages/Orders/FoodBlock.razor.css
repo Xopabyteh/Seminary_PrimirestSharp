@@ -33,7 +33,7 @@
     
     border-radius: 1rem;
 
-    touch-action: none; /*Disable touch swiping*/
+    touch-action: pan-y; /*to enable full page scrolling*/
 
     box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.1);
 }
@@ -42,9 +42,9 @@
         display: flex;
 
         overflow: hidden;
-        /*overflow-x: scroll;*/
 
         scroll-snap-type: x mandatory;
+        touch-action: pan-y; /*to enable full page scrolling*/
 
         border-radius: inherit;
     }

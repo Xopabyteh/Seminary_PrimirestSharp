@@ -8,6 +8,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Orders;
@@ -32,9 +33,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        //Add Azure key vault if in production
+        //Add production Azure services
         if (builder.Environment.IsProduction())
         {
+            // Keyvault
             var keyVaultUrl =
                 builder.Configuration[
                     "KeyVaultUrl"]
@@ -43,6 +45,18 @@ public static class DependencyInjection
                 new Uri(keyVaultUrl),
                 new DefaultAzureCredential(
                     new DefaultAzureCredentialOptions {ExcludeSharedTokenCacheCredential = true}));
+
+            // Logging - Insights
+            builder.Logging.AddApplicationInsights(
+                configureTelemetryConfiguration: c =>
+                {
+                    var connectionString = builder.Configuration["Logging:ApplicationInsights:ConnectionString"];
+                    c.ConnectionString = connectionString;
+                },
+                configureApplicationInsightsLoggerOptions: c =>
+                {
+                    c.TrackExceptionsAsExceptionTelemetry = true;
+                });
         }
 
         services.AddHttpClient(HttpClientNames.Primirest, client =>
@@ -85,6 +99,7 @@ public static class DependencyInjection
                 services.ReplaceServicesWithDevMocks(builder);
             }
         }
+
 
         return services;
     }

@@ -83,8 +83,8 @@ public static class MauiProgram
         
 #if ANDROID
         NotificationChannel defaultChannel = new(
-            "default_channel",
-            "Default Channel",
+            "server_notifications",
+            "Server notifications",
             NotificationImportance.Default)
         {
             LockscreenVisibility = NotificationVisibility.Private
@@ -101,8 +101,8 @@ public static class MauiProgram
 #endif
 
         builder.Services.AddPushAzureNotificationHubs<MyPushDelegate>(
-            "Endpoint=sb://PrimirestSharpNS.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=S1EiLQf9Ai0X5t7SCkWlfq1grCCOlO57mGtEgsOp3/0=",
-            "PrimirestSharpNH"
+            "Endpoint=sb://PrimirestSharpNotificationHubNamespace.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=KK4SF5WMDV5dfbEHbomTiuiTHCC4atESqC4hDJCiKfI=",
+            "PrimirestSharpNotificationHub"
 #if ANDROID
             , firebaseCfg
 #endif
