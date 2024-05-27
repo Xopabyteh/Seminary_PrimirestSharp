@@ -112,10 +112,7 @@ public partial class SettingsPage
 
     private List<string> activeTags = new (3);
 
-    /// <returns>True if tag was set successfully</returns>
-#pragma warning disable CS1998 // Only here due to windows dev build 
     private async Task SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
-#pragma warning restore CS1998
     {
 #if ANDROID || IOS
         var pushAccess = await _pushNotificationsManager.RequestAccess();
@@ -128,7 +125,6 @@ public partial class SettingsPage
         {
             activeTags.Add(tag.Value);
 
-            // Todo: move to background task
 #if ANDROID || IOS
             await _pushNotificationsManager.Tags?.AddTag(tag.Value)!;
 #endif
@@ -137,13 +133,10 @@ public partial class SettingsPage
         {
             activeTags.Remove(tag.Value);
 
-            // Todo: move to background task
 #if ANDROID || IOS
             await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
 #endif
         }
-
-        StateHasChanged();
     }
 
     private bool IsLoadedTagActive(NotificationTagContract tag)

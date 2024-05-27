@@ -40,6 +40,10 @@
     transition: transform 0.4s ease-out;
 }
 
+.toggle[data-disabled] {
+    filter: opacity(0.5);
+}
+
 .toggle[data-checked] .fill {
     background-color: var(--clr-primary);
 }

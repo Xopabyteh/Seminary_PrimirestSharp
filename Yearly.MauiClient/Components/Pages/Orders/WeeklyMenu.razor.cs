@@ -33,8 +33,6 @@ public partial class WeeklyMenu
         await _menuAndOrderCacheService.EnsureOrdersLoadedAsync(WeeklyMenuDTO.PrimirestMenuId);
         orders = _menuAndOrderCacheService.GetOrdersForWeek(WeeklyMenuDTO.PrimirestMenuId);
         ordersLoaded = true;
-        
-        //StateHasChanged(); -- implicit
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -1,4 +1,7 @@
-﻿<div class='toggle' data-checked='@Checked' @onclick="async () => await ChangeChecked()">
+﻿<div class='toggle'
+     data-disabled='@isDisabled'
+     data-checked='@Checked'
+     @onclick="async () => await ChangeChecked()">
     <div class='fill'></div>
     <div class='knob'></div>
 </div>
