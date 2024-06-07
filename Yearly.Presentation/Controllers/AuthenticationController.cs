@@ -42,7 +42,7 @@ public class AuthenticationController : ApiController
         if (loginResult.IsError)
             return Problem(loginResult.Errors);
 
-        //Add session cookie to cookies
+        // Add session cookie to cookies
         Response.Cookies.Append(SessionCookieDetails.Name, loginResult.Value.SessionCookie, new CookieOptions
         {
             //SameSite = SameSiteMode.Strict,
@@ -53,20 +53,25 @@ public class AuthenticationController : ApiController
         return Ok(_mapper.Map<LoginResponse>(loginResult.Value));
     }
 
-    //[HttpPost("logout")]
-    //public async Task<IActionResult> Logout([FromHeader] string sessionCookie)
-    //{
-    //    var logoutQuery = new LogoutCommand(sessionCookie);
-    //    await _mediator.Send(logoutQuery);
-    //    return Ok();
-    //}
+    [HttpPost("switch-context")]
+    public Task<IActionResult> SwitchContext([FromQuery] int newUserId)
+    {
+        return PerformAuthenticatedActionAsync(async issuer =>
+        {
+            var command = new SwitchPrimirestContextCommand(issuer.SessionCookie, new UserId(newUserId));
+            var result = await _mediator.Send(command);
+
+            return result.Match(
+                _ => Ok(),
+                Problem);
+        });
+    }
 
     [HttpPost("logout")]
     public Task<IActionResult> Logout()
     {
         return PerformAuthenticatedActionAsync(async issuer =>
         {
-
             var logoutQuery = new LogoutCommand(issuer.SessionCookie);
             await _mediator.Send(logoutQuery);
 

@@ -49,29 +49,67 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         if (externalUserInfoAsync.IsError)
         {
             throw new IllegalStateException("Cannot retrieve external info of a user that just logged in");
-
-            //externalLoginResult.Errors.AddRange(externalUserInfoAsync.Errors);
-            //return externalLoginResult.Errors;
         }
 
-        var externalUser = externalUserInfoAsync.Value;
+        // Users from primirest
+        var availableExternalUsersDetails = externalUserInfoAsync.Value;
 
-        //Get user from our system
-        var sharpUser = await _userRepository.GetByIdAsync(new UserId(externalUser.Id));
-        if (sharpUser is null)
+        // Users from sharp (might not be in our system yet)
+        var availableSharpUsers = await _userRepository.GetUsersByIdsAsync(availableExternalUsersDetails
+            .Select(d => new UserId(d.Id))
+            .ToArray());
+
+        // Onboard nonexistant users
+        var didOnboardAnyone = false;
+        foreach (var externalUserDetails in availableExternalUsersDetails)
         {
-            //Persist user in our db
-            sharpUser = new User(new UserId(externalUser.Id), externalUser.Username);
+            if (!availableSharpUsers.TryGetValue(new UserId(externalUserDetails.Id), out var sharpUser))
+            {
+                // Onboard
+                sharpUser = new User(new UserId(externalUserDetails.Id), externalUserDetails.Username);
 
-            await _userRepository.AddAsync(sharpUser);
+                // Add to dictionary
+                availableSharpUsers.Add(sharpUser.Id, sharpUser);
+
+                // Persist user in sharp db
+                await _userRepository.AddAsync(sharpUser);
+                didOnboardAnyone = true;
+            }
+        }
+        
+        // Save onboarding
+        if(didOnboardAnyone)
+        {
             await _unitOfWork.SaveChangesAsync();
         }
 
-        //Add to cache
-        await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser);
+        if(availableSharpUsers.Count == 0)
+        {
+            throw new IllegalStateException("No users were translated to sharp");
+        }
+        if(availableSharpUsers.Count == 1)
+        {
+            // Common case, user is only in one tenant
+            var sharpUser = availableSharpUsers.First();
 
-        return new LoginResult(externalLoginResult.Value, sharpUser, _sessionCache.SessionExpiration);
+            //Add to cache
+            await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser.Value);
+            
+            return new LoginResult(
+                [new(externalLoginResult.Value, sharpUser.Value)],
+                _sessionCache.SessionExpiration);
+        }
+
+        // -> Multiple users within tenant
+        var sharpUsersDetails = availableSharpUsers.Values
+            .Select(u => new UserDetailsResult(externalLoginResult.Value, u))
+            .ToArray();
+
+        return new LoginResult(
+            sharpUsersDetails,
+            _sessionCache.SessionExpiration);
     }
 }
 
-public record LoginResult(string SessionCookie, User User, DateTimeOffset SessionExpirationTime);
+public record LoginResult(UserDetailsResult[] availableSharpUsers, DateTimeOffset SessionExpirationTime);
+public record UserDetailsResult(string SessionCookie, User User);

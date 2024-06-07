@@ -32,12 +32,24 @@ public class UserRepository : IUserRepository
     /// <returns></returns>
     public async Task<User?> GetByIdAsync(UserId id)
     {
-        var user = await _context.Users.AsTracking().SingleOrDefaultAsync(u => u.Id == id);
+        var user = await _context.Users
+            .AsTracking()
+            .SingleOrDefaultAsync(u => u.Id == id);
+        
         return user;
     }
 
     public Task<bool> DoesUserExistAsync(string username)
     {
         return _context.Users.AnyAsync(u => u.Username == username);
+    }
+
+    public async Task<Dictionary<UserId, User>> GetUsersByIdsAsync(UserId[] ids)
+    {
+        var users = await _context.Users
+            .Where(u => ids.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id);
+    
+        return users ?? new();    
     }
 }

@@ -2,8 +2,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using ErrorOr;
+using MediatR;
 using Newtonsoft.Json;
 using Yearly.Application.Authentication;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Authentication;
@@ -58,44 +60,7 @@ public class PrimirestAuthService : IAuthService
         await client.SendAsync(requestMessage);
     }
 
-    ///// <summary>
-    ///// Gets id of the logged in user via Primirest auth and returns the user from our repository.
-    ///// The user must already exist in our repository for this to work.
-    ///// </summary>
-    ///// <param name="sessionCookie"></param>
-    ///// <returns></returns>
-    ///// <exception cref="InvalidOperationException"></exception>
-    //public async Task<ErrorOr<User>> GetSharpUserAsync(string sessionCookie)
-    //{
-    //    var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
-
-    //    var path = $"cs/context/available?q=&_={timeStamp}";
-    //    var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
-
-    //    var requestMessage = new HttpRequestMessage(HttpMethod.Get, path);
-    //    requestMessage.Headers.Add("cookie", sessionCookie);
-
-    //    var response = await client.SendAsync(requestMessage);
-
-    //    var resultJson = await response.Content.ReadAsStringAsync();
-
-    //    if (resultJson.StartsWith("<!doctype html>"))
-    //    {
-    //        //We have been redirected to the login page, so the cookie is not valid
-    //        return Application.Errors.Errors.Authentication.CookieNotSigned;
-    //    }
-
-    //    dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
-    //    dynamic userDetailsObj = userObj.Items[0];
-
-    //    //return new PrimirestUser(userDetailsObj.ID.ToString(), userDetailsObj.Name.ToString());
-    //    var userId = new UserId(int.Parse(userDetailsObj.ID.ToString()));
-    //    var sharpUser = await _userRepository.GetByIdAsync(userId);
-        
-    //    return sharpUser!; //The user is already in our repository, so no worry about null.
-    //}
-
-    public async Task<ErrorOr<PrimirestUserInfo>> GetPrimirestUserInfoAsync(string sessionCookie)
+    public async Task<ErrorOr<PrimirestUserInfo[]>> GetPrimirestUserInfoAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 
@@ -109,21 +74,34 @@ public class PrimirestAuthService : IAuthService
 
         var resultJson = await response.Content.ReadAsStringAsync();
 
-        //if (resultJson.StartsWith("<!doctype html>"))
-        //{
-        //    //We have been redirected to the login page, so the cookie is not valid
-        //    return Application.Errors.Errors.Authentication.CookieNotSigned;
-        //}
+        if(response.GotRoutedToLogin())
+            return Application.Errors.Errors.Authentication.CookieNotSigned;
+
+        var usersWithinTenantResponse = JsonConvert.DeserializeObject<AvailableResponseRoot>(resultJson) ?? throw new InvalidOperationException();
+
+        return usersWithinTenantResponse.Items
+            .Select(user => new PrimirestUserInfo(
+                user.ID,
+                user.Name))
+            .ToArray();
+    }
+
+    public async Task<ErrorOr<Unit>> SwitchPrimirestContextAsync(
+        string sessionCookie,
+        UserId newUserId)
+    {
+        var path = $"en/context/switch/{newUserId.Value}";
+        var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, path);
+        requestMessage.Headers.Add("cookie", sessionCookie);
+
+        var response = await client.SendAsync(requestMessage);
 
         if(response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
-        dynamic userObj = JsonConvert.DeserializeObject(resultJson) ?? throw new InvalidOperationException();
-        dynamic userDetailsObj = userObj.Items[0];
-
-        var userId = (int)int.Parse(userDetailsObj.ID.ToString());
-        var userName = (string)userDetailsObj.Name.ToString();
-        return new PrimirestUserInfo(userId, userName);
+        return Unit.Value;
     }
 
     /// <summary>
@@ -132,6 +110,7 @@ public class PrimirestAuthService : IAuthService
     /// </summary>
     private string CreateValidCookie()
     {
+        // Todo: do better :D
         ReadOnlySpan<byte> cookieBytes = RandomNumberGenerator.GetBytes(16);
         ReadOnlySpan<char> cookieValue = Convert.ToBase64String(cookieBytes).ToLower();
         Span<char> urlFriendlyCookieValue = stackalloc char[24];
@@ -163,6 +142,7 @@ public class PrimirestAuthService : IAuthService
         //var cookie = new Cookie("ASP.NET_SessionId", new string(urlFriendlyCookieValue));
         return $"ASP.NET_SessionId={new string(urlFriendlyCookieValue)}";
     }
+
 
     // Used for easier json serialization
     [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local", Justification = "Used for json serialization")]

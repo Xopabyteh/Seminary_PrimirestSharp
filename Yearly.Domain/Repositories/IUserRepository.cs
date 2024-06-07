@@ -12,4 +12,6 @@ public interface IUserRepository
     public Task<User?> GetByIdAsync(UserId id);
 
     public Task<bool> DoesUserExistAsync(string username);
+
+    public Task<Dictionary<UserId, User>> GetUsersByIdsAsync(UserId[] ids);
 }
