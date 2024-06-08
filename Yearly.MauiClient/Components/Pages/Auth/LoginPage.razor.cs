@@ -51,6 +51,9 @@ public partial class LoginPage
         //1. Try get stored credentials
         if (_authService.AutoLoginStoredCredentials is not null)
         {
+            ModelUsername = _authService.AutoLoginStoredCredentials.Username;
+            ModelPassword = "****";
+
             autoLoginChecked = true;
             isLoggingIn = true;
             StateHasChanged();
@@ -60,6 +63,7 @@ public partial class LoginPage
             if (loginResult is not null)
             {
                 // -> Problem
+                ModelPassword = string.Empty;
                 isLoggingIn = false;
                 StateHasChanged();
 

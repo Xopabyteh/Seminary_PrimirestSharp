@@ -92,7 +92,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         var activeLoggedUser = availableSharpUsers.First().Value;
         var sessionExpirationTime = await _sessionCache.SetAsync(sessionCookieResult.Value, activeLoggedUser);
 
-        if (availableSharpUsers.Count > 0)
+        if (availableSharpUsers.Count > 1)
         {
             // Less common case:
             // There are multiple available users, so we need to
