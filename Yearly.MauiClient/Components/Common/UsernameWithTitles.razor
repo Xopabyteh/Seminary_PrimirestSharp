@@ -1,7 +1,7 @@
 ﻿@using Yearly.MauiClient.Services
 
 <p class='fw-semi-bold fs-regular color-secondary'>
-    @AuthService.UserDetailsLazy.Username <span class='fw-regular fs-small'>@string.Join(", ", AuthService.UserDetailsLazy.Roles.Select(r => $"{r.RoleCode}."))</span>
+    @AuthService.ActiveUserDetailsLazy.Username <span class='fw-regular fs-small'>@string.Join(", ", AuthService.ActiveUserDetailsLazy.Roles.Select(r => $"{r.RoleCode}."))</span>
 </p>
 
 @code {

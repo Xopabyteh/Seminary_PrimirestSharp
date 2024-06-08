@@ -33,6 +33,8 @@ public partial class SettingsPage
     private bool isOrderCheckerEnabled;
     private const string k_OrderCheckerPrefKey = "ordercheckerenabled";
 
+    private bool isLoggingOut = false;
+
     protected override void OnInitialized()
     {
 #if ANDROID || IOS
@@ -92,6 +94,9 @@ public partial class SettingsPage
 
     private async Task Logout()
     {
+        isLoggingOut = true;
+        StateHasChanged();
+
         await _authService.LogoutAsync();
         
         _navigationManager.NavigateTo("/login");

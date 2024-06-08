@@ -77,7 +77,7 @@ public class OrderCheckerBackgroundWorker : Worker
         }
 
         var loginResponse = loginResult.AsT0;
-        authService.SetSession(loginResponse);
+        authService.LoginAsync(loginResponse);
 
         //Check
         NotifyOnUnorderedDays();

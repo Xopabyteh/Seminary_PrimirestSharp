@@ -1,4 +1,6 @@
 ﻿header {
+    --card-size: 0.5rem;
+
     position: sticky;
     z-index: 5;
     
@@ -8,38 +10,84 @@
     background-color: var(--clr-white);
 
     min-height: 5rem;
+
+    display: flex;
+    align-items: start;
 }
+
+.picker-array {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    list-style: none;
+    flex: 1;
+}
+
+    .picker-array .picker-card:first-child {
+        margin-top: 0;
+    }
 
 .date-picker {
     width: 50%;
-    list-style: none;
 }
 
+    .date-picker .picker-card {
+        padding: var(--card-size);
+        
+    }
+        .date-picker .picker-card[data-selected] {
+            color: var(--clr-primary);
+        }
 
-.date-picker-card {
+.user-picker[data-switching-context] {
+    animation: placeholder-glow 1.5s ease-in-out infinite;
+}
+
+    .user-picker .picker-card {
+        max-width: 18ch;
+        gap: 4px;
+        justify-content: start;
+    }
+
+    .user-picker .picker-card .name {
+        max-width: 16ch;
+        text-wrap: nowrap;
+        overflow: hidden;
+    }
+        .user-picker .picker-card[data-selected] .name > p {
+            color: var(--clr-primary);
+        }
+
+        .user-picker .picker-card .icon {
+            padding: 0.5rem;
+            border-radius: 0.4rem;
+        }
+
+
+
+.picker-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     width: 100%;
+    height: 2rem;
 
     margin-top: 1rem;
-    padding: 0.5rem;
 
-    background-color: var(--clr-accent);
+    border-radius: 0.4rem;
 }
 
-    .date-picker-card[data-selected] {
-        color: var(--clr-primary);
-    }
+
 
     /*Other than selected in list view (order picker open)*/
-    .date-picker-card[data-in-list]:not([data-selected]) {
+    .picker-card[data-in-list]:not([data-selected]) {
         animation: pop-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /*Selected when only selected is showing (we just picked it)*/
-    .date-picker-card[data-selected]:not([data-in-list]) {
+    .picker-card[data-selected]:not([data-in-list]) {
         animation: highlight 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -56,15 +104,17 @@
 
 @keyframes highlight {
     0% {
-        margin-left: 0;
+        /*transform: scale(2);*/
+        transform: scaleX(1.1) scaleY(0.9);
     }
 
     50% {
-        margin-left: 0.5rem;
+        transform: scaleX(0.9) scaleY(1.1);
     }
 
     100% {
-        margin-left: 0;
+        transform: scaleX(1) scaleY(1);
+        /*transform: scale(1);*/
     }
 }
 

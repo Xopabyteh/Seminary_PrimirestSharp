@@ -34,8 +34,8 @@ public partial class Authorized : IDisposable
     private void ResetAuthorized()
     {
         authorized = AuthService.IsLoggedIn
-                     && AuthService.UserDetails is not null
-                     && (RequiredRoles is null || RequiredRoles.All(AuthService.UserDetailsLazy.Roles.Contains) || AuthService.UserDetailsLazy.Roles.Contains(UserRoleDTO.Admin));
+                     && AuthService.ActiveUserDetails is not null
+                     && (RequiredRoles is null || RequiredRoles.All(AuthService.ActiveUserDetailsLazy.Roles.Contains) || AuthService.ActiveUserDetailsLazy.Roles.Contains(UserRoleDTO.Admin));
     }
 
     public void Dispose()

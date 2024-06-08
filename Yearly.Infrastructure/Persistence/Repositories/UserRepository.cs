@@ -47,6 +47,7 @@ public class UserRepository : IUserRepository
     public async Task<Dictionary<UserId, User>> GetUsersByIdsAsync(UserId[] ids)
     {
         var users = await _context.Users
+            .AsSingleQuery()
             .Where(u => ids.Contains(u.Id))
             .ToDictionaryAsync(u => u.Id);
     

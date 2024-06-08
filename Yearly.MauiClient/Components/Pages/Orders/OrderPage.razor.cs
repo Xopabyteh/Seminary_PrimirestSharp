@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Yearly.Contracts.Authentication;
 using Yearly.Contracts.Menu;
 using Yearly.MauiClient.Services;
 
@@ -10,6 +11,8 @@ public partial class OrderPage
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
     [Inject] private IJSRuntime _js { get; set; } = null!;
     [Inject] private DateTimeProvider _dateTimeProvider { get; set; } = null!;
+    [Inject] private AuthService _authService { get; set; } = null!;
+    [Inject] private NavigationManager _navigationManager { get; set; } = null!;
 
     private IReadOnlyList<WeeklyMenuDTO> weeklyMenus = Array.Empty<WeeklyMenuDTO>();
     private bool weeklyMenuDTOsLoaded = false; //Not the components themselves, but the DTOs.
@@ -20,11 +23,12 @@ public partial class OrderPage
 
     private Dictionary<WeeklyMenuDTO, WeeklyMenuSelectableVM> weeklyMenuSelectables = new(3);
     private bool datePickerOpen = false;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-            return;
 
+    private bool userPickerOpen = false;
+    private bool isSwitchingContext = false;
+
+    protected override async Task OnInitializedAsync()
+    {
         //Get weekly menus
         await _menuAndOrderCacheService.EnsureMenusLoadedAsync();
         weeklyMenus = _menuAndOrderCacheService.GetAvailableMenus();
@@ -39,16 +43,14 @@ public partial class OrderPage
 
         if (weeklyMenus.Count == 0)
         {
-            //No menus
+            // -> No menus
             weeklyMenuDTOsLoaded = true;
-            StateHasChanged();
             return;
         }
-
-        InitialSelectWeeklyAndDailyMenu();
+        
+        // -> Yes menus
         weeklyMenuDTOsLoaded = true;
-
-        StateHasChanged();
+        InitialSelectWeeklyAndDailyMenu();
     }
 
     /// <summary>
@@ -110,14 +112,28 @@ public partial class OrderPage
 
     private void OpenDatePicker()
     {
+        if (weeklyMenuSelectables.Count <= 1)
+            return; // No other options to pick from
+
         datePickerOpen = true;
-        StateHasChanged();
     }
 
     private void CloseDatePicker()
     {
         datePickerOpen = false;
-        StateHasChanged();
+    }
+
+    private void OpenUserPicker()
+    {
+        if(_authService.AvailableUsersWithinTenant!.Count <= 1)
+            return; // No other options to pick from
+
+        userPickerOpen = true;
+    }
+
+    private void CloseUserPicker()
+    {
+        userPickerOpen = false;
     }
 
     /// <summary>
@@ -130,6 +146,8 @@ public partial class OrderPage
     {
         if (!datePickerOpen)
             return;
+
+        await _menuAndOrderCacheService.EnsureMenusLoadedAsync();
 
         if (selectedWeeklyMenu == menu)
         {
@@ -146,4 +164,19 @@ public partial class OrderPage
     readonly record struct WeeklyMenuSelectableVM(DateTime StartDate, DateTime EndDate);
 
     class WeeklyMenusAreEmptyException : Exception;
+
+    private async Task SwitchContextAsync(UserDetailsResponse newUser)
+    {
+        if (newUser == _authService.ActiveUserDetailsLazy)
+        {
+            CloseUserPicker();
+            return; // Same user as is active rn
+        }
+
+        isSwitchingContext = true;
+        StateHasChanged();
+
+        await _authService.SwitchContextAsync(newUser);
+        _navigationManager.Refresh(true);
+    }
 }

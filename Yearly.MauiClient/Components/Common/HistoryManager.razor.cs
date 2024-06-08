@@ -30,6 +30,7 @@ public partial class HistoryManager : IDisposable
             
             // Copy history from old instance
             this.pagesHistoryStack = new Stack<string>(_instance.pagesHistoryStack);
+            this.currentPage = _instance.currentPage;
 
             _instance.Dispose();
         }

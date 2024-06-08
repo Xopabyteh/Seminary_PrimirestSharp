@@ -406,6 +406,10 @@ nav a {
     animation: placeholder-glow 1.5s ease-in-out infinite;
 }
 
+.placeholder-glow-text {
+    animation: placeholder-glow 1.5s ease-in-out infinite;
+}
+
 @keyframes placeholder-glow {
     50% {
         opacity: 0.2;
