@@ -4,7 +4,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Yearly.Application.Authentication;
-using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
 using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
@@ -16,20 +15,20 @@ public class SessionCache : ISessionCache
     private static readonly TimeSpan ExpirationTime = TimeSpan.FromMinutes(30);
 
     private readonly IDistributedCache _userCache;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public SessionCache(IDistributedCache userCache, IUnitOfWork unitOfWork)
+    public SessionCache(IDistributedCache userCache)
     {
         _userCache = userCache;
-        _unitOfWork = unitOfWork;
     }
 
-    public async Task AddAsync(string sessionCookie, User user)
+    public async Task<DateTimeOffset> SetAsync(string sessionCookie, User user)
     {
         var userJson = JsonConvert.SerializeObject(user);
 
         var options = new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = ExpirationTime};
         await _userCache.SetStringAsync(sessionCookie, userJson, options);
+
+        return DateTimeOffset.UtcNow.Add(ExpirationTime);
     }
 
     public async Task<User?> GetAsync(string sessionCookie)
@@ -39,7 +38,6 @@ public class SessionCache : ISessionCache
             return null;
 
         var user = JsonConvert.DeserializeObject<User>(userJson, new UserDeserializerConverter())!;
-        //_unitOfWork.AddForUpdate(user);
         
         return user;
     }
@@ -48,8 +46,6 @@ public class SessionCache : ISessionCache
     {
         return _userCache.RemoveAsync(sessionCookie);
     }
-
-    public DateTimeOffset SessionExpiration => DateTimeOffset.Now.Add(ExpirationTime);
 
     private class UserDeserializerConverter : JsonConverter<User>
     {

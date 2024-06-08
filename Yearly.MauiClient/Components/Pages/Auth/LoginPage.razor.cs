@@ -5,14 +5,12 @@ using Shiny.Push;
 #endif
 using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
 
 namespace Yearly.MauiClient.Components.Pages.Auth;
 
 public partial class LoginPage
 {
-    [Inject] private AuthenticationFacade _authenticationFacade { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private AuthService _authService { get; set; } = null!;
     [Inject] private ToastService _toastService { get; set; } = null!;
@@ -58,19 +56,18 @@ public partial class LoginPage
             StateHasChanged();
 
             //Try to Auto Login
-            var loginResult = await _authenticationFacade.LoginAsync(_authService.AutoLoginStoredCredentials);
-            if (loginResult.IsT1)
+            var loginResult = await _authService.AttemptAutoLoginAsync();
+            if (loginResult is not null)
             {
-                //Problem
+                // -> Problem
                 isLoggingIn = false;
                 StateHasChanged();
 
                 await _toastService.ShowErrorAsync("Auto login se nezdaøil, mìnil/a jste si heslo?");
                 return;
             }
-            // -> Successful login
 
-            _authService.SetSession(loginResult.AsT0);
+            // -> Successful login
             _navigationManager.NavigateTo("/orders");
         }
 
@@ -92,18 +89,18 @@ public partial class LoginPage
 
         var request = new LoginRequest(ModelUsername, ModelPassword);
 
-        var loginResult = await _authenticationFacade.LoginAsync(request);
-        if (loginResult.IsT1)
+        var loginResult = await _authService.LoginAsync(request);
+        if (loginResult is not null)
         {
-            //Problem
+            // -> Problem
             isLoggingIn = false;
             StateHasChanged();
 
-            await _toastService.ShowErrorAsync(loginResult.AsT1.Title);
+            await _toastService.ShowErrorAsync(loginResult.Value.Title);
             return;
         }
-        // -> Successful login
 
+        // -> Successful login
         if (isSettingUpAutoLogin)
         {
             //We are setting up autologin, so we don't want to login the user, but just store the credentials
@@ -119,7 +116,6 @@ public partial class LoginPage
             await _authService.SetupAutoLoginAsync(request);
         }
 
-        _authService.SetSession(loginResult.AsT0);
         _navigationManager.NavigateTo("/orders");
 
         // No need to reset isLoggingIn anymore...

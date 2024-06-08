@@ -1,4 +1,5 @@
 ﻿using Yearly.Contracts.Authentication;
+using Yearly.MauiClient.Exceptions;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;
@@ -8,14 +9,14 @@ public class AuthService
     /// <summary>
     /// Is null when the user is not logged in
     /// </summary>
-    private UserDetailsResponse? userDetailsField = null;
-    public UserDetailsResponse? UserDetails
+    private UserDetailsResponse? activeActiveUserDetailsField = null;
+    public UserDetailsResponse? ActiveUserDetails
     {
-        get => userDetailsField;
+        get => activeActiveUserDetailsField;
         private set
         {
-            userDetailsField = value;
-            UserDetailsLazy = value ?? new(string.Empty, 0, new(0));
+            activeActiveUserDetailsField = value;
+            ActiveUserDetailsLazy = value ?? new(string.Empty, 0, new(0));
         }
     }
 
@@ -23,15 +24,21 @@ public class AuthService
     /// Same as UserDetails, but instead of null, no value means default(UserDetailsResponse)
     /// Use this when you expect the field to be populated and don't want to go through null checks or the .Value disgust
     /// </summary>
-    public UserDetailsResponse UserDetailsLazy { get; private set; } = default;
+    public UserDetailsResponse ActiveUserDetailsLazy { get; private set; } = default;
+
+    /// <summary>
+    /// Less common case of when a user can switch context between users
+    /// within his "user tenant".
+    /// Is null when <see cref="LoginAsync"/> hasn't been called yet
+    /// </summary>
+    public IReadOnlyList<UserDetailsResponse>? AvailableUsersWithinTenant { get; private set; }
 
     /// <summary>
     /// Returns true if a session cookie is set.
     /// </summary>
-    public bool IsLoggedIn => UserDetails is not null;
+    public bool IsLoggedIn => ActiveUserDetails is not null;
 
-    public event Action OnLogin;
-
+    public event Action? OnLogin;
 
     /// <summary>
     /// Loads when <see cref="EnsureAutoLoginStateLoadedAsync"/> is called.
@@ -60,14 +67,42 @@ public class AuthService
     }
 
     /// <summary>
-    /// Sets the session cookie and user details.
+    /// Logs in using <see cref="LoginAsync"/> but tries to use stored credentials.
+    /// </summary>
+    /// <returns>A problem or null if success</returns>
+    public Task<ProblemResponse?> AttemptAutoLoginAsync()
+    {
+        if(AutoLoginStoredCredentials is null)
+            throw new NullReferenceException("AutoLoginStoredCredentials is null");
+
+        var request = new LoginRequest(AutoLoginStoredCredentials.Username, AutoLoginStoredCredentials.Password);
+        return LoginAsync(request);
+    }
+
+    /// <summary>
+    /// Logs in using <see cref="AuthenticationFacade"/> and establishes the session.
     /// Calls <see cref="OnLogin"/> after setting the session.
     /// </summary>
-    public void SetSession(LoginResponse loginResponse)
+    /// <returns>A problem or null if success</returns>
+    public async Task<ProblemResponse?> LoginAsync(LoginRequest loginRequest)
     {
-        UserDetails = loginResponse.UserDetails;
+        var loginResult = await _authenticationFacade.LoginAsync(loginRequest);
+        if (loginResult.IsT1)
+        {
+            //Problem
+            return loginResult.AsT1;
+        }
+
+        // Establish session
+        var login = loginResult.AsT0;
+
+        AvailableUsersWithinTenant = login.AvailableUserDetails;
+        ActiveUserDetails =  login.AvailableUserDetails
+            .Single(u => u.UserId == login.InitialActiveUserId);
 
         OnLogin?.Invoke();
+
+        return null; // Success, no problem
     }
 
     private const string k_AutoLoginUsernameKey = "autologinusername";
@@ -120,9 +155,22 @@ public class AuthService
     {
         await _authenticationFacade.LogoutAsync();
 
-        UserDetails = null;
+        ActiveUserDetails = null;
 
         //Todo: move to event based
+        _myPhotosCacheService.InvalidateCache();
+        _menuAndOrderCacheService.InvalidateCache();
+    }
+
+    public async Task SwitchContextAsync(UserDetailsResponse newUser)
+    {
+        // Switch context in api
+        await _authenticationFacade.SwitchContextAsync(newUser.UserId);
+
+        // Update local state
+        ActiveUserDetails = newUser;
+
+        // Clear all caches
         _myPhotosCacheService.InvalidateCache();
         _menuAndOrderCacheService.InvalidateCache();
     }

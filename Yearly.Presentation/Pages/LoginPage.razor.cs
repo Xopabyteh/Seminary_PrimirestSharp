@@ -38,7 +38,7 @@ public partial class LoginPage
             result.Value.SessionExpirationTime.Date);
 
         //Init session
-        _sessionDetailsService.Init(result.Value.SessionCookie, result.Value.User);
+        _sessionDetailsService.Init(result.Value.SessionCookie, result.Value.ActiveLoggedUser);
 
         // -> Redirect to home page
         _navigationManager.NavigateTo("/");

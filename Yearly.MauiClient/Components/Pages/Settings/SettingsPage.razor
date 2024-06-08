@@ -80,8 +80,8 @@
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když mi schválí fotku</label>
             <ToggleSwitch 
-                Checked='@IsLoadedTagActive(NotificationTagContract.PhotoApproved(_authService.UserDetailsLazy.UserId))' 
-                OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.PhotoApproved(_authService.UserDetailsLazy.UserId), active)'/>
+                Checked='@IsLoadedTagActive(NotificationTagContract.PhotoApproved(_authService.ActiveUserDetailsLazy.UserId))' 
+                OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.PhotoApproved(_authService.ActiveUserDetailsLazy.UserId), active)'/>
             </div>
         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
             <div class='toggle-with-label mt-300'>
@@ -128,13 +128,12 @@
             <label class="fs-regular fw-regular color-secondary">Notifikace když nemám objednáno</label>
             <ToggleSwitch Checked='isOrderCheckerEnabled' OnCheckedChanged='async active => await OnOrderCheckerToggle(active)'/>
         </div>
-@*         <div class='toggle-with-label mt-300'>
-            <label class="fs-regular fw-regular color-secondary">Auto Login</label>
-            <ToggleSwitch StartingState='@_authService.IsAutoLoginSetup' OnTryCheckedChange='RemoveAutoLogin' />
-        </div> *@
     </div>
 </section>
-<button id='logout' class='button color-danger fs-regular fw-regular mt-400 bg-white' @onclick="Logout">
+<button 
+    id='logout'
+    class='button color-danger fs-regular fw-regular mt-400 bg-white @(isLoggingOut ? "placeholder-glow-text" : string.Empty)'
+    @onclick="Logout">
     <svg width='19' height='25' viewBox='0 0 19 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
         <g clip-path='url(#clip0_239_484)'>
             <path d='M2.08725 11.8536H10.4423C10.8018 11.8536 11.0933 12.1431 11.0933 12.5002C11.0933 12.8575 10.8018 13.147 10.4423 13.147H2.08767L4.81626 16.2201C5.05334 16.4866 5.02831 16.8937 4.76019 17.1293C4.49186 17.3651 4.08203 17.3403 3.84473 17.0738L0.162612 12.9268C-0.0577197 12.6794 -0.0519266 12.3106 0.164888 12.0703L3.84494 7.92643C4.08203 7.65971 4.49207 7.63489 4.7604 7.87089C5.02852 8.10649 5.05355 8.51379 4.81646 8.78031L2.08725 11.8536ZM4.34415 4.73043C4.34415 5.08769 4.04975 5.3772 3.68667 5.3772C3.32338 5.3772 3.02899 5.08769 3.02899 4.73043V1.83288C3.02899 1.32934 3.23939 0.870766 3.57681 0.538939C3.91466 0.206907 4.38097 0.000202677 4.89259 0.000202677H17.1362C17.6482 0.000202677 18.1147 0.206501 18.4526 0.538532C18.7898 0.870156 19 1.32812 19 1.83288V23.1671C19 23.6717 18.7904 24.13 18.453 24.4621C18.1156 24.7939 17.6495 25 17.1362 25H4.8928C4.37994 25 3.91403 24.7933 3.57661 24.4617C3.23877 24.1294 3.02919 23.6705 3.02919 23.1671V20.2698C3.02919 19.9127 3.32359 19.6232 3.68688 19.6232C4.04996 19.6232 4.34435 19.9127 4.34435 20.2698V23.1671C4.34435 23.314 4.40663 23.4489 4.50676 23.5474C4.60648 23.6454 4.74343 23.7067 4.89301 23.7067H17.1362C17.2864 23.7067 17.4235 23.6456 17.5231 23.5476C17.623 23.4497 17.6848 23.3148 17.6848 23.1671V1.83288C17.6848 1.68559 17.6226 1.55111 17.5228 1.45304C17.4227 1.35457 17.2856 1.29333 17.1362 1.29333H4.8928C4.74385 1.29333 4.6071 1.35478 4.50696 1.45325C4.40663 1.55172 4.34415 1.6864 4.34415 1.83288V4.73043Z' fill='#BF211E'/>
@@ -146,4 +145,8 @@
         </defs>
     </svg>
     <span class='color-danger'>Odhlásit</span>
+    @if (isLoggingOut)
+    {
+        <Loader DotColor='var(--clr-danger)'/>
+    }
 </button>

@@ -37,36 +37,53 @@ public class AuthenticationController : ApiController
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var loginQuery = _mapper.Map<LoginCommand>(request);
-        var loginResult = await _mediator.Send(loginQuery);
+        var result = await _mediator.Send(loginQuery);
 
-        if (loginResult.IsError)
-            return Problem(loginResult.Errors);
+        if (result.IsError)
+            return Problem(result.Errors);
 
-        //Add session cookie to cookies
-        Response.Cookies.Append(SessionCookieDetails.Name, loginResult.Value.SessionCookie, new CookieOptions
+        // Add session cookie to cookies
+        Response.Cookies.Append(SessionCookieDetails.Name, result.Value.SessionCookie, new CookieOptions
         {
             //SameSite = SameSiteMode.Strict,
             Secure = true,
-            Expires = loginResult.Value.SessionExpirationTime
+            Expires = result.Value.SessionExpirationTime
         });
 
-        return Ok(_mapper.Map<LoginResponse>(loginResult.Value));
+        var response = new LoginResponse(
+            InitialActiveUserId: result.Value.ActiveLoggedUser.Id.Value,
+            AvailableUserDetails: result.Value.AvailableUsers
+                .Select(u => new UserDetailsResponse(
+                    Username: u.Username,
+                    UserId: u.Id.Value,
+                    Roles: u.Roles
+                        .Select(r => new UserRoleDTO(r.RoleCode))
+                        .ToList()))
+                .ToArray(),
+            SessionCookieDetails: new(result.Value.SessionCookie, result.Value.SessionExpirationTime));
+
+        return Ok(response);
     }
 
-    //[HttpPost("logout")]
-    //public async Task<IActionResult> Logout([FromHeader] string sessionCookie)
-    //{
-    //    var logoutQuery = new LogoutCommand(sessionCookie);
-    //    await _mediator.Send(logoutQuery);
-    //    return Ok();
-    //}
+    [HttpPost("switch-context")]
+    public Task<IActionResult> SwitchContext([FromQuery] int newUserId)
+    {
+        return PerformAuthenticatedActionAsync(async issuer =>
+        {
+            var command = new SwitchPrimirestContextCommand(issuer.SessionCookie, new UserId(newUserId));
+            var newSessionExpirationTimeResult = await _mediator.Send(command);
+
+            return newSessionExpirationTimeResult.Match(
+                value => Ok(new SwitchContextResponse(value)),
+                Problem);
+        });
+    }
 
     [HttpPost("logout")]
     public Task<IActionResult> Logout()
     {
         return PerformAuthenticatedActionAsync(async issuer =>
         {
-
             var logoutQuery = new LogoutCommand(issuer.SessionCookie);
             await _mediator.Send(logoutQuery);
 

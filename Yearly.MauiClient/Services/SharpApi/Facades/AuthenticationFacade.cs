@@ -36,20 +36,28 @@ public class AuthenticationFacade
         return problemResponse;
     }
 
-    public async Task<UserDetailsResponse?> GetMyDetailsAsync()
-    {
-        var response = await _sharpAPIClient.HttpClient.GetAsync("/api/auth/my-details");
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<UserDetailsResponse>();
-            return result;
-        }
+    //public async Task<UserDetailsResponse?> GetMyDetailsAsync()
+    //{
+    //    var response = await _sharpAPIClient.HttpClient.GetAsync("/api/auth/my-details");
+    //    if (response.IsSuccessStatusCode)
+    //    {
+    //        var result = await response.Content.ReadFromJsonAsync<UserDetailsResponse>();
+    //        return result;
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
 
     public async Task LogoutAsync()
     {
         await _sharpAPIClient.HttpClient.PostAsync("/api/auth/logout", null);
+    }
+
+    public async Task SwitchContextAsync(int newUserId)
+    {
+        // POST / {{host}}/auth/switch-context?newUserId=25625910
+        var response = await _sharpAPIClient.HttpClient.PostAsync($"/api/auth/switch-context?newUserId={newUserId}", null);
+
+        response.EnsureSuccessStatusCode();
     }
 }

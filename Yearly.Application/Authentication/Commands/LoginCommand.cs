@@ -40,38 +40,70 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
 
     public async Task<ErrorOr<LoginResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var externalLoginResult = await _authService.LoginAsync(request.Username, request.Password);
+        var sessionCookieResult = await _authService.LoginAsync(request.Username, request.Password);
 
-        if (externalLoginResult.IsError)
-            return externalLoginResult.Errors;
+        if (sessionCookieResult.IsError)
+            return sessionCookieResult.Errors;
 
-        var externalUserInfoAsync = await _authService.GetPrimirestUserInfoAsync(externalLoginResult.Value);
+        var externalUserInfoAsync = await _authService.GetAvailableUsersInfoAsync(sessionCookieResult.Value);
         if (externalUserInfoAsync.IsError)
         {
             throw new IllegalStateException("Cannot retrieve external info of a user that just logged in");
-
-            //externalLoginResult.Errors.AddRange(externalUserInfoAsync.Errors);
-            //return externalLoginResult.Errors;
         }
 
-        var externalUser = externalUserInfoAsync.Value;
+        // Users from primirest
+        var availableExternalUsersDetails = externalUserInfoAsync.Value;
 
-        //Get user from our system
-        var sharpUser = await _userRepository.GetByIdAsync(new UserId(externalUser.Id));
-        if (sharpUser is null)
+        // Users from sharp (might not be in our system yet)
+        var availableSharpUsers = await _userRepository.GetUsersByIdsAsync(availableExternalUsersDetails
+            .Select(d => new UserId(d.Id))
+            .ToArray());
+
+        // Onboard nonexistant users
+        var didOnboardAnyone = false;
+        foreach (var externalUserDetails in availableExternalUsersDetails)
         {
-            //Persist user in our db
-            sharpUser = new User(new UserId(externalUser.Id), externalUser.Username);
+            if (!availableSharpUsers.TryGetValue(new UserId(externalUserDetails.Id), out var sharpUser))
+            {
+                // Onboard
+                sharpUser = new User(new UserId(externalUserDetails.Id), externalUserDetails.Username);
 
-            await _userRepository.AddAsync(sharpUser);
+                // Add to dictionary
+                availableSharpUsers.Add(sharpUser.Id, sharpUser);
+
+                // Persist user in sharp db
+                await _userRepository.AddAsync(sharpUser);
+                didOnboardAnyone = true;
+            }
+        }
+        
+        // Save onboarding
+        if(didOnboardAnyone)
+        {
             await _unitOfWork.SaveChangesAsync();
         }
 
-        //Add to cache
-        await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser);
+        if(availableSharpUsers.Count == 0)
+        {
+            throw new IllegalStateException("No sharp user present after login attempt");
+        }
 
-        return new LoginResult(externalLoginResult.Value, sharpUser, _sessionCache.SessionExpiration);
+        // Make the first user the active
+        var activeLoggedUser = availableSharpUsers.First().Value;
+        var sessionExpirationTime = await _sessionCache.SetAsync(sessionCookieResult.Value, activeLoggedUser);
+
+        if (availableSharpUsers.Count > 0)
+        {
+            // Less common case:
+            // There are multiple available users, so we need to
+            // explicitly switch the context to the active one on primirest
+            await _authService.SwitchPrimirestContextAsync(sessionCookieResult.Value, activeLoggedUser.Id);
+        }
+
+        return new LoginResult(
+            activeLoggedUser,
+            availableSharpUsers.Values,
+            sessionCookieResult.Value,
+            sessionExpirationTime);
     }
 }
-
-public record LoginResult(string SessionCookie, User User, DateTimeOffset SessionExpirationTime);
