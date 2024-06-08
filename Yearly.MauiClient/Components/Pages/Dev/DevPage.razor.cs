@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Plugin.LocalNotification.AndroidOption;
+using Plugin.LocalNotification;
 using Shiny;
 #if ANDROID || IOS
 using Shiny.Push;
+using Yearly.Contracts.Menu;
+
 #endif
 using Yearly.MauiClient.Services;
 
@@ -9,6 +13,10 @@ namespace Yearly.MauiClient.Components.Pages.Dev;
 
 public partial class DevPage
 {
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
     protected override void OnInitialized()
     {
 #if ANDROID || IOS

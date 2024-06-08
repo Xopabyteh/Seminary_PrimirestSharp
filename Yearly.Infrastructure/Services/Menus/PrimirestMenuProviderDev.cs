@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
+using System.Reflection;
 using System.Text;
 using Yearly.Infrastructure.Services.Orders.PrimirestStructures;
 
@@ -31,8 +32,21 @@ public class PrimirestMenuProviderDev : IPrimirestMenuProvider
                 "SampleMenuMock.json"),
             Encoding.UTF8);
 
-        var menus = JsonConvert.DeserializeObject<List<PrimirestWeeklyMenu>>(menusJson);
-        return menus!;
+        var menus = JsonConvert.DeserializeObject<List<PrimirestWeeklyMenu>>(menusJson)!;
+
+        // Shift the menus such the first menu starts this monday
+        var today = DateTime.Today;
+        var thisWeekMonday = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+
+        var youngestMenu = menus.MinBy(wm => wm.DailyMenus.First().Date);
+        var shift =  thisWeekMonday - youngestMenu.DailyMenus.First().Date;
+
+        // Create new menus with shift
+        return menus.Select(wm => wm
+            with {DailyMenus = wm.DailyMenus
+                .Select(dm => dm with {Date = dm.Date + shift})
+                .ToList()})
+            .ToList();
     }
 
     public Task<int[]> GetMenuIdsAsync(HttpClient adminSessionLoggedClient)

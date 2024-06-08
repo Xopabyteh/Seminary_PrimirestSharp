@@ -1,8 +1,9 @@
-﻿using Android.Content;
+﻿using _Microsoft.Android.Resource.Designer;
+using Android.Content;
+using AndroidX.Core.App;
 using AndroidX.Work;
 using Java.Util.Concurrent;
-using Plugin.LocalNotification;
-using Plugin.LocalNotification.AndroidOption;
+using Yearly.Contracts.Menu;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 
@@ -13,12 +14,13 @@ public class OrderCheckerBackgroundWorker : Worker
     public const string UniqueWorkerName = $"psharp-{nameof(OrderCheckerBackgroundWorker)}";
     private const string k_UniqueRescheduledWorkerName = $"psharp-{nameof(OrderCheckerBackgroundWorker)}-rescheduled";
     public const string WorkNameTag = $"psharp-{nameof(OrderCheckerBackgroundWorker)}-tag";
+
     public OrderCheckerBackgroundWorker(Context context, WorkerParameters workerParams) 
         : base(context, workerParams)
     {
     }
 
-    public override Result DoWork()
+    public override AndroidX.Work.ListenableWorker.Result DoWork()
     {
         //Log
         Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), "DoWork");
@@ -78,35 +80,36 @@ public class OrderCheckerBackgroundWorker : Worker
         authService.SetSession(loginResponse);
 
         //Check
-        CheckIfHasOrdered().GetAwaiter().GetResult();
+        NotifyOnUnorderedDays();
 
         //Remove session
         authService.RemoveSessionAsync().GetAwaiter().GetResult();
 
-        return Result.InvokeSuccess();
+        return AndroidX.Work.ListenableWorker.Result.InvokeSuccess();
     }
 
-    private async Task CheckIfHasOrdered()
+    private void NotifyOnUnorderedDays()
     {
         var orderCheckerService = IPlatformApplication.Current!.Services.GetService<OrderCheckerService>()!;
-        var daysWithoutOrder = await orderCheckerService.GetDaysWithoutOrder();
-        foreach (var day in daysWithoutOrder)
-        {
-            var notification = new NotificationRequest
-            {
-                NotificationId = day.Date.GetHashCode(),
-                Title = "Nemáte objednáno",
-                Description = $"Nemáte objednáno na {day.Date:dddd dd.MMMM}",
-                Android = new AndroidOptions()
-                {
-                    IconSmallName =
-                    {
-                        ResourceName = "notificationicon"
-                    }
-                }
-            };
+        var notificationManager = NotificationManagerCompat.From(ApplicationContext);
 
-            await LocalNotificationCenter.Current.Show(notification);
+        var daysWithoutOrder = orderCheckerService.GetDaysWithoutOrder().GetAwaiter().GetResult();
+        for (int i = 0; i < daysWithoutOrder.Count; i++)
+        {
+            Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), $"Day without order: {daysWithoutOrder[i].Date:dddd dd.MMMM}");
+
+            DailyMenuDTO day = daysWithoutOrder[i];
+
+            // Create notification using native android builder
+            var builder = new NotificationCompat.Builder(ApplicationContext, "orders_notifications")
+                .SetContentTitle("Neobjednáno")
+                .SetContentText($"Nemáš objednáno na den {day.Date:dddd dd.MMMM}")
+                .SetSmallIcon(ResourceConstant.Drawable.notificationicon)
+                .SetAutoCancel(true);
+
+            // Show
+            var notification = builder.Build();
+            notificationManager.Notify(i, notification);
         }
     }
 }

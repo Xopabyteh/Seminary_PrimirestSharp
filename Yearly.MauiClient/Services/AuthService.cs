@@ -30,7 +30,7 @@ public class AuthService
     /// </summary>
     public bool IsLoggedIn => UserDetails is not null;
 
-    public event Action OnLogin = null!;
+    public event Action OnLogin;
 
 
     /// <summary>
@@ -61,14 +61,12 @@ public class AuthService
 
     /// <summary>
     /// Sets the session cookie and user details.
-    /// Also stores the session cookie in the secure storage.
     /// Calls <see cref="OnLogin"/> after setting the session.
     /// </summary>
     public void SetSession(LoginResponse loginResponse)
     {
         UserDetails = loginResponse.UserDetails;
 
-        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         OnLogin?.Invoke();
     }
 

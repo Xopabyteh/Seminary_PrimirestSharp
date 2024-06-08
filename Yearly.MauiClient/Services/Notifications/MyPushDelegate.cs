@@ -1,4 +1,5 @@
 ﻿using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
 using Shiny.Push;
 using Yearly.Contracts.Notifications;
 
@@ -28,13 +29,14 @@ public class MyPushDelegate : PushDelegate
             NotificationId = notificationId,
             Title = push.Notification?.Title!,
             Description = push.Notification?.Message!,
+            #if ANDROID
             Android =
-                {
-                    IconSmallName =
-                    {
-                        ResourceName = "notificationicon"
-                    }
+                new AndroidOptions {
+                    ChannelId = "server_notifications",
+                    IconSmallName = new AndroidIcon(nameof(_Microsoft.Android.Resource.Designer.Resource.Drawable.notificationicon)),
+                    IconLargeName = new AndroidIcon(nameof(_Microsoft.Android.Resource.Designer.Resource.Drawable.notificationicon))
                 }
+            #endif
         };
 
         await LocalNotificationCenter.Current.Show(notification);
