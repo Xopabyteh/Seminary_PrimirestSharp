@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Plugin.LocalNotification.AndroidOption;
 #if DEBUG
 using Microsoft.Extensions.Logging;
 #endif
@@ -11,7 +12,10 @@ using Shiny;
 using Plugin.LocalNotification;
 using Shiny.Push;
 using Yearly.MauiClient.Services.Notifications;
+#if ANDROID
 using Android.App;
+#endif
+
 #endif
 
 namespace Yearly.MauiClient;
@@ -79,10 +83,16 @@ public static class MauiProgram
 #if ANDROID || IOS
     public static MauiAppBuilder RegisterNotifications(this MauiAppBuilder builder)
     {
-        builder.UseLocalNotification();
+        builder.UseLocalNotification(c =>
+        {
+            c.AddAndroid(ac =>
+            {
+                ac.AddChannel(new NotificationChannelRequest() {Id = "orders_notifications", Name = "Objednávky"});
+            });
+        });
         
 #if ANDROID
-        NotificationChannel defaultChannel = new(
+        NotificationChannel serverNotificationsChannel = new(
             "server_notifications",
             "Server notifications",
             NotificationImportance.Default)
@@ -96,7 +106,7 @@ public static class MauiProgram
             "32637295511",
             "primirest-sharp-fb",
             "AIzaSyAG4HEPPOnup-0SvazStty9nKFkrOwqgR0",
-            defaultChannel
+            serverNotificationsChannel
         );
 #endif
 

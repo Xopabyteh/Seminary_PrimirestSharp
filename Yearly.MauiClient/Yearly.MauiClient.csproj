@@ -94,7 +94,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.20" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
         <PackageReference Include="OneOf" Version="3.0.263" />
-        <PackageReference Include="Plugin.LocalNotification" Version="11.1.2" />
+        <PackageReference Include="Plugin.LocalNotification" Version="11.1.0" />
         <PackageReference Include="Shiny.Core" Version="3.3.3" />
         <PackageReference Include="Shiny.Hosting.Maui" Version="3.3.3" />
         <PackageReference Include="Shiny.Jobs" Version="3.3.3" />

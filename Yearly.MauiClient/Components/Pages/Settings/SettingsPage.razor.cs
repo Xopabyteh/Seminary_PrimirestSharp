@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Shiny.Jobs;
 using Yearly.Contracts.Common;
 #if ANDROID || IOS
 using Shiny;
@@ -60,10 +61,8 @@ public partial class SettingsPage
         StateHasChanged();
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     // ReSharper disable once UnusedParameter.Local
     private async Task OnOrderCheckerToggle(bool newState)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
 #if ANDROID
         if (newState)

@@ -1,4 +1,5 @@
-﻿using Yearly.Domain.Models.UserAgg;
+﻿using Microsoft.EntityFrameworkCore;
+using Yearly.Domain.Models.UserAgg;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Infrastructure.Persistence.Seeding;
@@ -37,7 +38,7 @@ public class DataSeeder
     public async Task DbResetAsync()
     {
         await _context.Database.EnsureDeletedAsync();
-        await _context.Database.EnsureCreatedAsync();
+        await _context.Database.MigrateAsync();
 
         SeedCoreData();
     }
