@@ -17,7 +17,7 @@ public interface IAuthService
     /// Gets info available from the primirest auth provider about the logged in user
     /// Returns all available users within the "user tenant"
     /// </summary>
-    public Task<ErrorOr<PrimirestUserInfo[]>> GetPrimirestUserInfoAsync(string sessionCookie);
+    public Task<ErrorOr<PrimirestUserInfo[]>> GetAvailableUsersInfoAsync(string sessionCookie);
 
     /// <summary>
     /// Primirest keeps a session of a user within a "user tenant". That sucks...

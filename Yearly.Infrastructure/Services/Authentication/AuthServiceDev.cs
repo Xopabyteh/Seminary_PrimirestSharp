@@ -18,13 +18,15 @@ public class AuthServiceDev : IAuthService
         return Task.CompletedTask;
     }
 
-    public Task<ErrorOr<PrimirestUserInfo>> GetPrimirestUserInfoAsync(string sessionCookie)
+    public Task<ErrorOr<PrimirestUserInfo[]>> GetAvailableUsersInfoAsync(string sessionCookie)
     {
-        //Little dirty, i know
-        return Task.FromResult((ErrorOr<PrimirestUserInfo>)new PrimirestUserInfo(26564871, "Martin Fiala"));
+        // Little dirty, I know
+        var availableUsers = new[] {new PrimirestUserInfo(26564871, "Martin Fiala")};
+        return Task.FromResult((ErrorOr<PrimirestUserInfo[]>)availableUsers);
     }
 
-    public Task<ErrorOr<Unit>> SwitchPrimirestContextAsync(UserId newUserId)
+
+    public Task<ErrorOr<Unit>> SwitchPrimirestContextAsync(string sessionCookie, UserId newUserId)
     {
         // NOOP
         return Task.FromResult((ErrorOr<Unit>)Unit.Value);

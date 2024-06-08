@@ -40,12 +40,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
 
     public async Task<ErrorOr<LoginResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var externalLoginResult = await _authService.LoginAsync(request.Username, request.Password);
+        var sessionCookieResult = await _authService.LoginAsync(request.Username, request.Password);
 
-        if (externalLoginResult.IsError)
-            return externalLoginResult.Errors;
+        if (sessionCookieResult.IsError)
+            return sessionCookieResult.Errors;
 
-        var externalUserInfoAsync = await _authService.GetPrimirestUserInfoAsync(externalLoginResult.Value);
+        var externalUserInfoAsync = await _authService.GetAvailableUsersInfoAsync(sessionCookieResult.Value);
         if (externalUserInfoAsync.IsError)
         {
             throw new IllegalStateException("Cannot retrieve external info of a user that just logged in");
@@ -85,31 +85,25 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
 
         if(availableSharpUsers.Count == 0)
         {
-            throw new IllegalStateException("No users were translated to sharp");
+            throw new IllegalStateException("No sharp user present after login attempt");
         }
-        if(availableSharpUsers.Count == 1)
+
+        // Make the first user the active
+        var activeLoggedUser = availableSharpUsers.First().Value;
+        var sessionExpirationTime = await _sessionCache.SetAsync(sessionCookieResult.Value, activeLoggedUser);
+
+        if (availableSharpUsers.Count > 0)
         {
-            // Common case, user is only in one tenant
-            var sharpUser = availableSharpUsers.First();
-
-            //Add to cache
-            await _sessionCache.AddAsync(externalLoginResult.Value, sharpUser.Value);
-            
-            return new LoginResult(
-                [new(externalLoginResult.Value, sharpUser.Value)],
-                _sessionCache.SessionExpiration);
+            // Less common case:
+            // There are multiple available users, so we need to
+            // explicitly switch the context to the active one on primirest
+            await _authService.SwitchPrimirestContextAsync(sessionCookieResult.Value, activeLoggedUser.Id);
         }
-
-        // -> Multiple users within tenant
-        var sharpUsersDetails = availableSharpUsers.Values
-            .Select(u => new UserDetailsResult(externalLoginResult.Value, u))
-            .ToArray();
 
         return new LoginResult(
-            sharpUsersDetails,
-            _sessionCache.SessionExpiration);
+            activeLoggedUser,
+            availableSharpUsers.Values,
+            sessionCookieResult.Value,
+            sessionExpirationTime);
     }
 }
-
-public record LoginResult(UserDetailsResult[] availableSharpUsers, DateTimeOffset SessionExpirationTime);
-public record UserDetailsResult(string SessionCookie, User User);

@@ -60,7 +60,7 @@ public class PrimirestAuthService : IAuthService
         await client.SendAsync(requestMessage);
     }
 
-    public async Task<ErrorOr<PrimirestUserInfo[]>> GetPrimirestUserInfoAsync(string sessionCookie)
+    public async Task<ErrorOr<PrimirestUserInfo[]>> GetAvailableUsersInfoAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
 
@@ -74,7 +74,7 @@ public class PrimirestAuthService : IAuthService
 
         var resultJson = await response.Content.ReadAsStringAsync();
 
-        if(response.GotRoutedToLogin())
+        if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
         var usersWithinTenantResponse = JsonConvert.DeserializeObject<AvailableResponseRoot>(resultJson) ?? throw new InvalidOperationException();

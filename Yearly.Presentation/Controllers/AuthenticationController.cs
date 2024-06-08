@@ -37,20 +37,32 @@ public class AuthenticationController : ApiController
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var loginQuery = _mapper.Map<LoginCommand>(request);
-        var loginResult = await _mediator.Send(loginQuery);
+        var result = await _mediator.Send(loginQuery);
 
-        if (loginResult.IsError)
-            return Problem(loginResult.Errors);
+        if (result.IsError)
+            return Problem(result.Errors);
 
         // Add session cookie to cookies
-        Response.Cookies.Append(SessionCookieDetails.Name, loginResult.Value.SessionCookie, new CookieOptions
+        Response.Cookies.Append(SessionCookieDetails.Name, result.Value.SessionCookie, new CookieOptions
         {
             //SameSite = SameSiteMode.Strict,
             Secure = true,
-            Expires = loginResult.Value.SessionExpirationTime
+            Expires = result.Value.SessionExpirationTime
         });
 
-        return Ok(_mapper.Map<LoginResponse>(loginResult.Value));
+        var response = new LoginResponse(
+            InitialActiveUserId: result.Value.ActiveLoggedUser.Id.Value,
+            AvailableUserDetails: result.Value.AvailableUsers
+                .Select(u => new UserDetailsResponse(
+                    Username: u.Username,
+                    UserId: u.Id.Value,
+                    Roles: u.Roles
+                        .Select(r => new UserRoleDTO(r.RoleCode))
+                        .ToList()))
+                .ToArray(),
+            SessionCookieDetails: new(result.Value.SessionCookie, result.Value.SessionExpirationTime));
+
+        return Ok(response);
     }
 
     [HttpPost("switch-context")]
@@ -59,10 +71,10 @@ public class AuthenticationController : ApiController
         return PerformAuthenticatedActionAsync(async issuer =>
         {
             var command = new SwitchPrimirestContextCommand(issuer.SessionCookie, new UserId(newUserId));
-            var result = await _mediator.Send(command);
+            var newSessionExpirationTimeResult = await _mediator.Send(command);
 
-            return result.Match(
-                _ => Ok(),
+            return newSessionExpirationTimeResult.Match(
+                value => Ok(new SwitchContextResponse(value)),
                 Problem);
         });
     }

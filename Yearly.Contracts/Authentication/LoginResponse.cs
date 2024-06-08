@@ -1,10 +1,14 @@
 ﻿namespace Yearly.Contracts.Authentication;
 
 /// <param name="SessionCookieDetails"></param>
-/// <param name="AvailableUserDetails">List of available users within the "user tenant"</param>
+/// <param name="AvailableUserDetails">
+/// List of available users within the primirest "user tenant"
+/// to which we can switch contexts
+/// </param>
 public readonly record struct LoginResponse(
-    SessionCookieDetails SessionCookieDetails,
-    UserDetailsResponse[] AvailableUserDetails);
+    int InitialActiveUserId,
+    UserDetailsResponse[] AvailableUserDetails,
+    SessionCookieDetails SessionCookieDetails);
 
 public readonly record struct SessionCookieDetails(string Value, DateTimeOffset ExpirationDate)
 {
