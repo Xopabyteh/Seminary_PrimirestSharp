@@ -5,7 +5,6 @@ using AndroidX.Work;
 using Java.Util.Concurrent;
 using Yearly.Contracts.Menu;
 using Yearly.MauiClient.Services;
-using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient;
 
@@ -26,7 +25,6 @@ public class OrderCheckerBackgroundWorker : Worker
         Android.Util.Log.Debug(nameof(OrderCheckerBackgroundWorker), "DoWork");
 
         var authService = IPlatformApplication.Current!.Services.GetService<AuthService>()!;
-        var authFacade = IPlatformApplication.Current.Services.GetService<AuthenticationFacade>()!;
 
         if (authService.IsLoggedIn)
         {
@@ -64,8 +62,8 @@ public class OrderCheckerBackgroundWorker : Worker
             return Result.InvokeFailure();
         }
 
-        var loginResult = authFacade.LoginAsync(authService.AutoLoginStoredCredentials!).GetAwaiter().GetResult();
-        if (loginResult.IsT1)
+        var loginResult = authService.AttemptAutoLoginAsync().GetAwaiter().GetResult();
+        if (loginResult is not null)
         {
             //Problem -> Auto login failed
             //Unschedule self
@@ -75,9 +73,6 @@ public class OrderCheckerBackgroundWorker : Worker
 
             return Result.InvokeFailure();
         }
-
-        var loginResponse = loginResult.AsT0;
-        authService.LoginAsync(loginResponse);
 
         //Check
         NotifyOnUnorderedDays();
