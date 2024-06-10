@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Menu;
 using Yearly.Contracts.Order;
+using Yearly.MauiClient.Resources;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
@@ -131,7 +132,7 @@ public partial class DailyMenu
             //Error
 
             var problem = newOrderResult.AsT1;
-            await _toastService.ShowErrorAsync(problem.Title);
+            await _toastService.ShowErrorAsync(problem.GetLocalizedMessage());
             return null;
         }
 
@@ -149,7 +150,7 @@ public partial class DailyMenu
         }
         else
         {
-            await _toastService.ShowErrorAsync(response.Value.Title);
+            await _toastService.ShowErrorAsync(response.GetLocalizedMessage());
             return false;
         }
     }

@@ -201,7 +201,7 @@ public static class DependencyInjection
     private static void EnsureServiceInitialization(IServiceProvider services)
     {
         var azureStorage = services.GetRequiredService<AzurePhotoStorage>();
-        azureStorage.EnsureContainerExists().Wait();
+        //azureStorage.EnsureContainerExists().Wait();
     }
 
     private static void MigrateDb(IServiceProvider services)

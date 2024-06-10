@@ -1,7 +1,7 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Json;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Photos;
-using Yearly.MauiClient.Exceptions;
 
 namespace Yearly.MauiClient.Services.SharpApi.Facades;
 
@@ -14,7 +14,7 @@ public class PhotoFacade
         _sharpAPIClient = sharpAPIClient;
     }
 
-    public async Task<ProblemResponse?> PublishPhotoAsync(Guid foodId, Stream photoDataStream, string photoFileName)
+    public async Task<ProblemDetails?> PublishPhotoAsync(Guid foodId, Stream photoDataStream, string photoFileName)
     {
         //Convert photo to IFormFile
         var content = new MultipartFormDataContent
@@ -28,7 +28,7 @@ public class PhotoFacade
         //Consider the request was validated and the response should be success
         if (!response.IsSuccessStatusCode)
         {
-            var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
+            var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
             return problem;
         }
 
@@ -53,7 +53,7 @@ public class PhotoFacade
     /// </summary>
     /// <param name="photoId"></param>
     /// <returns>Null if success or problem response</returns>
-    public async Task<ProblemResponse?> ApprovePhotoAsync(Guid photoId)
+    public async Task<ProblemDetails?> ApprovePhotoAsync(Guid photoId)
     {
         //Post to {{host}}/photo/approve
         //With form data: photoId = photoId
@@ -70,7 +70,7 @@ public class PhotoFacade
             return null;
         }
 
-        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         return problem;
     }
 
@@ -78,7 +78,7 @@ public class PhotoFacade
     /// Can return "Photo.PhotoNotFound"
     /// </summary>
     /// <returns>Null if success or problem response</returns>
-    public async Task<ProblemResponse?> RejectPhotoAsync(Guid photoId)
+    public async Task<ProblemDetails?> RejectPhotoAsync(Guid photoId)
     {
         //Post to {{host}}/photo/reject
         //With form data: photoId = photoId
@@ -95,7 +95,7 @@ public class PhotoFacade
             return null;
         }
 
-        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         return problem;
     }
 

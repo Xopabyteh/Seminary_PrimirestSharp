@@ -29,6 +29,7 @@
         
         <!-- Required for C# Hot Reload -->
         <UseInterpreter Condition="'$(Configuration)' == 'Debug'">True</UseInterpreter>
+        <NeutralLanguage>cs-CZ</NeutralLanguage>
     </PropertyGroup>
 
     <ItemGroup>
@@ -155,5 +156,26 @@
       <PackageReference Include="Shiny.Extensions.Configuration">
         <Version>3.3.3</Version>
       </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
+        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.5\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\LocalizationResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LocalizationResources.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\LocalizationResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LocalizationResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>

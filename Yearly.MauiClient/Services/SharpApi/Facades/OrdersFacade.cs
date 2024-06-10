@@ -1,8 +1,8 @@
-﻿using OneOf;
+﻿using Microsoft.AspNetCore.Mvc;
+using OneOf;
 using System.Net.Http.Json;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Order;
-using Yearly.MauiClient.Exceptions;
 
 namespace Yearly.MauiClient.Services.SharpApi.Facades;
 
@@ -26,7 +26,7 @@ public class OrdersFacade
         return result!;
     }
 
-    public async Task<OneOf<PrimirestOrderDataDTO, ProblemResponse>> NewOrderAsync(PrimirestFoodIdentifierDTO foodId)
+    public async Task<OneOf<PrimirestOrderDataDTO, ProblemDetails>> NewOrderAsync(PrimirestFoodIdentifierDTO foodId)
     {
         //Post to {{host}}/order/new-order
         //{
@@ -46,11 +46,11 @@ public class OrdersFacade
             return result!;
         }
 
-        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         return problem;
     }
 
-    public async Task<ProblemResponse?> CancelOrderAsync(PrimirestOrderIdentifierDTO orderId)
+    public async Task<ProblemDetails?> CancelOrderAsync(PrimirestOrderIdentifierDTO orderId)
     {
         //Post to {{host}}/order/cancel-order
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync(
@@ -60,7 +60,7 @@ public class OrdersFacade
         if (response.IsSuccessStatusCode)
             return null;
 
-        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         return problem;
     }
 

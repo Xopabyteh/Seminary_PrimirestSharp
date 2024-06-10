@@ -24,7 +24,7 @@ public class ApiController : ControllerBase
     {
         var sessionCookie = Request.Cookies[SessionCookieDetails.Name];
         if(string.IsNullOrEmpty(sessionCookie))
-            return Unauthorized();
+            return Problem([Application.Errors.Errors.Authentication.MissingCookie]);
 
         //Auth
         var userResult = await _mediator.Send(new UserBySessionQuery(sessionCookie));
@@ -43,7 +43,7 @@ public class ApiController : ControllerBase
             if (
                 !issuer.User.Roles.Any(roles.Contains)
                 && !issuer.User.Roles.Contains(UserRole.Admin)) //Admin can do anything
-                return Unauthorized();
+                return Problem([Application.Errors.Errors.Authentication.InsufficientPermissions]);
 
             return await action(issuer);
         });

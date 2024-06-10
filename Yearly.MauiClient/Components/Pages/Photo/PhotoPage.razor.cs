@@ -198,7 +198,7 @@ public partial class PhotoPage
         {
             //Error, show it
             isPublishingPhoto = false;
-            await _toastService.ShowErrorAsync(result.Value.Title);
+            await _toastService.ShowErrorAsync(result.GetLocalizedMessage());
             return;
         }
 

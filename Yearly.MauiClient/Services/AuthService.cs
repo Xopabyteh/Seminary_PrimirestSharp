@@ -1,5 +1,5 @@
-﻿using Yearly.Contracts.Authentication;
-using Yearly.MauiClient.Exceptions;
+﻿using Microsoft.AspNetCore.Mvc;
+using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;
@@ -70,7 +70,7 @@ public class AuthService
     /// Logs in using <see cref="LoginAsync"/> but tries to use stored credentials.
     /// </summary>
     /// <returns>A problem or null if success</returns>
-    public Task<ProblemResponse?> AttemptAutoLoginAsync()
+    public Task<ProblemDetails?> AttemptAutoLoginAsync()
     {
         if(AutoLoginStoredCredentials is null)
             throw new NullReferenceException("AutoLoginStoredCredentials is null");
@@ -84,7 +84,7 @@ public class AuthService
     /// Calls <see cref="OnLogin"/> after setting the session.
     /// </summary>
     /// <returns>A problem or null if success</returns>
-    public async Task<ProblemResponse?> LoginAsync(LoginRequest loginRequest)
+    public async Task<ProblemDetails?> LoginAsync(LoginRequest loginRequest)
     {
         var loginResult = await _authenticationFacade.LoginAsync(loginRequest);
         if (loginResult.IsT1)

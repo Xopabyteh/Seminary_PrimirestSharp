@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Yearly.Contracts.Photos;
+using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
 
@@ -31,7 +32,7 @@ public partial class PhA_PhotoApprovingPage
         if (response is not null)
         {
             //Error
-            await ToastService.ShowErrorAsync(response.Value.Title);
+            await ToastService.ShowErrorAsync(response.GetLocalizedMessage());
             return;
         }
 
@@ -46,7 +47,7 @@ public partial class PhA_PhotoApprovingPage
         if (response is not null)
         {
             //Error
-            await ToastService.ShowErrorAsync(response.Value.Title);
+            await ToastService.ShowErrorAsync(response.GetLocalizedMessage());
             return;
         }
 

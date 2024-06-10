@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 #if ANDROID || IOS
 using Shiny.Jobs;
-using Shiny.Push;
 #endif
 using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services;
@@ -67,7 +66,7 @@ public partial class LoginPage
                 isLoggingIn = false;
                 StateHasChanged();
 
-                await _toastService.ShowErrorAsync("Auto login se nezdaøil, mìnil/a jste si heslo?");
+                await _toastService.ShowErrorAsync(loginResult.GetLocalizedMessage());
                 return;
             }
 
@@ -100,7 +99,7 @@ public partial class LoginPage
             isLoggingIn = false;
             StateHasChanged();
 
-            await _toastService.ShowErrorAsync(loginResult.Value.Title);
+            await _toastService.ShowErrorAsync(loginResult.GetLocalizedMessage());
             return;
         }
 

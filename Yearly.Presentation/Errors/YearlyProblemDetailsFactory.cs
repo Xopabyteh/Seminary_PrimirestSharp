@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
+using Yearly.Contracts.Common;
 using Yearly.Presentation.Http;
 
 namespace Yearly.Presentation.Errors;
@@ -77,6 +78,10 @@ internal sealed class YearlyProblemDetailsFactory : ProblemDetailsFactory
         return problemDetails;
     }
 
+    /// <summary>
+    /// Sets problem details with default values if not set.
+    /// Also sets extensions: TraceId, ErrorCodes
+    /// </summary>
     private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails, int statusCode)
     {
         problemDetails.Status ??= statusCode;
@@ -90,14 +95,14 @@ internal sealed class YearlyProblemDetailsFactory : ProblemDetailsFactory
         var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
         if (traceId != null)
         {
-            problemDetails.Extensions["traceId"] = traceId;
+            problemDetails.Extensions[ProblemDetailsExtensionKeys.TraceId] = traceId;
         }
 
         _configure?.Invoke(new() { HttpContext = httpContext!, ProblemDetails = problemDetails });
 
         if (httpContext?.Items[HttpContextItemKeys.Errors] is List<Error> errors)
         {
-            problemDetails.Extensions["errorCodes"] = errors.Select(e => e.Code);
+            problemDetails.Extensions[ProblemDetailsExtensionKeys.ErrorCodes] = errors.Select(e => e.Code);
         }
     }
 }

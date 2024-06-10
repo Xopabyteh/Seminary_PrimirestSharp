@@ -1,7 +1,7 @@
-﻿using OneOf;
+﻿using Microsoft.AspNetCore.Mvc;
+using OneOf;
 using System.Net.Http.Json;
 using Yearly.Contracts.Authentication;
-using Yearly.MauiClient.Exceptions;
 
 namespace Yearly.MauiClient.Services.SharpApi.Facades;
 
@@ -20,7 +20,7 @@ public class AuthenticationFacade
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<OneOf<LoginResponse, ProblemResponse>> LoginAsync(LoginRequest request)
+    public async Task<OneOf<LoginResponse, ProblemDetails>> LoginAsync(LoginRequest request)
     {
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync("/api/auth/login", request);
 
@@ -32,8 +32,8 @@ public class AuthenticationFacade
         }
 
         //Not success
-        var problemResponse = await response.Content.ReadFromJsonAsync<ProblemResponse>();
-        return problemResponse;
+        var problemResponse = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        return problemResponse!;
     }
 
     //public async Task<UserDetailsResponse?> GetMyDetailsAsync()
