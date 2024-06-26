@@ -150,7 +150,7 @@ public partial class DailyMenu
         }
         else
         {
-            await _toastService.ShowErrorAsync(response.GetLocalizedMessage());
+            await _toastService.ShowErrorAsync(response.Value.GetLocalizedMessage());
             return false;
         }
     }

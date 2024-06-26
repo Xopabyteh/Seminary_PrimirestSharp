@@ -32,7 +32,7 @@ public partial class PhA_PhotoApprovingPage
         if (response is not null)
         {
             //Error
-            await ToastService.ShowErrorAsync(response.GetLocalizedMessage());
+            await ToastService.ShowErrorAsync(response.Value.GetLocalizedMessage());
             return;
         }
 
@@ -47,7 +47,7 @@ public partial class PhA_PhotoApprovingPage
         if (response is not null)
         {
             //Error
-            await ToastService.ShowErrorAsync(response.GetLocalizedMessage());
+            await ToastService.ShowErrorAsync(response.Value.GetLocalizedMessage());
             return;
         }
 

@@ -20,7 +20,7 @@ public class AuthenticationFacade
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<OneOf<LoginResponse, ProblemDetails>> LoginAsync(LoginRequest request)
+    public async Task<OneOf<LoginResponse, ProblemResponse>> LoginAsync(LoginRequest request)
     {
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync("/api/auth/login", request);
 
@@ -32,7 +32,7 @@ public class AuthenticationFacade
         }
 
         //Not success
-        var problemResponse = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var problemResponse = await response.Content.ReadFromJsonAsync<ProblemResponse>();
         return problemResponse!;
     }
 

@@ -13,10 +13,6 @@ namespace Yearly.MauiClient.Components.Pages.Dev;
 
 public partial class DevPage
 {
-    protected override async Task OnInitializedAsync()
-    {
-    }
-
     protected override void OnInitialized()
     {
 #if ANDROID || IOS

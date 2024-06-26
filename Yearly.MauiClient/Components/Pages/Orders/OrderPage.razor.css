@@ -4,8 +4,8 @@
     position: sticky;
     z-index: 5;
     
-    top: -1rem;
-    padding-top: 1rem;
+    top: 0rem;
+    padding-block: 1rem;
     
     background-color: var(--clr-white);
 

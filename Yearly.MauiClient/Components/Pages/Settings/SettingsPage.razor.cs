@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Shiny.Jobs;
 using Yearly.Contracts.Common;
 #if ANDROID || IOS
 using Shiny;
@@ -69,22 +68,21 @@ public partial class SettingsPage
 #if ANDROID
         if (newState)
         {
-            //Try Enable
+            // Try Enable
             var didStart = await MainActivity.Instance.TryStartOrderCheckerAsync();
             if (didStart)
             {
-                isOrderCheckerEnabled = newState;
+                isOrderCheckerEnabled = true;
             }
             else
             {
-                //Todo: Show alert
-
+                await _toastService.ShowErrorAsync("Funkci nelze zapnout bez oprávnìní");
                 isOrderCheckerEnabled = false;
             }
         }
         else
         {
-            //Disable
+            // Disable
             MainActivity.Instance.StopOrderChecker();
             isOrderCheckerEnabled = newState;
         }
@@ -127,19 +125,17 @@ public partial class SettingsPage
 #endif
         if (shouldBeActive)
         {
-            activeTags.Add(tag.Value);
-
 #if ANDROID || IOS
             await _pushNotificationsManager.Tags?.AddTag(tag.Value)!;
 #endif
+            activeTags.Add(tag.Value);
         }
         else
         {
-            activeTags.Remove(tag.Value);
-
 #if ANDROID || IOS
             await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
 #endif
+            activeTags.Remove(tag.Value);
         }
     }
 

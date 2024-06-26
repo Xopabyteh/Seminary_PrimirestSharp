@@ -66,7 +66,7 @@ public partial class LoginPage
                 isLoggingIn = false;
                 StateHasChanged();
 
-                await _toastService.ShowErrorAsync(loginResult.GetLocalizedMessage());
+                await _toastService.ShowErrorAsync(loginResult.Value.GetLocalizedMessage());
                 return;
             }
 
@@ -99,7 +99,7 @@ public partial class LoginPage
             isLoggingIn = false;
             StateHasChanged();
 
-            await _toastService.ShowErrorAsync(loginResult.GetLocalizedMessage());
+            await _toastService.ShowErrorAsync(loginResult.Value.GetLocalizedMessage());
             return;
         }
 

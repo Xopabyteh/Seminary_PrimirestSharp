@@ -26,7 +26,7 @@ public class OrdersFacade
         return result!;
     }
 
-    public async Task<OneOf<PrimirestOrderDataDTO, ProblemDetails>> NewOrderAsync(PrimirestFoodIdentifierDTO foodId)
+    public async Task<OneOf<PrimirestOrderDataDTO, ProblemResponse>> NewOrderAsync(PrimirestFoodIdentifierDTO foodId)
     {
         //Post to {{host}}/order/new-order
         //{
@@ -46,11 +46,11 @@ public class OrdersFacade
             return result!;
         }
 
-        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
         return problem;
     }
 
-    public async Task<ProblemDetails?> CancelOrderAsync(PrimirestOrderIdentifierDTO orderId)
+    public async Task<ProblemResponse?> CancelOrderAsync(PrimirestOrderIdentifierDTO orderId)
     {
         //Post to {{host}}/order/cancel-order
         var response = await _sharpAPIClient.HttpClient.PostAsJsonAsync(
@@ -60,7 +60,7 @@ public class OrdersFacade
         if (response.IsSuccessStatusCode)
             return null;
 
-        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var problem = await response.Content.ReadFromJsonAsync<ProblemResponse>();
         return problem;
     }
 
