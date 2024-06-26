@@ -40,10 +40,21 @@ public class GetAvailableMenuDTOsQueryHandler
                   JOIN
                     Domain.Foods F ON MFI.FoodId = F.Id
                   LEFT JOIN
-                    Domain.Photos P
-                  ON (P.IsApproved = 1) 
-                  AND (P.ThumbnailResourceLink IS NOT NULL) 
-                  AND ((P.FoodId_Value = F.Id) OR (P.FoodId_Value = F.AliasForFoodId));
+                    Domain.Photos P ON (P.IsApproved = 1) 
+                    AND (P.ThumbnailResourceLink IS NOT NULL) 
+                    AND (
+                      -- Photo belongs to food
+                      (P.FoodId_Value = F.Id)
+                      -- Photo belongs to alias origin
+                      OR (P.FoodId_Value = F.AliasForFoodId)
+                      -- Food is an alias origin and photo belongs to alias
+                      OR EXISTS (
+                        SELECT *
+                        FROM Domain.Foods AliasFood
+                        WHERE AliasFood.AliasForFoodId = F.Id
+                        AND AliasFood.Id = P.FoodId_Value
+                      )
+                    )
                   """;
 
         var weeklyMenuVms = new Dictionary<int, WeeklyMenuVm>();
