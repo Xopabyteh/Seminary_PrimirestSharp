@@ -1,12 +1,17 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using Azure.Core;
 using ErrorOr;
 using MediatR;
 using Newtonsoft.Json;
+using Pipelines.Sockets.Unofficial.Arenas;
 using Yearly.Application.Authentication;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Infrastructure.Http;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Yearly.Infrastructure.Services.Authentication;
 
@@ -31,16 +36,37 @@ public class PrimirestAuthService : IAuthService
         var client = _httpClientFactory.CreateClient(HttpClientNames.Primirest);
         var sessionCookie = CreateValidCookie();
 
-        var requestContent = new StringContent(
-            JsonConvert.SerializeObject(new PrimirestLoginRequest(username, password)),
-            Encoding.UTF8,
-            "application/json");
+        var requestContent = new FormUrlEncodedContent(new [] {
+            new KeyValuePair<string?, string?>("UserName", username),
+            new KeyValuePair<string?, string?>("Password", password),
+            new KeyValuePair<string?, string?>("RememberMe", "false"),
+        });
 
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, "ajax/CS/auth/login")
+        Activity.Current = null; // Used to remove traceparent header
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, "ajax/EN/auth/login")
         {
             Content = requestContent,
+            Headers = { 
+                { "Cookie", sessionCookie },
+                { "Connection", "keep-alive" },
+                { "Cache-Control", "max-age=0" },
+                { "sec-ch-ua", "\"Not/A)Brand\";v=\"8\", \"Chromium\";v=\"126\", \"Brave\";v=\"126\"" },
+                { "sec-ch-ua-mobile", "?0" },
+                { "sec-ch-ua-platform", "\"Windows\"" },
+                { "Upgrade-Insecure-Requests", "1" },
+                { "Origin", "https://mujprimirest.cz" },
+                { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" },
+                { "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8" },
+                { "Sec-GPC", "1" },
+                { "Accept-Language", "en-US,en;q=0.8" },
+                { "Sec-Fetch-Site", "same-origin" },
+                { "Sec-Fetch-Mode", "navigate" },
+                { "Sec-Fetch-User", "?1" },
+                { "Sec-Fetch-Dest", "document" },
+                { "Referer", "https://mujprimirest.cz/CS/auth/login" },
+                { "Accept-Encoding", "gzip, deflate, br, zstd" }
+            },
         };
-        requestMessage.Headers.Add("cookie", sessionCookie);
 
         var loginResponse = await client.SendAsync(requestMessage);
 
