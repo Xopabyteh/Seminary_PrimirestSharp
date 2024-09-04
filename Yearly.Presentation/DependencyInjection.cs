@@ -45,7 +45,7 @@ public static class DependencyInjection
                 c.AddHttpClientInstrumentation();
 
                 // App insights
-                //if (builder.Environment.IsProduction())
+                if (builder.Environment.IsProduction())
                 {
                     c.AddAzureMonitorMetricExporter(ac =>
                     {
@@ -59,7 +59,7 @@ public static class DependencyInjection
                 c.AddHttpClientInstrumentation();
 
                 // App insights
-                //if (builder.Environment.IsProduction())
+                if (builder.Environment.IsProduction())
                 {
                     c.AddAzureMonitorTraceExporter(ac =>
                     {
