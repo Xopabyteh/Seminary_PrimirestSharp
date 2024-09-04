@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Domain.Tests", "Year
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Infrastructure.Tests", "Yearly.Infrastructure.Tests\Yearly.Infrastructure.Tests.csproj", "{43EAE89D-D372-4B88-801B-FD3467775C84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Application.SubcutaneousTests", "Yearly.Application.SubcutaneousTests\Yearly.Application.SubcutaneousTests.csproj", "{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{43EAE89D-D372-4B88-801B-FD3467775C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43EAE89D-D372-4B88-801B-FD3467775C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43EAE89D-D372-4B88-801B-FD3467775C84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +92,7 @@ Global
 		{86EE6F69-E7D7-4388-8DFE-4D97D0C86B47} = {14AA2949-83D0-4448-82A6-232FD2C384D4}
 		{7E3AE2F5-8141-4116-A131-D163846B10E7} = {983F1A9A-EACC-4396-8FD3-489101CDC93A}
 		{43EAE89D-D372-4B88-801B-FD3467775C84} = {983F1A9A-EACC-4396-8FD3-489101CDC93A}
+		{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45} = {983F1A9A-EACC-4396-8FD3-489101CDC93A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A0E2C9E-83F1-400E-B50F-2F5906590494}
