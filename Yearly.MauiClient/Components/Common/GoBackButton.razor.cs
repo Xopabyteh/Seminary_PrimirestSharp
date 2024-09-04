@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient.Components.Common;
 

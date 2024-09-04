@@ -7,14 +7,9 @@ namespace Yearly.MauiClient.Components.Pages.WebRequestProblem;
 public partial class WebRequestProblemPage
 {
     [Inject] private WebRequestProblemService _webRequestProblemService { get; set; } = null!;
-    [Inject] private IJSRuntime _js { get; set; } = null!;
-    protected override Task OnInitializedAsync()
-    {
-        return base.OnInitializedAsync();
-    }
-
+    [Inject] protected NavigationManager _navigationManager { get; set; } = null!;
     private async Task Retry()
     {
-        await _js.InvokeVoidAsync("history.back");
+        _navigationManager.NavigateTo("/", true);
     }
 }

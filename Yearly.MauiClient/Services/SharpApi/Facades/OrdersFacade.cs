@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using OneOf;
+﻿using OneOf;
 using System.Net.Http.Json;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Order;
