@@ -48,7 +48,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         var externalUserInfoAsync = await _authService.GetAvailableUsersInfoAsync(sessionCookieResult.Value);
         if (externalUserInfoAsync.IsError)
         {
-            throw new IllegalStateException("Cannot retrieve external info of a user that just logged in");
+            throw new IllegalStateException("P# tried, but is unable to retrieve external info of a user that just logged in");
         }
 
         // Users from primirest
