@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Plugin.LocalNotification.AndroidOption;
-using Plugin.LocalNotification;
 using Shiny;
 #if ANDROID || IOS
 using Shiny.Push;

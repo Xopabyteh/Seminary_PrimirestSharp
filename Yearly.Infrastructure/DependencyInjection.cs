@@ -45,23 +45,11 @@ public static class DependencyInjection
                 new Uri(keyVaultUrl),
                 new DefaultAzureCredential(
                     new DefaultAzureCredentialOptions {ExcludeSharedTokenCacheCredential = true}));
-
-            // Logging - Insights
-            builder.Logging.AddApplicationInsights(
-                configureTelemetryConfiguration: c =>
-                {
-                    var connectionString = builder.Configuration["Logging:ApplicationInsights:ConnectionString"];
-                    c.ConnectionString = connectionString;
-                },
-                configureApplicationInsightsLoggerOptions: c =>
-                {
-                    c.TrackExceptionsAsExceptionTelemetry = true;
-                });
         }
 
         services.AddHttpClient(HttpClientNames.Primirest, client =>
         {
-            client.BaseAddress = new Uri("https://www.mujprimirest.cz");
+            client.BaseAddress = new Uri("https://mujprimirest.cz");
         });
 
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();

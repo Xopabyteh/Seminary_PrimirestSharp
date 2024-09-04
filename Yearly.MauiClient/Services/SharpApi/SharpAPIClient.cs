@@ -2,13 +2,15 @@
 
 public class SharpAPIClient : IDisposable
 {
+    private readonly ApiUrlService _apiUrlService;
 
     public SafeConnectionAwareHttpClientHandler HttpClientHandler { get; init; }
     public HttpClient HttpClient { get; init; }
 
 
-    public SharpAPIClient()
+    public SharpAPIClient(ApiUrlService apiUrlService)
     {
+        _apiUrlService = apiUrlService;
         (HttpClient, HttpClientHandler) = CreateClient();
     }
 
@@ -16,13 +18,8 @@ public class SharpAPIClient : IDisposable
     {
         var handler = new SafeConnectionAwareHttpClientHandler() { UseCookies = true };
         var httpClient = new HttpClient(handler);
-#if DEBUG
-        //const string baseAddress = "https://primirestsharp.azurewebsites.net";
-        const string baseAddress = "https://ntg29zg8-7217.euw.devtunnels.ms/";
-#elif RELEASE
-       const string baseAddress = "https://primirestsharp.azurewebsites.net";
-#endif
-        httpClient.BaseAddress = new Uri(baseAddress);
+
+        httpClient.BaseAddress = new Uri(_apiUrlService.GetBaseAddress());
 
         return (httpClient, handler);
     }

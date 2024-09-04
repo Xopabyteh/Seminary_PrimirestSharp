@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Yearly.Contracts.Common;
 using Yearly.Contracts.Menu;
 using Yearly.Contracts.Order;
-using Yearly.MauiClient.Resources;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;

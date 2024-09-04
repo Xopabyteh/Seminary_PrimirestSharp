@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Yearly.Contracts.Authentication;
+﻿using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 
 namespace Yearly.MauiClient.Services;

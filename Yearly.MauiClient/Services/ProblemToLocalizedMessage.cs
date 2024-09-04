@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Yearly.Contracts;
+﻿using Yearly.Contracts;
 using Yearly.MauiClient.Resources;
 
 namespace Yearly.MauiClient.Services;

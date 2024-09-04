@@ -24,24 +24,25 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        // ** Deploy Environment **
+        var environment = DeployEnvironment.Dev;
+        // ** Deploy Environment **
+
         var builder = MauiApp.CreateBuilder();
         return builder
             .UseMauiApp<App>()
             .UseShiny()
             .UseMauiCommunityToolkit()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            })
-            .RegisterServices()
+            .RegisterServices(environment)
 #if ANDROID || IOS
             .RegisterNotifications()
 #endif
             .Build();
     }
 
-    public static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
+    public static MauiAppBuilder RegisterServices(this MauiAppBuilder builder, DeployEnvironment environment)
     {
+        builder.Services.AddSingleton(new DeployEnvironmentAccessor(environment));
         builder.Services.AddMauiBlazorWebView();
 
         builder.Services.AddTransient<DateTimeProvider>();
@@ -55,6 +56,7 @@ public static class MauiProgram
 
         // Sharp API
         builder.Services.AddSingleton<AuthService>();
+        builder.Services.AddSingleton<ApiUrlService>();
         builder.Services.AddSingleton<SharpAPIClient>();
         builder.Services.AddSingleton<WebRequestProblemService>();
 

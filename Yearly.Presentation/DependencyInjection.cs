@@ -1,12 +1,14 @@
 ﻿using System.Reflection;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Hangfire;
-using Havit.Blazor.Components.Web;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using Serilog;
 using Yearly.Presentation.BackgroundJobs;
 using Yearly.Presentation.Errors;
-using Yearly.Presentation.Http;
 using Yearly.Presentation.OutputCaching;
 using Yearly.Presentation.Pages;
 
@@ -35,13 +37,36 @@ public static class DependencyInjection
 
         services.AddBlazor();
 
-        //services.AddHttpClient(HttpClientNames.SharpAPI, client =>
-        //{
-        //    client.BaseAddress = builder.Environment.IsProduction()
-        //        ? new Uri(builder.Configuration["API:ProdBaseAddress"]!)
-        //        : new Uri(builder.Configuration["API:DevBaseAddress"]!);
+        services.OverrideLogging(builder);
+        services.AddOpenTelemetry()
+            .WithMetrics(c =>
+            {
+                c.AddAspNetCoreInstrumentation();
+                c.AddHttpClientInstrumentation();
 
-        //});
+                // App insights
+                //if (builder.Environment.IsProduction())
+                {
+                    c.AddAzureMonitorMetricExporter(ac =>
+                    {
+                        ac.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights")!;
+                    });
+                }
+            })
+            .WithTracing(c =>
+            {
+                c.AddAspNetCoreInstrumentation();
+                c.AddHttpClientInstrumentation();
+
+                // App insights
+                //if (builder.Environment.IsProduction())
+                {
+                    c.AddAzureMonitorTraceExporter(ac =>
+                    {
+                        ac.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights")!;
+                    });
+                }
+            });
 
         return services;
     }
@@ -79,5 +104,35 @@ public static class DependencyInjection
 
         // Background jobs:
         services.AddTransient<PersistAvailableMenusJob>();
+    }
+
+    private static IServiceCollection OverrideLogging(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+        // Clear & Add serilog
+        builder.Logging.ClearProviders();
+
+        // Serilog Debugging
+        if (builder.Environment.IsDevelopment())
+        {
+            Serilog.Debugging.SelfLog.Enable(Console.Error);
+        }
+
+        // Configure + App insights
+        builder.Host.UseSerilog((context, configuration) =>
+        {
+            configuration
+                .ReadFrom.Configuration(context.Configuration);
+            
+            // App insights
+            if (builder.Environment.IsProduction())
+            {
+                configuration
+                    .WriteTo.ApplicationInsights(
+                        connectionString: context.Configuration.GetConnectionString("ApplicationInsights")!,
+                        TelemetryConverter.Traces);
+            }
+        });
+
+        return services;
     }
 }
