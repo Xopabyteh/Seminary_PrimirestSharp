@@ -6,6 +6,7 @@ using MediatR;
 using Newtonsoft.Json;
 using Yearly.Application.Authentication;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
+using Yearly.Infrastructure.Errors;
 using Yearly.Infrastructure.Http;
 
 namespace Yearly.Infrastructure.Services.Authentication;
@@ -60,6 +61,10 @@ public class PrimirestAuthService : IAuthService
         await client.SendAsync(requestMessage);
     }
 
+    /// <summary>
+    /// Gets available info about users within the same tenant as the logged-in user.
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task<ErrorOr<PrimirestUserInfo[]>> GetAvailableUsersInfoAsync(string sessionCookie)
     {
         var timeStamp = ((DateTimeOffset)_dateTimeProvider.UtcNow).ToUnixTimeSeconds();
@@ -77,12 +82,14 @@ public class PrimirestAuthService : IAuthService
         if (response.GotRoutedToLogin())
             return Application.Errors.Errors.Authentication.CookieNotSigned;
 
-        var usersWithinTenantResponse = JsonConvert.DeserializeObject<AvailableResponseRoot>(resultJson) ?? throw new InvalidOperationException();
+        var usersWithinTenantResponse = JsonConvert.DeserializeObject<AvailableResponseRoot>(resultJson) 
+                                        ?? throw new InvalidPrimirestContractException("Failed to parse result from \"available\"");
 
         return usersWithinTenantResponse.Items
             .Select(user => new PrimirestUserInfo(
                 user.ID,
-                user.Name))
+                user.Name,
+                user.AdditionalInfo))
             .ToArray();
     }
 

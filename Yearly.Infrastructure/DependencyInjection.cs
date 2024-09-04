@@ -59,6 +59,7 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthService, PrimirestAuthService>();
         services.AddScoped<IPrimirestAdminLoggedSessionRunner, PrimirestAdminLoggedSessionRunner>();
+        services.AddScoped<IUserOnboarderService, PrimirestToSharpUserOnboarderService>();
 
         services.AddScoped<IPrimirestMenuPersister, PrimirestMenuPersister>();
         services.AddScoped<IPrimirestMenuProvider, PrimirestMenuProvider>();
