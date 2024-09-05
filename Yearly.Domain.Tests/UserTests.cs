@@ -11,8 +11,8 @@ public class UserTests
     public void User_GetsRoleWhenAdminAddsIt()
     {
         // Arrange
-        var user = new User(new UserId(0), "some user");
-        var adminUser = new User(new UserId(1), "admin");
+        var user = new User(new UserId(0), "some user", UserPricingGroup.MoreOrEqual15YearsOldStudent);
+        var adminUser = new User(new UserId(1), "admin", UserPricingGroup.MoreOrEqual15YearsOldStudent);
         var admin = Admin.FromUser(adminUser);
         var roleToAdd = UserRole.PhotoApprover;
 
@@ -27,8 +27,8 @@ public class UserTests
     public void User_RoleGetsRemovedWhenAdminRemovesIt()
     {
         // Arrange
-        var user = new User(new UserId(0), "some user");
-        var adminUser = new User(new UserId(1), "admin");
+        var user = new User(new UserId(0), "some user", UserPricingGroup.MoreOrEqual15YearsOldStudent);
+        var adminUser = new User(new UserId(1), "admin", UserPricingGroup.MoreOrEqual15YearsOldStudent);
         var admin = Admin.FromUser(adminUser);
         var roleToRemove = UserRole.PhotoApprover;
         admin.AddRole(roleToRemove, user);
@@ -44,7 +44,7 @@ public class UserTests
     public void User_OwnsPhotoWhenHePublishesIt()
     {
         // Arrange
-        var publisher = new User(new UserId(0), "some publisher");
+        var publisher = new User(new UserId(0), "some publisher", UserPricingGroup.MoreOrEqual15YearsOldStudent);
         var someFoodId = new FoodId(Guid.NewGuid());
         var someResourceLink = "some resource link";
 
@@ -59,14 +59,14 @@ public class UserTests
     public void User_ApproverCannotRejectApprovedPhoto()
     {
         // Arrange
-        var publisher = new User(new UserId(0), "some publisher");
+        var publisher = new User(new UserId(0), "some publisher", UserPricingGroup.MoreOrEqual15YearsOldStudent);
         var photo = publisher.PublishPhoto(
             new PhotoId(Guid.NewGuid()),
             DateTime.UtcNow,
             new FoodId(Guid.NewGuid()),
                        "some resource link");
 
-        var approver = PhotoApprover.FromUser(new User(new UserId(1), "some approver"));
+        var approver = PhotoApprover.FromUser(new User(new UserId(1), "some approver", UserPricingGroup.MoreOrEqual15YearsOldStudent));
         approver.ApprovePhoto(photo);
 
         // Act

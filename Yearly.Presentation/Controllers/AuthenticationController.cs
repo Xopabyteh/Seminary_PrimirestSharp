@@ -1,6 +1,7 @@
 ﻿using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Yearly.Application.Authentication.Commands;
 using Yearly.Application.Authentication.Queries;
 using Yearly.Contracts.Authentication;
@@ -12,26 +13,14 @@ namespace Yearly.Presentation.Controllers;
 public class AuthenticationController : ApiController
 {
     private readonly IMapper _mapper;
+    private readonly IOptions<UserPricingGroupPredictionOptions> _userPricingGroupPredictionOptions;
 
-    public AuthenticationController(ISender mediator, IMapper mapper) 
+    public AuthenticationController(ISender mediator, IMapper mapper, IOptions<UserPricingGroupPredictionOptions> userPricingGroupPredictionOptions) 
         : base(mediator)
     {
         _mapper = mapper;
+        _userPricingGroupPredictionOptions = userPricingGroupPredictionOptions;
     }
-
-    [HttpGet("my-details")]
-    public Task<IActionResult> GetMyDetails()
-    {
-        return PerformAuthenticatedActionAsync(async issuer =>
-        {
-            var userResult = await _mediator.Send(new UserBySessionQuery(issuer.SessionCookie));
-
-            return userResult.Match(
-                value => Ok(_mapper.Map<UserDetailsResponse>(value)),
-                Problem);
-        });
-    }
-
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
@@ -58,7 +47,12 @@ public class AuthenticationController : ApiController
                     UserId: u.Id.Value,
                     Roles: u.Roles
                         .Select(r => new UserRoleDTO(r.RoleCode))
-                        .ToList()))
+                        .ToList(),
+                    PredictedPriceCzechCrowns: u.PricingGroup
+                        .GetPricePrediction(_userPricingGroupPredictionOptions.Value!)
+                        .Value
+                    )
+                )
                 .ToArray(),
             SessionCookieDetails: new(result.Value.SessionCookie, result.Value.SessionExpirationTime));
 

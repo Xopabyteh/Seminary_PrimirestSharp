@@ -13,7 +13,7 @@ using Yearly.Infrastructure.Persistence;
 namespace Yearly.Infrastructure.Migrations
 {
     [DbContext(typeof(PrimirestSharpDbContext))]
-    [Migration("20240905152513_AddPricingGroup")]
+    [Migration("20240905163219_AddPricingGroup")]
     partial class AddPricingGroup
     {
         /// <inheritdoc />
@@ -125,9 +125,6 @@ namespace Yearly.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("PricingGroup")
-                        .HasColumnType("int");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -220,6 +217,25 @@ namespace Yearly.Infrastructure.Migrations
                                 .HasForeignKey("UserId");
                         });
 
+                    b.OwnsOne("Yearly.Domain.Models.UserAgg.ValueObjects.UserPricingGroup", "PricingGroup", b1 =>
+                        {
+                            b1.Property<int>("PricingGroupEnum")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("UserId")
+                                .HasColumnType("int");
+
+                            b1.HasKey("PricingGroupEnum");
+
+                            b1.HasIndex("UserId")
+                                .IsUnique();
+
+                            b1.ToTable("UserPricingGroups", "Domain");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
                     b.OwnsMany("Yearly.Domain.Models.UserAgg.ValueObjects.UserRole", "Roles", b1 =>
                         {
                             b1.Property<int>("UserId")
@@ -245,6 +261,9 @@ namespace Yearly.Infrastructure.Migrations
                         });
 
                     b.Navigation("PhotoIds");
+
+                    b.Navigation("PricingGroup")
+                        .IsRequired();
 
                     b.Navigation("Roles");
                 });

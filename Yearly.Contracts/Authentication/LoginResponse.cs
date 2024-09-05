@@ -18,7 +18,7 @@ public readonly record struct SessionCookieDetails(string Value, DateTimeOffset 
     public const string Name = "session";
 }
 
-public readonly record struct UserDetailsResponse(string Username, int UserId, List<UserRoleDTO> Roles);
+public readonly record struct UserDetailsResponse(string Username, int UserId, List<UserRoleDTO> Roles, decimal PredictedPriceCzechCrowns);
 
 public readonly record struct UserRoleDTO(string RoleCode)
 {

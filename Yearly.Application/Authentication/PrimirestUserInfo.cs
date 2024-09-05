@@ -19,8 +19,8 @@ public readonly record struct PrimirestUserInfo(int Id, string Username, string 
     public UserPricingGroup DeterminePricingGroup()
     {
         if (AdditionalInfo.Contains("studenti 15 a v"))
-            return UserPricingGroup.MoreThan15YearsOldStudent;
+            return UserPricingGroup.MoreOrEqual15YearsOldStudent;
 
-        return UserPricingGroup.LessThan15YearsOldStudent;
+        return UserPricingGroup.Less15YearsOldStudent;
     }
 }

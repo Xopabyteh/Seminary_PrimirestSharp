@@ -23,8 +23,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(u => u.PricingGroup)
-            .IsRequired();
+        builder.OwnsOne(u => u.PricingGroup, builder =>
+        {
+            builder.ToTable("UserPricingGroups");
+
+            builder.WithOwner().HasForeignKey(nameof(UserId));
+
+            builder.HasKey(g => g.PricingGroupEnum);
+        });
 
         builder.OwnsMany(u => u.Roles, roleBuilder =>
             {

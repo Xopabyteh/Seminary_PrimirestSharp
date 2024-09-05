@@ -19,6 +19,7 @@ public partial class DailyMenu
     [Inject] private OrdersFacade _ordersFacade { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
     [Inject] private ToastService _toastService { get; set; } = null!;
+    [Inject] protected AuthService _authService { get; set; } = null!;
 
     private OrderDTO? order;
 
@@ -152,5 +153,21 @@ public partial class DailyMenu
             await _toastService.ShowErrorAsync(response.Value.GetLocalizedMessage());
             return false;
         }
+    }
+
+    /// <summary>
+    /// When ordered, we know the price so use that one.
+    /// Until ordered, we may only use the prediction...
+    /// </summary>
+    /// <param name="forFood"></param>
+    /// <returns></returns>
+    private decimal GetFoodPrice(FoodDTO forFood)
+    {
+        // If we have ordered this food, use the price we know
+        if (order is not null && order.SharpFoodId == forFood.FoodId)
+            return order.PrimirestOrderData.PriceCzechCrowns;
+
+        // If we haven't ordered this food, use the prediction
+        return _authService.ActiveUserDetailsLazy.PredictedPriceCzechCrowns;
     }
 }

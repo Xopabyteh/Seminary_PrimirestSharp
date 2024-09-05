@@ -1,4 +1,6 @@
-﻿using Yearly.Domain.Errors.Exceptions;
+﻿using System.Text.Json.Serialization;
+using Yearly.Domain.Errors.Exceptions;
+using Yearly.Domain.Models.Common.ValueObjects;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
@@ -30,6 +32,15 @@ public class User : AggregateRoot<UserId>
         _photoIds = new List<PhotoId>();
         PricingGroup = pricingGroup;
     }
+
+    // For EF Core
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    private User()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    {
+
+    }
+
     public Photo PublishPhoto(
         PhotoId photoId,
         DateTime publishDate,

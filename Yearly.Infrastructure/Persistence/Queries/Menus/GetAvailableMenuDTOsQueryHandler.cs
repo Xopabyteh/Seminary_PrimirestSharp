@@ -55,6 +55,7 @@ public class GetAvailableMenuDTOsQueryHandler
                         AND AliasFood.Id = P.FoodId_Value
                       )
                     )
+                  ORDER BY DM.Date
                   """;
 
         var weeklyMenuVms = new Dictionary<int, WeeklyMenuVm>();

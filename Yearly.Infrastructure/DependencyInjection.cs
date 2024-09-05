@@ -13,6 +13,7 @@ using Yearly.Application.Authentication;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Application.Orders;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 using Yearly.Domain.Repositories;
 using Yearly.Infrastructure.BackgroundJobs;
 using Yearly.Infrastructure.Http;
@@ -75,6 +76,9 @@ public static class DependencyInjection
 
         services.Configure<PhotoOptions>(
             builder.Configuration.GetSection(PhotoOptions.SectionName));
+
+        services.Configure<UserPricingGroupPredictionOptions>(
+            builder.Configuration.GetSection(UserPricingGroupPredictionOptions.SectionName));
 
         services.AddPersistence(builder);
         services.AddBackgroundJobs();

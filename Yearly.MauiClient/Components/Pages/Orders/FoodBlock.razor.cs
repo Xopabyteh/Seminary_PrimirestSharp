@@ -19,13 +19,13 @@ public partial class FoodBlock
     protected bool isInteractable => IsLoaded && !IsOrdering;
 
     [Parameter] public EventCallback<FoodBlock> OnOrderClicked { get; set; }
+    [Parameter] public decimal FoodPrice { get; set; }
 
     //<div class="images">
     private ElementReference imagesReference;
     //<div class="controls">
     private ElementReference imagesControlsReference;
 
-    private string foodPrice = "53~55";
     private async Task RaiseOnOrderClickedEvent()
     {
         await OnOrderClicked.InvokeAsync(this);

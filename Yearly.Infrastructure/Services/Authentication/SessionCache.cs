@@ -69,7 +69,7 @@ public class SessionCache : ISessionCache
             var username = jsonObject[nameof(User.Username)]!.Value<string>()!;
             var roles = jsonObject[nameof(User.Roles)]!.ToObject<List<UserRole>>()!;
             var photoIds = jsonObject[nameof(User.PhotoIds)]!.ToObject<List<PhotoId>>()!;
-            var pricingGroup = jsonObject[nameof(User.PricingGroup)]!.Value<UserPricingGroup>()!;
+            var pricingGroup = jsonObject[nameof(User.PricingGroup)]!.ToObject<UserPricingGroup>()!;
 
             // Create a new User object with reflection
             var user = new User(new UserId(userIdValue), username, pricingGroup);

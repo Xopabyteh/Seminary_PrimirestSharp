@@ -11,7 +11,7 @@ public class AggregateRoot<TId> : Entity<TId>, IAggregateRoot
     }
 
     // ReSharper disable once UnusedMember.Local
-    private AggregateRoot() //For EF Core
+    protected AggregateRoot() //For EF Core
     {
     }
 

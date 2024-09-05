@@ -35,18 +35,6 @@ public class AuthenticationFacade
         return problemResponse!;
     }
 
-    //public async Task<UserDetailsResponse?> GetMyDetailsAsync()
-    //{
-    //    var response = await _sharpAPIClient.HttpClient.GetAsync("/api/auth/my-details");
-    //    if (response.IsSuccessStatusCode)
-    //    {
-    //        var result = await response.Content.ReadFromJsonAsync<UserDetailsResponse>();
-    //        return result;
-    //    }
-
-    //    return null;
-    //}
-
     public async Task LogoutAsync()
     {
         await _sharpAPIClient.HttpClient.PostAsync("/api/auth/logout", null);
