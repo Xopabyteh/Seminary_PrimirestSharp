@@ -23,6 +23,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.Property(u => u.PricingGroup)
+            .IsRequired();
+
         builder.OwnsMany(u => u.Roles, roleBuilder =>
             {
                 roleBuilder.ToTable("UserRoles");

@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		README.md = README.md
+		migrate-db.ps1 = migrate-db.ps1
 		Docs\SolutionDocs.md = Docs\SolutionDocs.md
 	EndProjectSection
 EndProject
@@ -33,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Domain.Tests", "Year
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Infrastructure.Tests", "Yearly.Infrastructure.Tests\Yearly.Infrastructure.Tests.csproj", "{43EAE89D-D372-4B88-801B-FD3467775C84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yearly.Application.SubcutaneousTests", "Yearly.Application.SubcutaneousTests\Yearly.Application.SubcutaneousTests.csproj", "{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yearly.Application.SubcutaneousTests", "Yearly.Application.SubcutaneousTests\Yearly.Application.SubcutaneousTests.csproj", "{AAAD7114-21AE-4CE6-A1A1-D50B591E2F45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

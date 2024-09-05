@@ -63,16 +63,16 @@ public class SessionCache : ISessionCache
         {
             // Load JSON into JObject
             var jsonObject = JObject.Load(reader);
-            var json = jsonObject.ToString();
 
             // Extract properties from JSON
-            var userIdValue = jsonObject[nameof(User.Id)]![nameof(User.Id.Value)]!.Value<int>()!;
+            var userIdValue = jsonObject[nameof(User.Id)]![nameof(User.Id.Value)]!.Value<int>();
             var username = jsonObject[nameof(User.Username)]!.Value<string>()!;
             var roles = jsonObject[nameof(User.Roles)]!.ToObject<List<UserRole>>()!;
             var photoIds = jsonObject[nameof(User.PhotoIds)]!.ToObject<List<PhotoId>>()!;
+            var pricingGroup = jsonObject[nameof(User.PricingGroup)]!.Value<UserPricingGroup>()!;
 
             // Create a new User object with reflection
-            var user = new User(new UserId(userIdValue), username);
+            var user = new User(new UserId(userIdValue), username, pricingGroup);
             SetBackingFieldByConvention(nameof(User.Roles), user, roles);
             SetBackingFieldByConvention(nameof(User.PhotoIds), user, photoIds);
 

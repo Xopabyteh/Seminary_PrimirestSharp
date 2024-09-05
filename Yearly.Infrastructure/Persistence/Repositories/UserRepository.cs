@@ -19,10 +19,9 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
     }
 
-    public Task UpdateAsync(User user)
+    public void Update(User user)
     {
         _context.Users.Update(user);
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -39,9 +38,9 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public Task<bool> DoesUserExistAsync(string username)
+    public async Task<bool> DoesUserExistAsync(string username)
     {
-        return _context.Users.AnyAsync(u => u.Username == username);
+        return await _context.Users.AnyAsync(u => u.Username == username);
     }
 
     public async Task<Dictionary<UserId, User>> GetUsersByIdsAsync(UserId[] ids)

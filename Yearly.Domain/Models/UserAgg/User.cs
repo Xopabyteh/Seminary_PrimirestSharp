@@ -20,12 +20,15 @@ public class User : AggregateRoot<UserId>
     private readonly List<PhotoId> _photoIds;
     public IReadOnlyList<PhotoId> PhotoIds => _photoIds.AsReadOnly();
 
-    public User(UserId id, string username)
+    public UserPricingGroup PricingGroup { get; private set; }
+
+    public User(UserId id, string username, UserPricingGroup pricingGroup)
         : base(id)
     {
         Username = username;
         _roles = new List<UserRole>();
         _photoIds = new List<PhotoId>();
+        PricingGroup = pricingGroup;
     }
     public Photo PublishPhoto(
         PhotoId photoId,
@@ -51,6 +54,11 @@ public class User : AggregateRoot<UserId>
         }
 
         return photo;
+    }
+
+    public void UpdatePricingGroup(UserPricingGroup pricingGroup)
+    {
+        PricingGroup = pricingGroup;
     }
 
     internal void ApprovePhoto(Photo photo)

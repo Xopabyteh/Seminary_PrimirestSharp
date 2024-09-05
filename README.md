@@ -52,6 +52,7 @@ User secrets should look like this
   "PrimirestAuthentication:AdminUsername": "Name of your primirest account"
 
   "NotificationHub:FullAccessConnectionString": "Connection string"
+  "ConnectionStrings:ApplicationInsights": "Connection string"
 ```
 
 ##### Azure storage

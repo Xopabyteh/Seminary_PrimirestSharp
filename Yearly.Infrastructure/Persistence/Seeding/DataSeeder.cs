@@ -18,7 +18,7 @@ public class DataSeeder
     /// </summary>
     public void SeedCoreData()
     {
-        var adminUser = new User(new UserId(26564871), @"Martin Fiala");
+        var adminUser = new User(new UserId(26564871), @"Martin Fiala", UserPricingGroup.MoreThan15YearsOldStudent);
         var admin = Admin.FromUser(adminUser);
         admin.AddRole(UserRole.Admin, adminUser);
 

@@ -16,6 +16,9 @@ public class PrimirestToSharpUserOnboarderService : IUserOnboarderService
         _userRepository = userRepository;
     }
 
+    /// <summary>
+    /// Does not save changes to db
+    /// </summary>
     public async Task<ErrorOr<IReadOnlyCollection<User>>> OnboardOrUpdatePrimirestUsersToSharp(IReadOnlyCollection<PrimirestUserInfo> externalUserInfos)
     {
         if (externalUserInfos.Count == 0)
@@ -33,10 +36,15 @@ public class PrimirestToSharpUserOnboarderService : IUserOnboarderService
         // Onboard nonexistent users
         foreach (var externalUserDetails in externalUserInfos)
         {
+            var userPricingGroup = externalUserDetails.DeterminePricingGroup();
+
             if (!availableSharpUsers.TryGetValue(new UserId(externalUserDetails.Id), out var sharpUser))
             {
                 // Onboard
-                sharpUser = new User(new UserId(externalUserDetails.Id), externalUserDetails.Username);
+                sharpUser = new User(
+                    new UserId(externalUserDetails.Id),
+                    externalUserDetails.Username,
+                    userPricingGroup);
 
                 // Add to dictionary
                 availableSharpUsers.Add(sharpUser.Id, sharpUser);
@@ -47,8 +55,9 @@ public class PrimirestToSharpUserOnboarderService : IUserOnboarderService
             else
             {
                 // User already exists, update him
-                
-                // Todo:
+                sharpUser.UpdatePricingGroup(userPricingGroup);
+
+                _userRepository.Update(sharpUser);
             }
         }
 
