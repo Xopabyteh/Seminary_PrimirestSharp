@@ -21,7 +21,7 @@ public class AuthServiceDev : IAuthService
     public Task<ErrorOr<PrimirestUserInfo[]>> GetAvailableUsersInfoAsync(string sessionCookie)
     {
         // Little dirty, I know
-        var availableUsers = new[] {new PrimirestUserInfo(26564871, "Martin Fiala")};
+        var availableUsers = new[] {new PrimirestUserInfo(26564871, "Martin Fiala", @"2B77CF8; sk. 3 (studenti 15 a více let)")};
         return Task.FromResult((ErrorOr<PrimirestUserInfo[]>)availableUsers);
     }
 

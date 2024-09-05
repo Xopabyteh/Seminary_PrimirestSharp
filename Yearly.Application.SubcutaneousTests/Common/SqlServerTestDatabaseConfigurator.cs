@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yearly.Infrastructure.Persistence;
+using Yearly.Infrastructure.Persistence.Seeding;
 
 namespace Yearly.Application.SubcutaneousTests.Common;
 
@@ -19,8 +20,9 @@ public static class SqlServerTestDatabaseConfigurator
                                                   -- Disable all foreign key constraints
                                                   DECLARE @disableConstraints NVARCHAR(MAX) = '';
                                                   
-                                                  SELECT @disableConstraints += 'ALTER TABLE ' + QUOTENAME(t.name) + ' NOCHECK CONSTRAINT ALL; '
+                                                  SELECT @disableConstraints += 'ALTER TABLE ' + QUOTENAME(s.name) + '.' + QUOTENAME(t.name) + ' NOCHECK CONSTRAINT ALL; '
                                                   FROM sys.tables t
+                                                  JOIN sys.schemas s ON t.schema_id = s.schema_id
                                                   WHERE t.name <> '__EFMigrationsHistory';
                                                   
                                                   EXEC sp_executesql @disableConstraints;
@@ -28,8 +30,9 @@ public static class SqlServerTestDatabaseConfigurator
                                                   -- Generate DELETE statements
                                                   DECLARE @deleteSql NVARCHAR(MAX) = '';
                                                   
-                                                  SELECT @deleteSql += 'DELETE FROM ' + QUOTENAME(t.name) + '; '
+                                                  SELECT @deleteSql += 'DELETE FROM ' + QUOTENAME(s.name) + '.' + QUOTENAME(t.name) + '; '
                                                   FROM sys.tables t
+                                                  JOIN sys.schemas s ON t.schema_id = s.schema_id
                                                   WHERE t.name <> '__EFMigrationsHistory';
                                                   
                                                   -- Execute DELETE statements
@@ -38,12 +41,16 @@ public static class SqlServerTestDatabaseConfigurator
                                                   -- Re-enable all foreign key constraints
                                                   DECLARE @enableConstraints NVARCHAR(MAX) = '';
                                                   
-                                                  SELECT @enableConstraints += 'ALTER TABLE ' + QUOTENAME(t.name) + ' CHECK CONSTRAINT ALL; '
+                                                  SELECT @enableConstraints += 'ALTER TABLE ' + QUOTENAME(s.name) + '.' + QUOTENAME(t.name) + ' CHECK CONSTRAINT ALL; '
                                                   FROM sys.tables t
+                                                  JOIN sys.schemas s ON t.schema_id = s.schema_id
                                                   WHERE t.name <> '__EFMigrationsHistory';
                                                   
                                                   EXEC sp_executesql @enableConstraints;
                                                   """);
 
+        // Seed core data
+        var dataSeeder = new DataSeeder(context);
+        dataSeeder.SeedCoreData();
     }
 }
