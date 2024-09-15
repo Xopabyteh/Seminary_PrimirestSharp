@@ -16,6 +16,16 @@
     <button class='button bg-danger color-white' @onclick="UpdateStatusOrderChecker">Get status</button>
 </section>
 <section>
+    <h2>Balance checker</h2>
+    <p class='capsule bg-primary color-white'>@balanceCheckerStatus</p>
+    <button class='button bg-success color-white' @onclick="StartBalanceChecker">Start</button>
+    <input id='balancecheckerdelay' type='number' name='Delay millis' placeholder='20000' @bind="balanceCheckerStartDelayMillis" />
+    <label for='balancecheckerdelay'>Delay millis</label>
+    <button class='button bg-danger color-white' @onclick="StopBalanceChecker">Stop</button>
+    <button class='button bg-danger color-white' @onclick="UpdateStatusBalanceChecker">Get status</button>
+</section>
+
+<section>
     <h2>Notifications</h2>
     <p class='capsule bg-primary color-white'>State: @Enum.GetName(notificationsPushAccessState)</p>
     <p class='capsule bg-primary color-white'>Token: @notificationsRegistrationToken</p>

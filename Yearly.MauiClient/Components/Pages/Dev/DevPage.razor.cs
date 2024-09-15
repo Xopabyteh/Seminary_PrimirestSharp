@@ -17,6 +17,7 @@ public partial class DevPage
 #endif
 
         UpdateStatusOrderChecker();
+        UpdateStatusBalanceChecker();
     }
 
     #region Auth
@@ -38,7 +39,7 @@ public partial class DevPage
     {
 #if ANDROID
         Task.Run(
-            async () => await OrderCheckerBackgroundWorker.TryStartOrderCheckerAsync(orderCheckerStartDelayMillis));
+            async () => await OrderCheckerBackgroundWorker.TryStart(orderCheckerStartDelayMillis));
 #endif
     }
     private void StopOrderChecker()
@@ -51,9 +52,39 @@ public partial class DevPage
     private void UpdateStatusOrderChecker()
     {
 #if ANDROID
-        var status = OrderCheckerBackgroundWorker.GetIsOrderCheckerBackgroundWorkerScheduled();
+        var status = MainActivity.Instance.GetIsBackgroundWorkerScheduled(OrderCheckerBackgroundWorker.WorkNameTag);
         orderCheckerStatus = status ? "Scheduled/Running" : "Not scheduled";
 #endif
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region BalanceChecker
+
+    private string balanceCheckerStatus = "No status loaded";
+    private long balanceCheckerStartDelayMillis = 0;
+    private void StartBalanceChecker()
+    {
+        #if ANDROID
+        Task.Run(
+            async () => await BalanceCheckerBackgroundWorker.TryStart(balanceCheckerStartDelayMillis));
+        #endif
+    }
+
+    private void StopBalanceChecker()
+    {
+        #if ANDROID
+        BalanceCheckerBackgroundWorker.Stop();
+        #endif
+    }
+
+    private void UpdateStatusBalanceChecker()
+    {
+        #if ANDROID
+        var status = MainActivity.Instance.GetIsBackgroundWorkerScheduled(BalanceCheckerBackgroundWorker.WorkNameTag);
+        balanceCheckerStatus = status ? "Scheduled/Running" : "Not scheduled";
+        #endif
         StateHasChanged();
     }
 

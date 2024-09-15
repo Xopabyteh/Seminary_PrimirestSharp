@@ -12,6 +12,9 @@ namespace Yearly.MauiClient.Components.Pages.Settings;
 
 public partial class SettingsPage
 {
+    //public const string BalanceMinimumThresholdPrefKey = "balanceminimumthreshold";
+    //public const int BalanceMinimumThresholdDefault = 700; // Todo: change
+
     [Inject] private AuthService _authService { get; set; } = null!;
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
@@ -31,6 +34,9 @@ public partial class SettingsPage
 
     private bool isOrderCheckerEnabled;
     private const string k_OrderCheckerEnabledPrefKey = "ordercheckerenabled";
+    
+    private bool isBalanceCheckerEnabled;
+    private const string k_BalanceCheckerEnabledPrefKey = "balancecheckerenabled";
 
     private bool isLoggingOut = false;
 
@@ -44,6 +50,7 @@ public partial class SettingsPage
         }
 #endif
         isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerEnabledPrefKey, false);
+        isBalanceCheckerEnabled = Preferences.Get(k_BalanceCheckerEnabledPrefKey, false);
     }
 
     protected override async Task OnInitializedAsync()
@@ -69,7 +76,7 @@ public partial class SettingsPage
         if (shouldEnable)
         {
             // Try Enable
-            var didStart = await OrderCheckerBackgroundWorker.TryStartOrderCheckerAsync();
+            var didStart = await OrderCheckerBackgroundWorker.TryStart();
             if (didStart)
             {
                 isOrderCheckerEnabled = true;
@@ -91,6 +98,36 @@ public partial class SettingsPage
         Preferences.Set(k_OrderCheckerEnabledPrefKey, isOrderCheckerEnabled);
         
         return isOrderCheckerEnabled;
+    }
+
+    private async Task<bool> OnBalanceCheckerToggle(bool shouldEnable)
+    {
+#if ANDROID
+        if (shouldEnable)
+        {
+            // Try Enable
+            var didStart = await BalanceCheckerBackgroundWorker.TryStart();
+            if (didStart)
+            {
+                isBalanceCheckerEnabled = true;
+            }
+            else
+            {
+                await _toastService.ShowErrorAsync("Funkci nelze zapnout bez oprávnìní");
+                isBalanceCheckerEnabled = false;
+            }
+        }
+        else
+        {
+            // Disable
+            BalanceCheckerBackgroundWorker.Stop();
+            isBalanceCheckerEnabled = shouldEnable;
+        }
+#endif
+
+        Preferences.Set(k_BalanceCheckerEnabledPrefKey, isBalanceCheckerEnabled);
+        
+        return isBalanceCheckerEnabled;
     }
 
     private async Task Logout()
