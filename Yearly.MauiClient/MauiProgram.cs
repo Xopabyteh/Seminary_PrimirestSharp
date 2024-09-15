@@ -25,7 +25,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         // ** Deploy Environment **
-        var environment = DeployEnvironment.Dev;
+        var environment = DeployEnvironment.Prod;
         // ** Deploy Environment **
 
         var builder = MauiApp.CreateBuilder();

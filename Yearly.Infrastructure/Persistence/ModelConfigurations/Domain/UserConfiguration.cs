@@ -29,7 +29,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
             builder.WithOwner().HasForeignKey(nameof(UserId));
 
-            builder.HasKey(g => g.PricingGroupEnum);
+            //builder.HasKey(g => g.PricingGroupEnum);
+            builder
+                .Property(g => g.PricingGroupEnum)
+                .IsRequired();
         });
 
         builder.OwnsMany(u => u.Roles, roleBuilder =>
