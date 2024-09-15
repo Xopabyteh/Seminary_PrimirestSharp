@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Shiny;
 #if ANDROID || IOS
 using Shiny.Push;
-using Yearly.Contracts.Menu;
 
 #endif
 using Yearly.MauiClient.Services;
@@ -16,6 +15,8 @@ public partial class DevPage
 #if ANDROID || IOS
         notificationsRegistrationToken = _pushManager.RegistrationToken;
 #endif
+
+        UpdateStatusOrderChecker();
     }
 
     #region Auth
@@ -37,20 +38,20 @@ public partial class DevPage
     {
 #if ANDROID
         Task.Run(
-            async () => await MainActivity.Instance.TryStartOrderCheckerAsync(orderCheckerStartDelayMillis));
+            async () => await OrderCheckerBackgroundWorker.TryStartOrderCheckerAsync(orderCheckerStartDelayMillis));
 #endif
     }
     private void StopOrderChecker()
     {
 #if ANDROID
-        MainActivity.Instance.StopOrderChecker();
+        OrderCheckerBackgroundWorker.StopOrderChecker();
 #endif
     }
 
     private void UpdateStatusOrderChecker()
     {
 #if ANDROID
-        var status = MainActivity.Instance.GetIsOrderCheckerBackgroundWorkerScheduled();
+        var status = OrderCheckerBackgroundWorker.GetIsOrderCheckerBackgroundWorkerScheduled();
         orderCheckerStatus = status ? "Scheduled/Running" : "Not scheduled";
 #endif
         StateHasChanged();

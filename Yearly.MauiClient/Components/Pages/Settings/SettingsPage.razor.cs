@@ -30,7 +30,7 @@ public partial class SettingsPage
     private bool firstMyPhotosFragmentLoaded = false;
 
     private bool isOrderCheckerEnabled;
-    private const string k_OrderCheckerPrefKey = "ordercheckerenabled";
+    private const string k_OrderCheckerEnabledPrefKey = "ordercheckerenabled";
 
     private bool isLoggingOut = false;
 
@@ -43,7 +43,7 @@ public partial class SettingsPage
             activeTags.AddRange(loadedTags);
         }
 #endif
-        isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerPrefKey, false);
+        isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerEnabledPrefKey, false);
     }
 
     protected override async Task OnInitializedAsync()
@@ -63,13 +63,13 @@ public partial class SettingsPage
     }
 
     // ReSharper disable once UnusedParameter.Local
-    private async Task OnOrderCheckerToggle(bool newState)
+    private async Task<bool> OnOrderCheckerToggle(bool shouldEnable)
     {
 #if ANDROID
-        if (newState)
+        if (shouldEnable)
         {
             // Try Enable
-            var didStart = await MainActivity.Instance.TryStartOrderCheckerAsync();
+            var didStart = await OrderCheckerBackgroundWorker.TryStartOrderCheckerAsync();
             if (didStart)
             {
                 isOrderCheckerEnabled = true;
@@ -83,11 +83,14 @@ public partial class SettingsPage
         else
         {
             // Disable
-            MainActivity.Instance.StopOrderChecker();
-            isOrderCheckerEnabled = newState;
+            OrderCheckerBackgroundWorker.StopOrderChecker();
+            isOrderCheckerEnabled = shouldEnable;
         }
 #endif
-        Preferences.Set(k_OrderCheckerPrefKey, isOrderCheckerEnabled);
+
+        Preferences.Set(k_OrderCheckerEnabledPrefKey, isOrderCheckerEnabled);
+        
+        return isOrderCheckerEnabled;
     }
 
     private async Task Logout()
@@ -114,29 +117,26 @@ public partial class SettingsPage
 
     private List<string> activeTags = new (3);
 
-    private async Task SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
+    /// <returns>New tag state. True is tag set, false is tag unset</returns>
+    private async Task<bool> SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
     {
-#if ANDROID || IOS
         var pushAccess = await _pushNotificationsManager.RequestAccess();
         if (pushAccess.Status != AccessState.Available)
         {
             await _toastService.ShowErrorAsync("Musíte povolit notifikace, aby je aplikace mohla zoobrazit.");
+            return false;
         }
-#endif
+
         if (shouldBeActive)
         {
-#if ANDROID || IOS
             await _pushNotificationsManager.Tags?.AddTag(tag.Value)!;
-#endif
             activeTags.Add(tag.Value);
+            return true;
         }
-        else
-        {
-#if ANDROID || IOS
-            await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
-#endif
-            activeTags.Remove(tag.Value);
-        }
+
+        await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
+        activeTags.Remove(tag.Value);
+        return false;
     }
 
     private bool IsLoadedTagActive(NotificationTagContract tag)
