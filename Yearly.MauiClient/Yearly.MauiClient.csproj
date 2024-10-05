@@ -64,6 +64,7 @@
       <None Remove="Components\Pages\Settings\SettingsPage.razor.css" />
       <None Remove="Components\Pages\WebRequestProblem\NoInternetAccessPage.razor.css" />
       <None Remove="Components\Pages\WebRequestProblem\WebRequestProblemPage.razor.css" />
+      <None Remove="Platforms\Android\Resources\values\styles.xml" />
       <None Remove="Platforms\Android\Resources\xml\file_paths.xml" />
       <None Remove="Resources\Images\notificationicon.png" />
       <None Remove="Resources\Splash\splash.svg" />

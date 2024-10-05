@@ -6,6 +6,7 @@ using Shiny.Push;
 using Yearly.MauiClient.Services.Toast;
 #endif
 using Yearly.Contracts.Notifications;
+using Yearly.MauiClient.Components.Layout;
 using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient.Components.Pages.Settings;
@@ -179,4 +180,13 @@ public partial class SettingsPage
     private bool IsLoadedTagActive(NotificationTagContract tag)
         => activeTags.Contains(tag.Value);
 #endregion
+
+    private Task<bool> ToggleDarkMode(bool newState)
+    {
+        if (ThemeManager.Instance is null)
+            return Task.FromResult(false);
+
+        ThemeManager.Instance.IsDarkMode = newState;
+        return Task.FromResult(newState);
+    }
 }

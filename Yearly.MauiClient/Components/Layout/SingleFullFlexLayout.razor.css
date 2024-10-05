@@ -6,6 +6,8 @@
 }
 
 main {
+    background-color: var(--clr-white);
+
     display: flex;
     flex-direction: column;
 

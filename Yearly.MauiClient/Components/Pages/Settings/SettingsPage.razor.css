@@ -1,5 +1,8 @@
-﻿#super-cool-links > * {
+﻿#super-cool-links a {
     display: block;
+}
+
+#super-cool-links > * {
     margin-bottom: 1rem;
 }
 

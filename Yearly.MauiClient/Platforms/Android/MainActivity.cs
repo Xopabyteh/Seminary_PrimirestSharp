@@ -10,13 +10,14 @@ using Java.Lang;
 using Java.Util.Concurrent;
 using OneOf.Types;
 using Yearly.MauiClient.Components.Common;
+using Yearly.MauiClient.Components.Layout;
 using Yearly.MauiClient.Services;
 
 namespace Yearly.MauiClient;
 
 [Activity(
     LaunchMode = LaunchMode.SingleTop,
-    Theme = "@style/Maui.SplashTheme",
+    Theme = "@style/PSharpSplashTheme",
     MainLauncher = true,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 [IntentFilter(

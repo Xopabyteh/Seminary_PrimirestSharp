@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 
-namespace Yearly.MauiClient.Components.Common;
+namespace Yearly.MauiClient.Components.Layout;
 
 public partial class HistoryManager : IDisposable
 {

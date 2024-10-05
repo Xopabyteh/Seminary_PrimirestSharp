@@ -65,13 +65,19 @@
 <section>
     <h2 class='fw-semi-bold fs-regular color-secondary'>Super husté věci</h2>
     <div id='super-cool-links' class='mh-100'>
-        <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
+        <div class='toggle-with-label'>
+            <label class="fs-regular fw-regular color-secondary">Dark mode</label>
+            <ToggleSwitch 
+                IsChecked='ThemeManager.Instance?.IsDarkMode ?? false' 
+                OnCheckedChanged='ToggleDarkMode'/>
+        </div>
+        <Authorized RequiredRoles='new[] { UserRoleDTO.PhotoApprover }'>
             <a class='fs-regular color-primary' href='/pha'>PhA. Photo Approving</a>
         </Authorized>
-        <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
+        <Authorized RequiredRoles='new[] { UserRoleDTO.Admin }'>
             <a class='fs-regular color-primary' href='/similarity-table'>Adm. Similarity table</a>
         </Authorized>
-            <a class='fs-regular color-primary' href='/dev'>Dev.</a>
+        <a class='fs-regular color-primary' href='/dev'>Dev.</a>
     </div>
 </section>
 <section class='mt-400'>
@@ -82,7 +88,7 @@
             <ToggleSwitch 
                 IsChecked='@IsLoadedTagActive(NotificationTagContract.PhotoApproved(_authService.ActiveUserDetailsLazy.UserId))' 
                 OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.PhotoApproved(_authService.ActiveUserDetailsLazy.UserId), active)'/>
-            </div>
+        </div>
         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Pha. Nová čekající fotka</label>
