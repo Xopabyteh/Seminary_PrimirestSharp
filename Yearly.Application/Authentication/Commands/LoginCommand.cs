@@ -3,10 +3,14 @@ using FluentValidation;
 using MediatR;
 using Yearly.Application.Common.Interfaces;
 using Yearly.Domain.Errors.Exceptions;
+using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Application.Authentication.Commands;
 
-public record LoginCommand(string Username, string Password) : IRequest<ErrorOr<LoginResult>>;
+/// <summary>
+/// If user has multiple users in the tenant, the preferred user can be specified.
+/// </summary>
+public record LoginCommand(string Username, string Password, UserId? PreferredUserInTenant) : IRequest<ErrorOr<LoginResult>>;
 
 public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
@@ -59,8 +63,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginRe
         // Save
         await _unitOfWork.SaveChangesAsync();
 
-        // Make the first user the active
-        var activeLoggedUser = availableSharpUsers.Value.First();
+        // Make the first user the active or the preferred user
+        var activeLoggedUser = request.PreferredUserInTenant is not null
+            ? availableSharpUsers.Value.FirstOrDefault(u => u.Id == request.PreferredUserInTenant) ?? availableSharpUsers.Value.First()
+            : availableSharpUsers.Value.First();
+
         var sessionExpirationTime = await _sessionCache.SetAsync(sessionCookieResult.Value, activeLoggedUser);
 
         if (availableSharpUsers.Value.Count > 1)

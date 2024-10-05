@@ -22,7 +22,7 @@ public partial class LoginPage
 
     private async Task SubmitLogin()
     {
-        var loginCommand = new LoginCommand(model.Username, model.Password);
+        var loginCommand = new LoginCommand(model.Username, model.Password, PreferredUserInTenant: null);
         var result = await _mediator.Send(loginCommand);
 
         if (result.IsError)

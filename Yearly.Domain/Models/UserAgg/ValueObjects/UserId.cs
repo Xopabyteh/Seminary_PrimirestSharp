@@ -16,4 +16,9 @@ public class UserId : ValueObject
     {
         Value = value;
     }
+
+    public static UserId? FromNullable(int? value)
+    {
+        return value is null ? null : new UserId(value.Value);
+    }
 }

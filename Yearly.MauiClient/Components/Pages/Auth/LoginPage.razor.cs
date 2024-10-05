@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 #if ANDROID || IOS
 using Shiny.Jobs;
 #endif
-using Yearly.Contracts.Authentication;
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.Toast;
 
@@ -90,9 +89,7 @@ public partial class LoginPage
             return;
         }
 
-        var request = new LoginRequest(ModelUsername, ModelPassword);
-
-        var loginResult = await _authService.LoginAsync(request);
+        var loginResult = await _authService.LoginAsync(ModelUsername, ModelPassword);
         if (loginResult is not null)
         {
             // -> Problem
@@ -108,7 +105,7 @@ public partial class LoginPage
         {
             //We are setting up autologin, so we don't want to login the user, but just store the credentials
             await _toastService.ShowSuccessAsync("Auto Login nastaven!");
-            await _authService.SetupAutoLoginAsync(request);
+            await _authService.SetupAutoLoginAsync(ModelUsername, ModelPassword);
             _navigationManager.NavigateTo("/orders");
             return;
         }
@@ -116,7 +113,7 @@ public partial class LoginPage
         if (autoLoginChecked)
         {
             //We want to setup auto login with these credentials
-            await _authService.SetupAutoLoginAsync(request);
+            await _authService.SetupAutoLoginAsync(ModelUsername, ModelPassword);
         }
 
         _navigationManager.NavigateTo("/orders");

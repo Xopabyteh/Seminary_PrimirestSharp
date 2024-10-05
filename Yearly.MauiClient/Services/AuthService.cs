@@ -4,7 +4,19 @@ using Yearly.MauiClient.Services.SharpApi.Facades;
 namespace Yearly.MauiClient.Services;
 
 public class AuthService
-{ 
+{
+    /// <summary>
+    /// Preferred user in tenant is stored in the preferences when a user switches context,
+    /// it is then used at next login, so the user doesn't have to switch context again.
+    /// </summary>
+    private const string k_PreferredUserIdInTenantPrefKey = "preferreduserintenant";
+
+    private int? GetPreferredUserInTenantPref()
+    {
+        var pref = Preferences.Get(k_PreferredUserIdInTenantPrefKey, 0);
+        return pref == 0 ? null : pref;
+    }
+
     /// <summary>
     /// Is null when the user is not logged in
     /// </summary>
@@ -74,8 +86,7 @@ public class AuthService
         if(AutoLoginStoredCredentials is null)
             throw new NullReferenceException("AutoLoginStoredCredentials is null");
 
-        var request = new LoginRequest(AutoLoginStoredCredentials.Username, AutoLoginStoredCredentials.Password);
-        return LoginAsync(request);
+        return LoginAsync(AutoLoginStoredCredentials.Username, AutoLoginStoredCredentials.Password);
     }
 
     /// <summary>
@@ -83,8 +94,10 @@ public class AuthService
     /// Calls <see cref="OnLogin"/> after setting the session.
     /// </summary>
     /// <returns>A problem or null if success</returns>
-    public async Task<ProblemResponse?> LoginAsync(LoginRequest loginRequest)
+    public async Task<ProblemResponse?> LoginAsync(string username, string password)
     {
+        var preferredUserInTenantId = GetPreferredUserInTenantPref();
+        var loginRequest = new LoginRequest(username, password, preferredUserInTenantId);
         var loginResult = await _authenticationFacade.LoginAsync(loginRequest);
         if (loginResult.IsT1)
         {
@@ -106,11 +119,11 @@ public class AuthService
 
     private const string k_AutoLoginUsernameKey = "autologinusername";
     private const string k_AutoLoginPasswordKey = "autologinpassword";
-    public async Task SetupAutoLoginAsync(LoginRequest storedCredentials)
+    public async Task SetupAutoLoginAsync(string username, string password)
     {
-        await SecureStorage.Default.SetAsync(k_AutoLoginUsernameKey, storedCredentials.Username);
-        await SecureStorage.Default.SetAsync(k_AutoLoginPasswordKey, storedCredentials.Password);
-        AutoLoginStoredCredentials = storedCredentials;
+        await SecureStorage.Default.SetAsync(k_AutoLoginUsernameKey, username);
+        await SecureStorage.Default.SetAsync(k_AutoLoginPasswordKey, password);
+        AutoLoginStoredCredentials = new LoginRequest(username, password, GetPreferredUserInTenantPref());
     }
 
     public async Task EnsureAutoLoginStateLoadedAsync()
@@ -124,7 +137,9 @@ public class AuthService
         if (username is null || password is null)
             return;
 
-        AutoLoginStoredCredentials = new LoginRequest(username, password);
+        var preferredUserInTenantId = GetPreferredUserInTenantPref();
+
+        AutoLoginStoredCredentials = new LoginRequest(username, password, preferredUserInTenantId);
     }
 
     public void RemoveAutoLogin()
@@ -165,6 +180,9 @@ public class AuthService
     {
         // Switch context in api
         await _authenticationFacade.SwitchContextAsync(newUser.UserId);
+
+        // Store preferred user in tenant
+        Preferences.Set(k_PreferredUserIdInTenantPrefKey, newUser.UserId);
 
         // Update local state
         ActiveUserDetails = newUser;

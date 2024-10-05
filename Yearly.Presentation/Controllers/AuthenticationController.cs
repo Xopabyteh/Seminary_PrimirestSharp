@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Yearly.Application.Authentication.Commands;
-using Yearly.Application.Authentication.Queries;
 using Yearly.Contracts.Authentication;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
@@ -25,7 +24,7 @@ public class AuthenticationController : ApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var loginQuery = _mapper.Map<LoginCommand>(request);
+        var loginQuery = new LoginCommand(request.Username, request.Password, UserId.FromNullable(request.PreferredUserInTenantId));
         var result = await _mediator.Send(loginQuery);
 
         if (result.IsError)
