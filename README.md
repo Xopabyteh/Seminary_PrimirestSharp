@@ -25,6 +25,7 @@ so i'm just using portions of DDD.
  - [x] Notifications when you forgot to order 📩
  - [x] Food aliasing for photo reusability ♻
  - [x] Slick client app 🔥
+ - [x] Dark mode 🌝 
 
 ## Docs
 Most of the docs are made with figma available at the links below. Some docs can be found in project folders specific to that layer of the application.
