@@ -53,11 +53,16 @@ public class PrimirestFinanceService : IPrimirestFinanceService
                 _dateTimeProvider.CzechNow.Day)
             .ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
 
-        // Last day of this month in format "dd.mm.yyyy"
+        // Last day of next month in format "dd.mm.yyyy"
+        // We pick the next month, because we predict, that the user will have orders
+        // at most until the end of the next month
+        // Note: If the balance displayed is incorrect, it is probably due to this being just a prediction
+        // and a proper calculation may be required (but damn who expects primirest to push out more than a month of menus)
+        var nextMonth = _dateTimeProvider.CzechNow.AddMonths(1);
         var to = new DateTime(
-            _dateTimeProvider.CzechNow.Year,
-            _dateTimeProvider.CzechNow.Month,
-            DateTime.DaysInMonth(_dateTimeProvider.CzechNow.Year, _dateTimeProvider.CzechNow.Month))
+            nextMonth.Year,
+            nextMonth.Month,
+            DateTime.DaysInMonth(nextMonth.Year, nextMonth.Month))
             .ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
 
         var request = $"https://www.mujprimirest.cz/ajax/cs/ordersummary/{ofUser.Id.Value}/index" +

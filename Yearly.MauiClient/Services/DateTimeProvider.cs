@@ -5,12 +5,13 @@
 /// </summary>
 public class DateTimeProvider
 {
-//#if RELEASE
+    /// <summary>
+    /// Relative time, Not UTC
+    /// </summary>
     public DateTime Now => DateTime.Now;
+
+    /// <summary>
+    /// Relative time, Not UTC
+    /// </summary>
     public DateTime Today => DateTime.Today;
-//#endif
-//#if DEBUG
-//    public DateTime Now => DateTime.Now;
-//    public DateTime Today => new DateTime(2024, 2, 23);
-//#endif
 }

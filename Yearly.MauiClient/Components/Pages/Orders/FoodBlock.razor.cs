@@ -21,6 +21,9 @@ public partial class FoodBlock
     [Parameter] public EventCallback<FoodBlock> OnOrderClicked { get; set; }
     [Parameter] public decimal FoodPrice { get; set; }
 
+    [Parameter] public bool ShowAddPhoto { get; set; }
+
+
     //<div class="images">
     private ElementReference imagesReference;
     //<div class="controls">

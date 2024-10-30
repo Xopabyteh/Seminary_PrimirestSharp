@@ -8,7 +8,8 @@
         IsLoaded='@WeekOrdersLoaded'
         IsOrdering='@foodIdsInvolvedInOrdering.Contains(food.FoodId)'
         OnOrderClicked='HandleFoodOnOrderClicked'
-        FoodPrice="@GetFoodPrice(food)"/>
+        FoodPrice="@GetFoodPrice(food)"
+        ShowAddPhoto="ShowAddPhoto"/>
 
     //Don't show br for the last one
     if (i != DailyMenuDTO.Foods.Count - 1)

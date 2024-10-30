@@ -21,7 +21,15 @@ public partial class DailyMenu
     [Inject] private ToastService _toastService { get; set; } = null!;
     [Inject] protected AuthService _authService { get; set; } = null!;
 
+    [Inject] protected DateTimeProvider _dateTimeProvider { get; set; } = null!;
+
+
     private OrderDTO? order;
+
+    /// <summary>
+    /// Show add photo in food blocks, if this is todays menu
+    /// </summary>
+    private bool ShowAddPhoto => _dateTimeProvider.Today == DailyMenuDTO.Date;
 
     /// <summary>
     /// Foods that are currently involed in being ordered.
