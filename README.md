@@ -40,7 +40,7 @@ Most of the docs are made with figma available at the links below. Some docs can
 > Process modeling, domain events storming
 
 ### Running the Backend
-#### Dependencies & User secrets
+#### Dependencies & User secrets    
 Parameters that are used by the app are all defined in the appsettings.json where it also states which portions are set using user secrets (or Azure keyvault or whatever)
 
 User secrets should look like this

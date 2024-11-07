@@ -132,7 +132,8 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
                     foodIdsForDay.Add(food.Id);
                 }
 
-                var menuForDay = new DailyMenu(foodIdsForDay, primirestDailyMenu.Date);
+                var primirestDailyMenuDate = primirestDailyMenu.Date.Date; // Date.Date, because we don't want to store time part
+                var menuForDay = new DailyMenu(foodIdsForDay, primirestDailyMenuDate);
                 dailyMenus.Add(menuForDay);
             }
 
