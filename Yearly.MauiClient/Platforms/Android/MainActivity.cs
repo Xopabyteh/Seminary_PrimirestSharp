@@ -8,8 +8,8 @@ using AndroidX.Work;
 using Google.Common.Util.Concurrent;
 using Java.Lang;
 using Java.Util.Concurrent;
-using OneOf.Types;
-using Yearly.MauiClient.Components.Common;
+using Plugin.Firebase.CloudMessaging;
+using Plugin.Firebase.Core.Platforms.Android;
 using Yearly.MauiClient.Components.Layout;
 using Yearly.MauiClient.Services;
 
@@ -20,19 +20,9 @@ namespace Yearly.MauiClient;
     Theme = "@style/PSharpSplashTheme",
     MainLauncher = true,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
-[IntentFilter(
-    new[] {
-        Shiny.ShinyNotificationIntents.NotificationClickAction
-    },
-    Categories = new[] {
-        "android.intent.category.DEFAULT"
-    }
-)]
 public class MainActivity : MauiAppCompatActivity
 {
     public static MainActivity Instance { get; private set; } = null!;
-
-    public const string GeneralNotificationChannelId = "General";
 
     private const int k_BatteryOptimizationRequestCode = 137; //Random number
     private TaskCompletionSource? batteryOptimizationResult;
@@ -49,9 +39,17 @@ public class MainActivity : MauiAppCompatActivity
         //Xamarin essentials
         Xamarin.Essentials.Platform.Init(this, savedInstanceState); // add this line to your code, it may also be called: bundle
 
-        CreateGeneralNotificationChannelIfNeeded();
+        CrossFirebase.Initialize(this);
+        FirebaseCloudMessagingImplementation.OnNewIntent(this.Intent);
     }
-    
+
+    protected override void OnNewIntent(Intent? intent)
+    {
+        FirebaseCloudMessagingImplementation.OnNewIntent(intent);
+        
+        base.OnNewIntent(intent);
+    }
+
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
     {
         //Xamarin essentials
@@ -179,17 +177,5 @@ public class MainActivity : MauiAppCompatActivity
             Log.Debug(nameof(MainActivity), "Error getting work info - stack trace: {0}", e.StackTrace);
             return false;
         }
-    }
-
-    
-    private void CreateGeneralNotificationChannelIfNeeded()
-    {
-        if (!OperatingSystem.IsOSPlatformVersionAtLeast("android", 26))
-            return;
-
-        var notificationManager = (NotificationManager)GetSystemService(NotificationService)!;
-        
-        notificationManager.CreateNotificationChannel(new(
-            GeneralNotificationChannelId, "General", NotificationImportance.Default));
     }
 }

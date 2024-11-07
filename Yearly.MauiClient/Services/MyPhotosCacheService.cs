@@ -6,9 +6,9 @@ namespace Yearly.MauiClient.Services;
 public class MyPhotosCacheService
 {
     private readonly PhotoFacade _photoFacade;
-    
+
     /// <summary>
-    /// Key: PageOffset, Value: DataFragmentDTO<PhotoLinkDTO>
+    /// Key: PageOffset, Value: <see cref="DataFragmentDTO{PhotoLinkDTO}"/>
     /// </summary>
     private Dictionary<int, DataFragmentDTO<PhotoLinkDTO>> myPhotos = new(4);
 

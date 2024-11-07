@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using Shiny;
-#if ANDROID || IOS
-using Shiny.Push;
-
-#endif
+using Plugin.Firebase.CloudMessaging;
 using Yearly.MauiClient.Services;
+using Yearly.MauiClient.Services.Notifications;
 
 namespace Yearly.MauiClient.Components.Pages.Dev;
 
@@ -12,9 +9,7 @@ public partial class DevPage
 {
     protected override void OnInitialized()
     {
-#if ANDROID || IOS
-        notificationsRegistrationToken = _pushManager.RegistrationToken;
-#endif
+        notificationsRegistrationToken = Preferences.Get(PushNotificationHandlerService.k_FCMTokenPrefKey, null);
 
         UpdateStatusOrderChecker();
         UpdateStatusBalanceChecker();
@@ -92,31 +87,16 @@ public partial class DevPage
 
 #region Notifications
 
-#if ANDROID || IOS
-    [Inject] private IPushManager _pushManager { get; set; } = null!;
-#endif
     private string? notificationsRegistrationToken = null;
-    private AccessState notificationsPushAccessState = AccessState.Unknown;
 
     private async Task RegisterNotifications()
     {
-#if ANDROID || IOS
-        var accessState = await _pushManager.RequestAccess();
-        notificationsRegistrationToken = accessState.RegistrationToken;
-        notificationsPushAccessState = accessState.Status;
-        
-        StateHasChanged();
-#endif
+        await CrossFirebaseCloudMessaging.Current.SubscribeToTopicAsync("debug_push");
     }
 
     private async Task UnregisterNotifications()
     {
-#if ANDROID || IOS
-        await _pushManager.UnRegister();
-        notificationsPushAccessState = AccessState.Disabled;
-        
-        StateHasChanged();
-#endif
+        await CrossFirebaseCloudMessaging.Current.UnsubscribeFromTopicAsync("debug_push");
     }
 
 #endregion

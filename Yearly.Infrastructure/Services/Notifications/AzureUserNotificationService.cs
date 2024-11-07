@@ -86,7 +86,7 @@ public class AzureUserNotificationService : IUserNotificationService
 
         //Add notification id to data
         customData ??= new Dictionary<string, object>(1);
-        customData.Add(NotificationDataKeysContract.k_NotificationIdKey, notificationId);
+        customData.Add(PushContracts.k_NotificationIdKey, notificationId);
 
         var payloadJson = $$"""
                             {

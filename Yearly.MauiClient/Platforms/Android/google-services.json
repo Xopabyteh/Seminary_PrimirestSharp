@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "32637295511",
+    "project_id": "primirest-sharp-fb",
+    "storage_bucket": "primirest-sharp-fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32637295511:android:3d4b4356d07045cb6e42d2",
+        "android_client_info": {
+          "package_name": "me.xopabyteh.yearly.primirestsharp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG4HEPPOnup-0SvazStty9nKFkrOwqgR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

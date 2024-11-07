@@ -10,6 +10,7 @@ using Locale = Java.Util.Locale;
 using NetworkType = AndroidX.Work.NetworkType;
 using TimeUnit = Java.Util.Concurrent.TimeUnit;
 using TimeZone = Android.Icu.Util.TimeZone;
+using Yearly.Contracts.Notifications;
 
 
 namespace Yearly.MauiClient;
@@ -103,7 +104,7 @@ public class OrderCheckerBackgroundWorker : Worker
             DailyMenuDTO day = daysWithoutOrder[i];
 
             // Create notification using native android builder
-            var builder = new NotificationCompat.Builder(ApplicationContext, MainActivity.GeneralNotificationChannelId)
+            var builder = new NotificationCompat.Builder(ApplicationContext, PushContracts.General.k_GeneralNotificationChannelId)
                 .SetContentTitle("Neobjednáno")
                 .SetContentText($"Nemáš objednáno na den {day.Date:dddd dd.MMMM}")
                 .SetSmallIcon(ResourceConstant.Drawable.notificationicon)

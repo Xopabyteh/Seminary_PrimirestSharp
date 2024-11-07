@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Components;
-#if ANDROID || IOS
-using Shiny.Jobs;
-#endif
 using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.Toast;
 
@@ -13,9 +10,6 @@ public partial class LoginPage
     [Inject] private AuthService _authService { get; set; } = null!;
     [Inject] private ToastService _toastService { get; set; } = null!;
 
-#if ANDROID || IOS
-    [Inject] private IJobManager _jobManager { get; set; } = null!;
-#endif
     [SupplyParameterFromForm] public string ModelUsername { get; set; } = string.Empty;
 
     [SupplyParameterFromForm] public string ModelPassword { get; set; } = string.Empty;
@@ -148,10 +142,5 @@ public partial class LoginPage
         if (!firstRender)
             // ReSharper disable once RedundantJumpStatement
             return;
-
-#if ANDROID || IOS
-
-        var jobAccess = await _jobManager.RequestAccess();
-#endif
     }
 }

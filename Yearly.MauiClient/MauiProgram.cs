@@ -7,16 +7,10 @@ using Yearly.MauiClient.Services;
 using Yearly.MauiClient.Services.SharpApi;
 using Yearly.MauiClient.Services.SharpApi.Facades;
 using Yearly.MauiClient.Services.Toast;
-using Shiny;
-#if ANDROID || IOS
 using Plugin.LocalNotification;
-using Shiny.Push;
+using Yearly.Contracts.Notifications;
+using Plugin.Firebase.CloudMessaging;
 using Yearly.MauiClient.Services.Notifications;
-#if ANDROID
-using Android.App;
-#endif
-
-#endif
 
 namespace Yearly.MauiClient;
 
@@ -31,23 +25,23 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         return builder
             .UseMauiApp<App>()
-            .UseShiny()
             .UseMauiCommunityToolkit()
             .RegisterServices(environment)
-#if ANDROID || IOS
             .RegisterNotifications()
-#endif
             .Build();
     }
 
     public static MauiAppBuilder RegisterServices(this MauiAppBuilder builder, DeployEnvironment environment)
     {
-        builder.Services.AddSingleton(new DeployEnvironmentAccessor(environment));
         builder.Services.AddMauiBlazorWebView();
 
-        builder.Services.AddTransient<DateTimeProvider>();
+        builder.Services.AddSingleton(new DeployEnvironmentAccessor(environment));
+        builder.Services.AddSingleton<DateTimeProvider>();
+        builder.Services.AddSingleton<ToastService>();
 
-        builder.Services.AddTransient<ToastService>();
+        // Push notifications
+        builder.Services.AddSingleton<PushNotificationHandlerService>();
+        
 
         builder.Services.AddTransient<OrderCheckerService>();
 
@@ -60,11 +54,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<SharpAPIClient>();
         builder.Services.AddSingleton<WebRequestProblemService>();
 
-        builder.Services.AddTransient<MenusFacade>();
-        builder.Services.AddTransient<AuthenticationFacade>();
-        builder.Services.AddTransient<OrdersFacade>();
-        builder.Services.AddTransient<PhotoFacade>();
-        builder.Services.AddTransient<FoodFacade>();
+        builder.Services.AddSingleton<MenusFacade>();
+        builder.Services.AddSingleton<AuthenticationFacade>();
+        builder.Services.AddSingleton<OrdersFacade>();
+        builder.Services.AddSingleton<PhotoFacade>();
+        builder.Services.AddSingleton<FoodFacade>();
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
@@ -74,53 +68,45 @@ public static class MauiProgram
         });
 #endif
 
-        // Jobs
-#if ANDROID || IOS
-        builder.Services.AddJobs();
-#endif
-
         return builder;
     }
 
-#if ANDROID || IOS
     public static MauiAppBuilder RegisterNotifications(this MauiAppBuilder builder)
     {
         builder.UseLocalNotification(c =>
         {
+            #if ANDROID
             c.AddAndroid(ac =>
             {
-                ac.AddChannel(new NotificationChannelRequest() {Id = "orders_notifications", Name = "Objednávky"});
+                ac.AddChannel(new NotificationChannelRequest() {Id = PushContracts.General.k_GeneralNotificationChannelId, Name = "General"});
+            
+                FirebaseCloudMessagingImplementation.ChannelId = PushContracts.General.k_GeneralNotificationChannelId;
             });
+            #endif
         });
-        
-#if ANDROID
-        NotificationChannel serverNotificationsChannel = new(
-            "server_notifications",
-            "Server notifications",
-            NotificationImportance.Default)
-        {
-            LockscreenVisibility = NotificationVisibility.Private
-        };
-        
-        var firebaseCfg = new FirebaseConfig(
-            false,
-            "1:32637295511:android:77db4b6fdcd37a706e42d2",
-            "32637295511",
-            "primirest-sharp-fb",
-            "AIzaSyAG4HEPPOnup-0SvazStty9nKFkrOwqgR0",
-            serverNotificationsChannel
-        );
-#endif
 
-        builder.Services.AddPushAzureNotificationHubs<MyPushDelegate>(
-            "Endpoint=sb://PrimirestSharpNotificationHubNamespace.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=KK4SF5WMDV5dfbEHbomTiuiTHCC4atESqC4hDJCiKfI=",
-            "PrimirestSharpNotificationHub"
-#if ANDROID
-            , firebaseCfg
-#endif
-        );
+        #if ANDROID
+        // Add FCM push notification handler for Android
+        FirebaseCloudMessagingImplementation.ShowLocalNotificationAction = ShowFCMNotification;
+        CrossFirebaseCloudMessaging.Current.TokenChanged += FCMTokenChanged;
+        #endif
 
         return builder;
     }
-#endif
+
+
+#if ANDROID
+    private static void FCMTokenChanged(object? sender, Plugin.Firebase.CloudMessaging.EventArgs.FCMTokenChangedEventArgs e)
+    {
+        Console.WriteLine($"P# FCM Token changed, Reg Token: {e.Token}");
+        Preferences.Set(PushNotificationHandlerService.k_FCMTokenPrefKey, e.Token);
+    }
+    private static async void ShowFCMNotification(FCMNotification notification)
+    {
+        Console.WriteLine("P# FCM Message received");
+
+        var pushHandlerService = IPlatformApplication.Current!.Services.GetService<PushNotificationHandlerService>()!;
+        await pushHandlerService.HandleNotificationAsync(notification.Data ?? new Dictionary<string, string>(0));
+    }
+    #endif
 }

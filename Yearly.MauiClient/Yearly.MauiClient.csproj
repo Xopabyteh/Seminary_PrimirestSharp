@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-
     <PropertyGroup>
         <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
 
@@ -15,7 +14,7 @@
         <ApplicationTitle>Primirest Sharp</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.yearly.primirestsharp</ApplicationId>
+        <ApplicationId>me.xopabyteh.yearly.primirestsharp</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -29,6 +28,10 @@
         <NeutralLanguage>cs-CZ</NeutralLanguage>
     </PropertyGroup>
 
+	<ItemGroup Condition="$(TargetFramework.Contains('-android'))">
+		<TrimmerRootDescriptor Include="Platforms\Android\ILLink.Descriptors.xml" />
+	</ItemGroup>
+	
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.65" Color="#007FFF" />
@@ -48,6 +51,10 @@
 
     <ItemGroup>
       <AndroidResource Remove="Platforms\Android\Resources\values\network_security_config.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Platforms\Android\google-services.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -94,12 +101,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
         <PackageReference Include="OneOf" Version="3.0.271" />
         <PackageReference Include="Plugin.LocalNotification" Version="11.1.4" />
-        <PackageReference Include="Shiny.Core" Version="3.3.3" />
-        <PackageReference Include="Shiny.Hosting.Maui" Version="3.3.3" />
-        <PackageReference Include="Shiny.Jobs" Version="3.3.3" />
-        <PackageReference Include="Shiny.Notifications" Version="3.3.3" />
-        <PackageReference Include="Shiny.Push" Version="3.3.3" />
-        <PackageReference Include="Shiny.Push.AzureNotificationHubs" Version="3.3.3" />
+		<PackageReference Include="Plugin.Firebase.CloudMessaging" Version="3.0.0" />
         <PackageReference Include="Xam.Plugin.Media" Version="6.0.2" />
         <PackageReference Include="Xamarin.Essentials" Version="1.8.1" />
     </ItemGroup>
@@ -108,23 +110,7 @@
       <ProjectReference Include="..\Yearly.Contracts\Yearly.Contracts.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <UpToDateCheckInput Remove="Components\Pages\Settings\SettingsPage.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Components\Pages\Settings\SettingsPage.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Components\Pages\Dev\" />
-      <Folder Include="Services\Toast\" />
-    </ItemGroup>
-
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
-      <PackageReference Include="Shiny.Extensions.Configuration">
-        <Version>3.3.3</Version>
-      </PackageReference>
       <PackageReference Include="Xamarin.AndroidX.Work.Runtime">
         <Version>2.9.1.1</Version>
       </PackageReference>
@@ -154,20 +140,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <GoogleServicesJson Include="Platforms\Android\google-services.json" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Include="wwwroot\js\foodBlockHelpers.js" />
     </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-ios'">
-      <PackageReference Include="Shiny.Extensions.Configuration">
-        <Version>3.3.3</Version>
-      </PackageReference>
-    </ItemGroup>
-
-    <!--<ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
-        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.5\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
-      </Reference>
-    </ItemGroup>-->
 
     <ItemGroup>
       <Compile Update="Resources\LocalizationResources.Designer.cs">

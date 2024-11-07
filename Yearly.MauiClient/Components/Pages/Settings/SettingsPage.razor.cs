@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Yearly.Contracts.Common;
-#if ANDROID || IOS
-using Shiny;
-using Shiny.Push;
 using Yearly.MauiClient.Services.Toast;
-#endif
 using Yearly.Contracts.Notifications;
 using Yearly.MauiClient.Components.Layout;
 using Yearly.MauiClient.Services;
@@ -21,10 +17,7 @@ public partial class SettingsPage
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
     [Inject] private MyPhotosCacheService _myPhotosCacheService { get; set; } = null!;
 
-#if ANDROID || IOS
     [Inject] private ToastService _toastService { get; set; } = null!;
-    [Inject] private IPushManager _pushNotificationsManager { get; set; } = null!;
-#endif
 
     private decimal balance = 0;
     private decimal orderedFor = 0;
@@ -43,13 +36,6 @@ public partial class SettingsPage
 
     protected override void OnInitialized()
     {
-#if ANDROID || IOS
-        var loadedTags = _pushNotificationsManager.TryGetTags();
-        if (loadedTags is not null)
-        {
-            activeTags.AddRange(loadedTags);
-        }
-#endif
         isOrderCheckerEnabled = Preferences.Get(k_OrderCheckerEnabledPrefKey, false);
         isBalanceCheckerEnabled = Preferences.Get(k_BalanceCheckerEnabledPrefKey, false);
     }
@@ -158,23 +144,25 @@ public partial class SettingsPage
     /// <returns>New tag state. True is tag set, false is tag unset</returns>
     private async Task<bool> SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
     {
-        var pushAccess = await _pushNotificationsManager.RequestAccess();
-        if (pushAccess.Status != AccessState.Available)
-        {
-            await _toastService.ShowErrorAsync("Musíte povolit notifikace, aby je aplikace mohla zoobrazit.");
-            return false;
-        }
+        await Task.CompletedTask;
+        return true;
+        //var pushAccess = await _pushNotificationsManager.RequestAccess();
+        //if (pushAccess.Status != AccessState.Available)
+        //{
+        //    await _toastService.ShowErrorAsync("Musíte povolit notifikace, aby je aplikace mohla zoobrazit.");
+        //    return false;
+        //}
 
-        if (shouldBeActive)
-        {
-            await _pushNotificationsManager.Tags?.AddTag(tag.Value)!;
-            activeTags.Add(tag.Value);
-            return true;
-        }
+        //if (shouldBeActive)
+        //{
+        //    await _pushNotificationsManager.Tags?.AddTag(tag.Value)!;
+        //    activeTags.Add(tag.Value);
+        //    return true;
+        //}
 
-        await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
-        activeTags.Remove(tag.Value);
-        return false;
+        //await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
+        //activeTags.Remove(tag.Value);
+        //return false;
     }
 
     private bool IsLoadedTagActive(NotificationTagContract tag)
