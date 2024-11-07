@@ -19,4 +19,5 @@ public class DateTimeProvider
     /// Now in Czech timezone (UTC+1)
     /// </summary>
     public DateTime CzechNow => DateTime.UtcNow.AddHours(1);
+    public DateTime CzechToday => CzechNow.Date;
 }

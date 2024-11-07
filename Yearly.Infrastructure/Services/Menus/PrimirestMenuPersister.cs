@@ -111,12 +111,14 @@ public class PrimirestMenuPersister : IPrimirestMenuPersister
                 //Handle foods
                 foreach (var primirestFood in primirestDailyMenu.Foods)
                 {
-                    //Don't add foods that have the same primirest food identifier
-                    //It might happen that the delete old menus function miss behaves
+                    // Don't create new foods that have the same primirest food identifier
+                    // It might happen that the delete old menus function miss behaves
                     // and we will get duplicate primirest foods in our db. That is bad
-                    if (foodsWithAlreadyExistingIdentifiers.Contains(primirestFood.PrimirestFoodIdentifier))
+                    // Only add those foods ids to the day.
+                    if (foodsWithAlreadyExistingIdentifiers.TryGetValue(primirestFood.PrimirestFoodIdentifier, out var knownFoodId))
                     {
-                        _logger.LogError("Food with primirest identifier {identifier} already exists in our db. Skipping it.", primirestFood.PrimirestFoodIdentifier.ToString());
+                        _logger.LogError("Food with primirest identifier {identifier} already exists in our db. Not recreating it.", primirestFood.PrimirestFoodIdentifier.ToString());
+                        foodIdsForDay.Add(knownFoodId);
                         continue;
                     }
 

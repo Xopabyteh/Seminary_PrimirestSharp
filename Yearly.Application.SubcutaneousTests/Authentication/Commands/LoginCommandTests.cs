@@ -16,7 +16,10 @@ public class LoginCommandTests(WebAppFactory webAppFactory)
         // Arrange
         var mediator = await webAppFactory.CreateMediatorAndResetDbAsync();
         var adminCredentials = webAppFactory.Services.GetService<IOptions<PrimirestAdminCredentialsOptions>>();
-        var loginCommand = new LoginCommand(adminCredentials!.Value.AdminUsername, adminCredentials.Value.AdminPassword);
+        var loginCommand = new LoginCommand(
+            adminCredentials!.Value.AdminUsername,
+            adminCredentials.Value.AdminPassword,
+            PreferredUserInTenant: null);
 
         // Act
         var result = await mediator.Send(loginCommand);

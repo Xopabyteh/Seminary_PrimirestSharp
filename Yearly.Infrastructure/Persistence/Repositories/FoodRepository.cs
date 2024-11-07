@@ -46,29 +46,22 @@ internal sealed class FoodRepository : IFoodRepository
     }
 
     ///<returns>A list of foods that answer yes to: "Is there a food in our DB that has the same order identifier?"</returns>
-    public async Task<List<PrimirestFoodIdentifier>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
+    public async Task<Dictionary<PrimirestFoodIdentifier, FoodId>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
         List<PrimirestFoodIdentifier> identifiers)
     {
         //Todo: Wtf, why does this not work like this? Why must there be this obscure select statement
-        //var result = await _context.Foods
-        //    .AsNoTracking()
-        //    .Where(f => identifiers.Contains(f.PrimirestFoodIdentifier))
-        //    .Select(f => f.PrimirestFoodIdentifier)
-        //    .ToListAsync();
-
+        
         var identifierItemIds = identifiers.Select(i => i.ItemId).ToList();
         var result = await _context.Foods
             .AsNoTracking()
             .Where(f => identifierItemIds.Contains(f.PrimirestFoodIdentifier.ItemId))
-            .Select(f => f.PrimirestFoodIdentifier)
-            .ToListAsync();
+            .Select(f => new { f.PrimirestFoodIdentifier, f.Id })
+            .ToDictionaryAsync(
+                keySelector: f => f.PrimirestFoodIdentifier,
+                elementSelector: food => food.Id);
 
         return result;
     }
-    //public async Task AddFoodAsync(Food food)
-    //{
-    //    await _context.Foods.AddAsync(food);
-    //}
 
     public async Task AddFoodsAsync(List<Food> foods)
     {

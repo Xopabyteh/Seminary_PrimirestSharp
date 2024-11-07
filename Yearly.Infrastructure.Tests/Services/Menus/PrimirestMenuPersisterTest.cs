@@ -214,13 +214,13 @@ public class PrimirestMenuPersisterTest
             return Task.CompletedTask;
         }
 
-        public Task<List<PrimirestFoodIdentifier>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
+        public Task<Dictionary<PrimirestFoodIdentifier, FoodId>> GetFoodsWithIdentifiersThatAlreadyExistAsync(
             List<PrimirestFoodIdentifier> identifiers)
         {
             return Task.FromResult(Foods
                 .Where(f => identifiers.Contains(f.PrimirestFoodIdentifier))
-                .Select(f => f.PrimirestFoodIdentifier)
-                .ToList());
+                .Select(f => new { f.PrimirestFoodIdentifier, f.Id })
+                .ToDictionary(f => f.PrimirestFoodIdentifier, f => f.Id));
         }
 
         public Task AddFoodsAsync(List<Food> foods)

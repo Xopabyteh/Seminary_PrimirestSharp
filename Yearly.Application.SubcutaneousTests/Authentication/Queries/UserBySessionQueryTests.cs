@@ -22,7 +22,10 @@ public class UserBySessionQueryTests
         var mediator = await webAppFactory.CreateMediatorAndResetDbAsync();
         var adminCredentials = webAppFactory.Services.GetService<IOptions<PrimirestAdminCredentialsOptions>>();
         
-        var loginCommand = new LoginCommand(adminCredentials!.Value.AdminUsername, adminCredentials.Value.AdminPassword);
+        var loginCommand = new LoginCommand(
+            adminCredentials!.Value.AdminUsername,
+            adminCredentials.Value.AdminPassword,
+            PreferredUserInTenant: null);
         var loginResult = await mediator.Send(loginCommand);
         var userBySessionQuery = new UserBySessionQuery(loginResult.Value.SessionCookie);
 

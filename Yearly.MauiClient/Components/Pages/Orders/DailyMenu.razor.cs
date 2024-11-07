@@ -27,9 +27,11 @@ public partial class DailyMenu
     private OrderDTO? order;
 
     /// <summary>
-    /// Show add photo in food blocks, if this is todays menu
+    /// Show add photo in food blocks, if this is todays menu.
+    /// Compares the date parts of CzechToday and DailyMenuDTO.Date
     /// </summary>
-    private bool ShowAddPhoto => _dateTimeProvider.Today == DailyMenuDTO.Date;
+    private bool ShowAddPhoto
+        => _dateTimeProvider.CzechToday == DailyMenuDTO.Date; // Date.Date to ensure we compare only the date part
 
     /// <summary>
     /// Foods that are currently involed in being ordered.

@@ -54,8 +54,8 @@ public partial class PhotoPage
 
     private async Task SelectBasedOnToday()
     {
-        // Get todays daily menu
-        var today = _dateTimeProvider.Today;
+        // Get todays (czech today) daily menu
+        var today = _dateTimeProvider.CzechToday;
 
         await _menuAndOrderCacheService.EnsureMenusLoadedAsync();
         var availableMenus = _menuAndOrderCacheService.GetAvailableMenus();
