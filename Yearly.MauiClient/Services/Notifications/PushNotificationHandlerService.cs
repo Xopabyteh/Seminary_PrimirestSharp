@@ -13,6 +13,7 @@ public class PushNotificationHandlerService
         _handlers = handlers;
     }
 
+    /// <summary>
     /// Finds appropriate handler for the notificationId and handles the notification
     /// </summary>
     public async Task HandleNotificationAsync(IDictionary<string, string> data)

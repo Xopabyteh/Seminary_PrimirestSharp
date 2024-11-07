@@ -3,7 +3,7 @@ public static partial class PushContracts
 {
     public class SimilarityTable
     {
-        public const int k_SimilarityTableNotificationId = 103;
-        public static string SimilarityTableTopic = CreateTopic("SimilarityTable", k_SimilarityTableNotificationId);
+        public const int k_NewSimilarityRecordId = 201;
+        public static string NewSimilarityRecordTopic = CreateTopic("SimilarityTable", k_NewSimilarityRecordId);
     }
 }

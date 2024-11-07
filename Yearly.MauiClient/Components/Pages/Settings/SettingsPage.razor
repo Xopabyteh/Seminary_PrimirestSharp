@@ -85,22 +85,22 @@
     <div class='notification-toggles mh-100'>
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Když mi schválí fotku</label>
-            <ToggleSwitch 
-                IsChecked='@IsLoadedTagActive(NotificationTagContract.PhotoApproved(_authService.ActiveUserDetailsLazy.UserId))' 
-                OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.PhotoApproved(_authService.ActiveUserDetailsLazy.UserId), active)'/>
+        @RenderPushTopicToggle(PushContracts.Photos.CreatePhotoApprovedTopic(_authService.ActiveUserDetailsLazy.UserId))
         </div>
         <Authorized RequiredRoles='new[] {UserRoleDTO.PhotoApprover}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Pha. Nová čekající fotka</label>
-                <ToggleSwitch IsChecked='@IsLoadedTagActive(NotificationTagContract.NewWaitingPhoto())'
-                              OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.NewWaitingPhoto(), active)' />
+                @* <ToggleSwitch IsChecked='@IsLoadedTagActive(NotificationTagContract.NewWaitingPhoto())' *@
+                              @* OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.NewWaitingPhoto(), active)' /> *@
+            @RenderPushTopicToggle(PushContracts.Photos.NewWaitingPhotoTopic)
             </div>
         </Authorized>
         <Authorized RequiredRoles='new[] {UserRoleDTO.Admin}'>
             <div class='toggle-with-label mt-300'>
                 <label class="fs-regular fw-regular color-secondary">Adm. Nový similarity record</label>
-                <ToggleSwitch IsChecked='@IsLoadedTagActive(NotificationTagContract.NewSimilarityRecord())'
-                              OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.NewSimilarityRecord(), active)' />
+                @* <ToggleSwitch IsChecked='@IsLoadedTagActive(NotificationTagContract.NewSimilarityRecord())' *@
+                              @* OnCheckedChanged='async active => await SetNotificationTag(NotificationTagContract.NewSimilarityRecord(), active)' /> *@
+            @RenderPushTopicToggle(PushContracts.SimilarityTable.NewSimilarityRecordTopic)
             </div>
         </Authorized>
     </div>
@@ -128,8 +128,8 @@
                 <span class='color-primary fw-regular fs-regular'>Aktivovat Auto Login</span>
             </a>
         </div>
-    }
-    <div class='notification-toggles mh-100' style='@(_authService.IsAutoLoginSetup ? "" : "filter: opacity(0.45)")'>
+     }
+       <div class='notification-toggles mh-100' style='@(_authService.IsAutoLoginSetup ? "" : "filter: opacity(0.45)")'>
         <div class='toggle-with-label mt-300'>
             <label class="fs-regular fw-regular color-secondary">Notifikace když nemám objednáno</label>
             <ToggleSwitch IsChecked='isOrderCheckerEnabled' OnCheckedChanged='async active => await OnOrderCheckerToggle(active)'/>
@@ -162,3 +162,10 @@
         <Loader DotColor='var(--clr-danger)'/>
     }
 </button>
+
+@code {
+    private RenderFragment RenderPushTopicToggle(string topic) 
+        => @<ToggleSwitch 
+            IsChecked="_pushRegistrationService.IsSubscribedToTopic(topic)"
+            OnCheckedChanged="async active => await TogglePushRegistration(active, topic)" />;
+}

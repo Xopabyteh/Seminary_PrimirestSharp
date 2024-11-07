@@ -4,6 +4,9 @@ using Yearly.MauiClient.Services.Toast;
 using Yearly.Contracts.Notifications;
 using Yearly.MauiClient.Components.Layout;
 using Yearly.MauiClient.Services;
+using Yearly.MauiClient.Services.Notifications;
+using System.Runtime.CompilerServices;
+using Plugin.LocalNotification;
 
 namespace Yearly.MauiClient.Components.Pages.Settings;
 
@@ -16,7 +19,7 @@ public partial class SettingsPage
     [Inject] private NavigationManager _navigationManager { get; set; } = null!;
     [Inject] private MenuAndOrderCacheService _menuAndOrderCacheService { get; set; } = null!;
     [Inject] private MyPhotosCacheService _myPhotosCacheService { get; set; } = null!;
-
+    [Inject] private PushRegistrationService _pushRegistrationService { get; set; } = null!;
     [Inject] private ToastService _toastService { get; set; } = null!;
 
     private decimal balance = 0;
@@ -56,9 +59,38 @@ public partial class SettingsPage
         StateHasChanged();
     }
 
-    // ReSharper disable once UnusedParameter.Local
+    private async Task<bool> TogglePushRegistration(bool shouldSubscribe, string topic)
+    {
+        // Check that notifications are enabled
+        var notificationsAllowed = await LocalNotificationCenter.Current.RequestNotificationPermission();
+        if(!notificationsAllowed)
+        {
+            await _toastService.ShowErrorAsync("Notifikace nejsou povoleny");
+            return false;
+        }
+
+        if (shouldSubscribe)
+        {
+            await _pushRegistrationService.SubscribeToTopic(topic);
+        }
+        else
+        {
+            await _pushRegistrationService.UnsubscribeFromTopic(topic);
+        }
+
+        return shouldSubscribe;
+    }
+
     private async Task<bool> OnOrderCheckerToggle(bool shouldEnable)
     {
+        // Check that notifications are enabled
+        var notificationsAllowed = await LocalNotificationCenter.Current.RequestNotificationPermission();
+        if (!notificationsAllowed)
+        {
+            await _toastService.ShowErrorAsync("Notifikace nejsou povoleny");
+            return false;
+        }
+
 #if ANDROID
         if (shouldEnable)
         {
@@ -89,6 +121,14 @@ public partial class SettingsPage
 
     private async Task<bool> OnBalanceCheckerToggle(bool shouldEnable)
     {
+        // Check that notifications are enabled
+        var notificationsAllowed = await LocalNotificationCenter.Current.RequestNotificationPermission();
+        if (!notificationsAllowed)
+        {
+            await _toastService.ShowErrorAsync("Notifikace nejsou povoleny");
+            return false;
+        }
+
 #if ANDROID
         if (shouldEnable)
         {
@@ -136,38 +176,6 @@ public partial class SettingsPage
             _ => $"{firstMyPhotosFragment.TotalCount} Sdílených fotek"
         };
     }
-
-    #region HubNotifications
-
-    private List<string> activeTags = new (3);
-
-    /// <returns>New tag state. True is tag set, false is tag unset</returns>
-    private async Task<bool> SetNotificationTag(NotificationTagContract tag, bool shouldBeActive)
-    {
-        await Task.CompletedTask;
-        return true;
-        //var pushAccess = await _pushNotificationsManager.RequestAccess();
-        //if (pushAccess.Status != AccessState.Available)
-        //{
-        //    await _toastService.ShowErrorAsync("Musíte povolit notifikace, aby je aplikace mohla zoobrazit.");
-        //    return false;
-        //}
-
-        //if (shouldBeActive)
-        //{
-        //    await _pushNotificationsManager.Tags?.AddTag(tag.Value)!;
-        //    activeTags.Add(tag.Value);
-        //    return true;
-        //}
-
-        //await _pushNotificationsManager.Tags?.RemoveTag(tag.Value)!;
-        //activeTags.Remove(tag.Value);
-        //return false;
-    }
-
-    private bool IsLoadedTagActive(NotificationTagContract tag)
-        => activeTags.Contains(tag.Value);
-#endregion
 
     private Task<bool> ToggleDarkMode(bool newState)
     {

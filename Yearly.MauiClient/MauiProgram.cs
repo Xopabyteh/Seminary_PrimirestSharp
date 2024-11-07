@@ -11,6 +11,8 @@ using Plugin.LocalNotification;
 using Yearly.Contracts.Notifications;
 using Plugin.Firebase.CloudMessaging;
 using Yearly.MauiClient.Services.Notifications;
+using Yearly.MauiClient.Services.Notifications.Photos;
+using Yearly.MauiClient.Services.Notifications.SimilarityTable;
 
 namespace Yearly.MauiClient;
 
@@ -40,8 +42,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<ToastService>();
 
         // Push notifications
+        builder.Services.AddSingleton<PushRegistrationService>();
         builder.Services.AddSingleton<PushNotificationHandlerService>();
-        
+        builder.Services.AddSingleton<IPushNotificationHandlerService, NewWaitingPhotoNotificationHandler>();
+        builder.Services.AddSingleton<IPushNotificationHandlerService, PhotoApprovedNotificationHandler>();
+        builder.Services.AddSingleton<IPushNotificationHandlerService, NewSimilarityRecordNotificationHandler>();
 
         builder.Services.AddTransient<OrderCheckerService>();
 
@@ -78,8 +83,11 @@ public static class MauiProgram
             #if ANDROID
             c.AddAndroid(ac =>
             {
-                ac.AddChannel(new NotificationChannelRequest() {Id = PushContracts.General.k_GeneralNotificationChannelId, Name = "General"});
-            
+                ac.AddChannel(new NotificationChannelRequest()
+                {
+                    Id = PushContracts.General.k_GeneralNotificationChannelId,
+                    Name = "General",
+                });
                 FirebaseCloudMessagingImplementation.ChannelId = PushContracts.General.k_GeneralNotificationChannelId;
             });
             #endif

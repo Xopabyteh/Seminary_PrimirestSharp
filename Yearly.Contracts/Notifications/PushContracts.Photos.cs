@@ -1,7 +1,7 @@
 ﻿namespace Yearly.Contracts.Notifications;
 public static partial class PushContracts
 {
-    public class Photo
+    public class Photos
     {
         public const int k_PhotoApprovedNotificationId = 101;
         public static string CreatePhotoApprovedTopic(int userId)
