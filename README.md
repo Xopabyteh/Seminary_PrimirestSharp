@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/Xopabyteh/Seminary_PrimirestSharp">
-    <img src="https://raw.githubusercontent.com/Xopabyteh/Seminary_PrimirestSharp/master/Inkscape/AppIcons/logo_bubble_path.svg" />
+    <img src="https://raw.githubusercontent.com/Xopabyteh/Seminary_PrimirestSharp/refs/heads/master/Inkscape/AppIcons/logo_bubble_path.svg?token=GHSAT0AAAAAACZQPS3AXFUT2BMAYMO2YBOCZZNDHBA" />
   </a>
 </p>
 
