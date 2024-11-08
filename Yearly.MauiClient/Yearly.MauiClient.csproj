@@ -16,9 +16,14 @@
         <!-- App Identifier -->
         <ApplicationId>me.xopabyteh.yearly.primirestsharp</ApplicationId>
 
-        <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+		<!-- Versions -->
+		<ApplicationVersion>2</ApplicationVersion>
+		<VersionPatch>0</VersionPatch>
+
+		<!--Display version (derived)-->
+		<VersionMajor>$([System.DateTime]::Now.ToString("yyyy"))</VersionMajor>
+		<VersionMinor>$(ApplicationVersion)</VersionMinor>
+		<ApplicationDisplayVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch)</ApplicationDisplayVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
