@@ -1,34 +1,18 @@
-﻿using Microsoft.JSInterop;
+﻿using Yearly.MauiClient.Components.Common;
 
 namespace Yearly.MauiClient.Services.Toast;
 
 public class ToastService
 {
-    private readonly IJSRuntime _js;
+    public Task ShowErrorAsync(string message)
+        => ToastManager.Instance!.ShowErrorAsync(message);
 
-    public ToastService(IJSRuntime js)
-    {
-        _js = js;
-    }
+    public Task ShowSuccessAsync(string message)
+        => ToastManager.Instance!.ShowSuccessAsync(message);
 
-    public async Task ShowErrorAsync(string message)
-    {
-        await _js.InvokeVoidAsync("toastError", message);
-    }
-
-    public async Task ShowSuccessAsync(string message)
-    {
-        await _js.InvokeVoidAsync("toastSuccess", message);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
     /// <param name="message"></param>
     /// <param name="durationMillis">In milliseconds, -1 for infinite</param>
     /// <returns></returns>
-    public async Task ShowInformationAsync(string message, int durationMillis = 3000)
-    {
-        await _js.InvokeVoidAsync("toastInformation", message, durationMillis);
-    }
+    public Task ShowInformationAsync(string message, int durationMillis = 3000)
+        => ToastManager.Instance!.ShowInformationAsync(message, durationMillis);
 }
