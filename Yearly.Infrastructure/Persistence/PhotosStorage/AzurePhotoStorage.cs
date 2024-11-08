@@ -43,6 +43,11 @@ public class AzurePhotoStorage : IPhotoStorage
     public async Task EnsureContainerExists()
     {
         var container = _blobServiceClient.GetBlobContainerClient(k_ContainerName);
+        var doesExist = await container.ExistsAsync();
+        if (doesExist)
+            return;
+        
         await container.CreateIfNotExistsAsync();
+        await container.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
     }
 }

@@ -8,6 +8,7 @@ using Yearly.Domain.Models.FoodAgg;
 using Yearly.Domain.Models.FoodAgg.ValueObjects;
 using Yearly.Domain.Models.PhotoAgg.DomainEvents;
 using Yearly.Domain.Models.PhotoAgg.ValueObjects;
+using Yearly.Domain.Models.UserAgg.DomainEvents;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
 
 namespace Yearly.Domain.Models.PhotoAgg;
@@ -61,12 +62,15 @@ public class Photo : AggregateRoot<PhotoId>
     }
 
 
-    internal void Approve()
+    internal void Approve(UserId approverId)
     {
         if (this.IsApproved)
             throw new IllegalStateException("Photo already approved");
 
         this.IsApproved = true;
+        
+        // Domain event published here to reach the change tracker
+        PublishDomainEvent(new UserApprovedPhotoDomainEvent(approverId, this.Id)); 
     }
 
 

@@ -1,4 +1,7 @@
 ﻿using Azure.Identity;
+using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +28,6 @@ using Yearly.Infrastructure.Services;
 using Yearly.Infrastructure.Services.Authentication;
 using Yearly.Infrastructure.Services.Foods;
 using Yearly.Infrastructure.Services.Menus;
-using Yearly.Infrastructure.Services.Notifications;
 using Yearly.Infrastructure.Services.Orders;
 
 namespace Yearly.Infrastructure;
@@ -93,6 +95,12 @@ public static class DependencyInjection
             }
         }
 
+        // Firebase:
+        FirebaseApp.Create(new AppOptions()
+        {
+            Credential = GoogleCredential.FromJson(builder.Configuration["Firebase:ServiceAccountCredentialJson"]),
+        });
+        services.AddSingleton(FirebaseMessaging.DefaultInstance);
 
         return services;
     }
@@ -174,11 +182,11 @@ public static class DependencyInjection
                 builder.Configuration["Persistence:AzureStorageConnectionString:blob"]!,
                 preferMsi: builder.Environment.IsDevelopment());
         });
-        builder.Services.AddScoped<INotificationHubClient>(_ => NotificationHubClient.CreateClientFromConnectionString(
-            builder.Configuration.GetSection("NotificationHub")["FullAccessConnectionString"],
-            builder.Configuration.GetSection("NotificationHub")["HubName"]));
-        builder.Services.AddScoped<IUserNotificationService, AzureUserNotificationService>();
-
+        //builder.Services.AddScoped<INotificationHubClient>(_ => NotificationHubClient.CreateClientFromConnectionString(
+        //    builder.Configuration.GetSection("NotificationHub")["FullAccessConnectionString"],
+        //    builder.Configuration.GetSection("NotificationHub")["HubName"]));
+        //builder.Services.AddScoped<IUserNotificationService, AzureUserNotificationService>();
+        
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddTransient<DataSeeder>();
@@ -194,7 +202,7 @@ public static class DependencyInjection
     private static void EnsureServiceInitialization(IServiceProvider services)
     {
         var azureStorage = services.GetRequiredService<AzurePhotoStorage>();
-        //azureStorage.EnsureContainerExists().Wait();
+        azureStorage.EnsureContainerExists().Wait();
     }
 
     private static void MigrateDb(IServiceProvider services)

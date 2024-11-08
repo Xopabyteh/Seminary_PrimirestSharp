@@ -74,18 +74,13 @@ public class User : AggregateRoot<UserId>
 
     internal void ApprovePhoto(Photo photo)
     {
-        photo.Approve();
-
-        // Publish Domain events
-        PublishDomainEvent(new UserApprovedPhotoDomainEvent(this.Id, photo.Id));
+        photo.Approve(approverId: this.Id);
     }
 
     internal void RejectPhoto(Photo photo)
     {
         if (photo.IsApproved)
             throw new RejectingApprovedPhotoException(this, photo);
-
-        // Publish Domain events
     }
     internal void AddRole(UserRole role, User toUser)
     {

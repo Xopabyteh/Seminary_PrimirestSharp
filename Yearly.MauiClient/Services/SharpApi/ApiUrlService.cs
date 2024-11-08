@@ -10,7 +10,7 @@ public class ApiUrlService
     }
 
 
-    public const string DevBaseAddress = "https://6xk8tlhr-7217.euw.devtunnels.ms/";
+    public const string DevBaseAddress = "https://02ps6q5z-7217.euw.devtunnels.ms/";
     public const string ProdBaseAddress = "https://primirestsharp.azurewebsites.net/";
     public string GetBaseAddress()
         => _deployEnvironmentAccessor.Env switch

@@ -1,5 +1,6 @@
-﻿using MediatR;
-using Yearly.Application.Common.Interfaces;
+﻿using System.Globalization;
+using FirebaseAdmin.Messaging;
+using MediatR;
 using Yearly.Contracts.Notifications;
 using Yearly.Domain.Models.UserAgg.DomainEvents;
 using Yearly.Domain.Models.UserAgg.ValueObjects;
@@ -9,15 +10,18 @@ namespace Yearly.Application.Users.DomainEvents;
 
 public class NotifyPublisherOnPhotoApprovedHandler : INotificationHandler<UserApprovedPhotoDomainEvent>
 {
-    private readonly IUserNotificationService _notificationService;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoRepository _photoRepository;
+    private readonly FirebaseMessaging _firebaseMessaging;
 
-    public NotifyPublisherOnPhotoApprovedHandler(IUserNotificationService notificationService, IPhotoRepository photoRepository, IUserRepository userRepository)
+    public NotifyPublisherOnPhotoApprovedHandler(
+        IPhotoRepository photoRepository,
+        IUserRepository userRepository,
+        FirebaseMessaging firebaseMessaging)
     {
-        _notificationService = notificationService;
         _photoRepository = photoRepository;
         _userRepository = userRepository;
+        _firebaseMessaging = firebaseMessaging;
     }
 
     public async Task Handle(UserApprovedPhotoDomainEvent request, CancellationToken cancellationToken)
@@ -30,13 +34,29 @@ public class NotifyPublisherOnPhotoApprovedHandler : INotificationHandler<UserAp
         var publisher = await _userRepository.GetByIdAsync(photo.PublisherId);
         if(publisher is null)
             return; // The publisher could've been deleted before the event was handled
-
+            
         if (publisher.Roles.Contains(UserRole.PhotoApprover))
             return; // Don't notify photo approvers themselves
 
-        await _notificationService.SendPushNotificationAsync(
-            "Díky",
-            "Vaše fotka byla schválena",
-            NotificationTagContract.PhotoApproved(photo.PublisherId.Value));
+        var messageData = new Dictionary<string, string>()
+        {
+            [PushContracts.General.k_NotificationIdKey] = PushContracts.Photos.k_PhotoApprovedNotificationId.ToString(CultureInfo.InvariantCulture)
+        };
+
+        var topicForPublisher = PushContracts.Photos.CreatePhotoApprovedTopic(publisher.Id.Value);
+        await _firebaseMessaging.SendAsync(
+            new Message()
+            {
+                Data = messageData,
+                Topic = topicForPublisher,
+                Apns = new()
+                {
+                    Aps = new()
+                    {
+                        ContentAvailable = true
+                    }
+                }
+            },
+            cancellationToken);
     }
 }
