@@ -17,8 +17,8 @@
         <ApplicationId>me.xopabyteh.yearly.primirestsharp</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationVersion>2</ApplicationVersion>
-		<VersionPatch>0</VersionPatch>
+		<ApplicationVersion>3</ApplicationVersion>
+		<VersionPatch>1</VersionPatch>
 
 		<!--Display version (derived)-->
 		<VersionMajor>$([System.DateTime]::Now.ToString("yyyy"))</VersionMajor>
