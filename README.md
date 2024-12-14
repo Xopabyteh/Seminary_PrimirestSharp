@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/Xopabyteh/Seminary_PrimirestSharp">
-    <img src="https://raw.githubusercontent.com/Xopabyteh/Seminary_PrimirestSharp/refs/heads/master/Inkscape/AppIcons/logo_bubble_path.svg?token=GHSAT0AAAAAACZQPS3AXFUT2BMAYMO2YBOCZZNDHBA" />
+    <img src="https://raw.githubusercontent.com/Xopabyteh/Seminary_PrimirestSharp/refs/heads/master/Inkscape/AppIcons/logo_bubble_path.svg" />
   </a>
 </p>
 
@@ -16,8 +16,7 @@ The project is split into two parts - a custom backend wrapper api and a fronten
 
 This is my Seminary work for mensa gymnázium `Sexta 2023 - Septima 2025`.
 The project is built with clean architecture and some DDD concepts in mind.
-But i am the only one working on the project and i am my own domain expert,
-so i'm just using portions of DDD.
+But i am the only one working on the project... so i'm just using the code portions of DDD.
 
 ### Features
  - [x] Ordering through primirest 🥓
@@ -26,6 +25,16 @@ so i'm just using portions of DDD.
  - [x] Food aliasing for photo reusability ♻
  - [x] Slick client app 🔥
  - [x] Dark mode 🌝 
+
+## Disclaimer 🫂
+This application is a student project and is not affiliated with Primirest, Delirest, or any other companies in their network.
+
+Systems designed in this project operate entirely separately from the official Primirest 
+system and do not integrate with or alter the original platform's backend processes.
+
+This application is provided free of charge and is intended solely for educational and personal use. It is non-commercial, meaning it generates no profit and is not sold, distributed, or promoted via any commercial channels, including app stores or other retail platforms. Users should be aware that, as a personal project, the app may contain bugs or incomplete features, and support is limited to the developer's availability and capacity.
+
+By using this application, you acknowledge and accept that it is provided "as-is" without any warranties or guarantees of any kind. The developer disclaims all liability for any damages or losses that may arise from the use of this app. Users are encouraged to report any issues or provide feedback to help improve the application, but there are no obligations or commitments from the developer to implement such changes or provide ongoing support.
 
 ## Docs
 Most of the docs are made with figma available at the links below. Some docs can be found in project folders specific to that layer of the application.
